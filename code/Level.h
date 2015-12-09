@@ -1,6 +1,8 @@
 #ifndef _Level_
 #define _Level_
 
+#include "LikelihoodType.h"
+
 namespace DNest4
 {
 
@@ -11,10 +13,13 @@ namespace DNest4
 class Level
 {
 	private:
-		// The loglikelihood and tiebreaker of the level
-		double log_likelihood;
-		double tiebreaker;
+		// The loglikelihood of the level
+		LikelihoodType log_likelihood;
 
+		// Estimated compression of the level
+		double log_X;
+
+		// unsigned long long int is a well-defined thing in C++11 !!!
 		// Counts for compression refinement
 		unsigned long long int visits, exceeds;
 
@@ -25,8 +30,8 @@ class Level
 		// A do-nothing constructor
 		Level();
 
-		// Specify log_likelihood and tiebreaker
-		Level(double log_likelihood, double tiebreaker);
+		// Specify log_likelihood
+		Level(const LikelihoodType& log_likelihood);
 };
 
 } // namespace DNest4
