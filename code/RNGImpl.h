@@ -1,4 +1,3 @@
-#include "RNG.h"
 #include <cmath>
 
 namespace DNest4

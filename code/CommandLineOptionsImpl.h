@@ -1,9 +1,8 @@
-#include "CommandLineOptions.h"
 #include <ctime>
 #include <sstream>
 #include <iostream>
-#include <unistd.h> // for getopt
-#include <cstdlib> // for exit
+#include <unistd.h>	// for getopt
+#include <cstdlib>	// for exit
 
 namespace DNest4
 {

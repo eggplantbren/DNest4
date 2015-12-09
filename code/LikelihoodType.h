@@ -1,5 +1,5 @@
-#ifndef _LikelihoodType_
-#define _LikelihoodType_
+#ifndef DNest4_LikelihoodType
+#define DNest4_LikelihoodType
 
 namespace DNest4
 {

@@ -1,5 +1,5 @@
-#ifndef _Level_
-#define _Level_
+#ifndef DNest4_Level
+#define DNest4_Level
 
 #include "LikelihoodType.h"
 

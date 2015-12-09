@@ -1,5 +1,5 @@
-#ifndef _CommandLineOptions_
-#define _CommandLineOptions_
+#ifndef DNest4_CommandLineOptions
+#define DNest4_CommandLineOptions
 
 #include <string>
 

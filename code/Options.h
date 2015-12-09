@@ -1,5 +1,5 @@
-#ifndef _Options_
-#define _Options_
+#ifndef DNest4_Options
+#define DNest4_Options
 
 #include <string>
 

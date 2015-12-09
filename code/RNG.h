@@ -1,5 +1,5 @@
-#ifndef _RNG_
-#define _RNG_
+#ifndef DNest4_RNG
+#define DNest4_RNG
 
 #include <random>
 
