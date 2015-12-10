@@ -25,8 +25,9 @@ class Sampler
 
 		// Particles, tiebreaker values, and level assignments
 		std::vector<ModelType> particles;
-		std::vector<LikelihoodType> log_likelihoods;
-		std::vector<unsigned int> level_assignments;
+		std::vector<double> log_likelihoods;
+		std::vector<double> tiebreakers;
+		std::vector<unsigned int> level_assignments; // j in the paper
 
 		// Levels
 		std::list<LikelihoodType> levels;
@@ -36,6 +37,13 @@ class Sampler
 
 		// Log likelihood values accumulated (to create a new level)
 		std::vector<LikelihoodType> log_likelihood_keep;
+
+		/* Private methods */
+		// Do an MCMC step of particle 'which' on thread 'thread'
+		void update(unsigned int which, unsigned int thread);
+
+		// Do MCMC for a while
+		std::vector<LikelihoodType> do_mcmc(unsigned int thread);
 
 	public:
 		// Constructor: Pass in Options object
