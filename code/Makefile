@@ -4,5 +4,10 @@ default:
 	g++ $(CXXFLAGS) -c *.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
+	make nolib -C Examples/SpikeSlab
 
-	make -C Examples/SpikeSlab
+noexample:
+	g++ $(CXXFLAGS) -c *.cpp
+	ar rcs libdnest4.a *.o
+	rm -f *.o
+
