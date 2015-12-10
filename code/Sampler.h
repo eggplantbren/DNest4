@@ -23,14 +23,19 @@ class Sampler
 		// Options (most useful comment ever)
 		Options options;
 
-		// Particles
+		// Particles, tiebreaker values, and level assignments
 		std::vector<ModelType> particles;
+		std::vector<LikelihoodType> log_likelihoods;
+		std::vector<unsigned int> level_assignments;
 
 		// Levels
 		std::list<LikelihoodType> levels;
 
 		// Random number generators
 		std::vector<RNG> rngs;
+
+		// Log likelihood values accumulated (to create a new level)
+		std::vector<LikelihoodType> log_likelihood_keep;
 
 	public:
 		// Constructor: Pass in Options object
