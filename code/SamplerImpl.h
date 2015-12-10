@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 
 namespace DNest4
 {
@@ -17,6 +18,19 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 	assert(compression > 1.);
 }
 
+template<class ModelType>
+void Sampler<ModelType>::initialise(unsigned int first_seed)
+{
+	// Seed the RNGs, incrementing the seed each time
+	for(RNG& rng: rngs)
+		rng.set_seed(first_seed++);
+
+	std::cout<<"# Generating "<<options.num_particles;
+	std::cout<<" from the prior..."<<std::flush;
+	for(ModelType& m: particles)
+		m.from_prior(rngs[0]);
+	std::cout<<"done."<<std::endl<<std::endl;
+}
 
 } // namespace DNest4
 

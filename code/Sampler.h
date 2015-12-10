@@ -37,6 +37,8 @@ class Sampler
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options);
 
+		// Set rng seeds, then draw all particles from the prior
+		void initialise(unsigned int first_seed);
 };
 
 } // namespace DNest4
