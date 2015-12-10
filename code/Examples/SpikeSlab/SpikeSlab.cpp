@@ -26,9 +26,9 @@ double SpikeSlab::perturb(RNG& rng)
 
 double SpikeSlab::log_likelihood() const
 {
-	double u = 0.01;
-	double v = 0.1;
-	double C = log(1.0/sqrt(2*M_PI));
+	constexpr double u = 0.01;
+	constexpr double v = 0.1;
+	constexpr double C = log(1.0/sqrt(2*M_PI));
 
 	double logl1 = params.size()*(C - log(u));
 	double logl2 = params.size()*(C - log(v));
