@@ -1,3 +1,4 @@
+#include "LikelihoodType.h"
 #include <limits>
 #include <cassert>
 

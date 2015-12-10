@@ -43,6 +43,5 @@ class RNG
 
 } // namespace DNest4
 
-#include "RNGImpl.h"
 #endif
 

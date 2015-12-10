@@ -51,6 +51,5 @@ std::vector<size_t> ranks(const std::vector<T>& v)
 
 } // namespace DNest4
 
-#include "UtilsImpl.h"
 #endif
 

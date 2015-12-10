@@ -26,6 +26,5 @@ class LikelihoodType
 
 } // namespace DNest4
 
-#include "LikelihoodTypeImpl.h"
 #endif
 

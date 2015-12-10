@@ -47,6 +47,5 @@ class Options
 
 } // namespace DNest4
 
-//#include "OptionsImpl.h"
 #endif
 

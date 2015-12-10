@@ -1,3 +1,5 @@
+#include "Level.h"
+
 namespace DNest4
 {
 

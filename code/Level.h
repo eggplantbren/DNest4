@@ -36,7 +36,5 @@ class Level
 
 } // namespace DNest4
 
-#include "LevelImpl.h"
-
 #endif
 

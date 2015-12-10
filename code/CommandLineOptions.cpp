@@ -1,3 +1,5 @@
+#include "CommandLineOptions.h"
+
 #include <ctime>
 #include <sstream>
 #include <iostream>

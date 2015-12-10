@@ -50,7 +50,6 @@ class CommandLineOptions
 };
 
 } // namespace DNest4
-#include "CommandLineOptionsImpl.h"
 
 #endif
 
