@@ -34,7 +34,8 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 	for(RNG& rng: rngs)
 		rng.set_seed(first_seed++);
 
-	std::cout<<"# Generating "<<options.num_particles;
+	std::cout<<"# Generating "<<particles.size();
+	std::cout<<" particle"<<((particles.size() > 1)?("s"):(""));
 	std::cout<<" from the prior..."<<std::flush;
 	for(size_t i=0; i<particles.size(); ++i)
 	{
