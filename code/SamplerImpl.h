@@ -70,7 +70,7 @@ void Sampler<ModelType>::do_mcmc_thread(unsigned int thread,
 	for(unsigned int i=0; i<options.thread_steps; ++i)
 	{
 		which = start_index + rng.rand_int(options.num_particles);
-		update(which, thread);
+		update(which, thread, levels_copy);
 	}
 }
 
@@ -78,18 +78,37 @@ template<class ModelType>
 void Sampler<ModelType>::do_mcmc()
 {
 	std::vector<std::thread> threads;
-	std::vector< std::vector<Level> > level_copies(num_threads, levels);
+	std::vector< std::vector<Level> > levels_copies(num_threads, levels);
 
 	for(unsigned int i=0; i<num_threads; ++i)
-		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i, std::ref(level_copies[i]))));
+		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i, std::ref(levels_copies[i]))));
 	for(std::thread& t: threads)
 		t.join();
+
+	// Go through level copies
+	std::vector<Level> levels_orig = levels;
+	for(const auto& lcps: levels_copies)
+	{
+		for(size_t i=0; i<levels.size(); ++i)
+		{
+			levels[i].increment_accepts(lcps[i].get_accepts()
+												- levels_orig[i].get_accepts());
+			levels[i].increment_tries(lcps[i].get_tries()
+												- levels_orig[i].get_tries());
+
+			levels[i].increment_visits(lcps[i].get_visits()
+												- levels_orig[i].get_visits());
+			levels[i].increment_exceeds(lcps[i].get_exceeds()
+												- levels_orig[i].get_exceeds());
+		}
+	}
 }
 
 
 
 template<class ModelType>
-void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
+void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
+							std::vector<Level>& levels_copy)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -116,23 +135,21 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 	{
 		p = proposal;
 		tb = tiebreaker_proposal;
+		levels_copy[level_assignments[which]].increment_accepts(1);
 	}
+	levels_copy[level_assignments[which]].increment_tries(1);
 }
 
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
-	while((saves < options.max_num_samples) || (options.max_num_samples == 0))
-	{
+//	while((saves < options.max_num_samples) || (options.max_num_samples == 0))
+//	{
 		do_mcmc();
-		do_bookkeeping();
-	}
-}
+//	}
 
-template<class ModelType>
-void Sampler<ModelType>::do_bookkeeping()
-{
-
+	for(size_t i=0; i<levels.size(); ++i)
+		std::cout<<levels[i].get_accepts()<<' '<<levels[i].get_tries()<<std::endl;
 }
 
 } // namespace DNest4

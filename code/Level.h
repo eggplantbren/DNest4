@@ -36,6 +36,23 @@ class Level
 		// Getter for the log_likelihood
 		const LikelihoodType& get_log_likelihood() const
 		{ return log_likelihood; }
+
+		// Getters
+		unsigned int get_visits() const
+		{ return visits; }
+		unsigned int get_exceeds() const
+		{ return exceeds; }
+		unsigned int get_accepts() const
+		{ return accepts; }
+		unsigned int get_tries() const
+		{ return tries; }
+
+
+		// Incrementors
+		void increment_visits(int diff) { visits += diff; }
+		void increment_exceeds(int diff) { exceeds += diff; }
+		void increment_accepts(int diff) { accepts += diff; }
+		void increment_tries(int diff) { tries += diff; }
 };
 
 } // namespace DNest4

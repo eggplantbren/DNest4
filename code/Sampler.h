@@ -42,7 +42,8 @@ class Sampler
 
 		/* Private methods */
 		// Do an MCMC step of particle 'which' on thread 'thread'
-		void update(unsigned int which, unsigned int thread);
+		void update(unsigned int which, unsigned int thread,
+											std::vector<Level>& levels_copy);
 
 		// Do MCMC for a while on thread 'thread'
 		void do_mcmc_thread(unsigned int thread,
