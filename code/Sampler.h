@@ -50,6 +50,9 @@ class Sampler
 		// Do MCMC for a while on multiple threads
 		void do_mcmc();
 
+		// Bookkeeping
+		void do_bookkeeping();
+
 	public:
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,

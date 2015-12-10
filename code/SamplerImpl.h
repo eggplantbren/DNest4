@@ -107,7 +107,6 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 
 	// Make a LikelihoodType for the proposal
 	LikelihoodType prop(p.log_likelihood(), tiebreaker_proposal);
-
 	if(rng.rand() <= exp(log_H) &&
 			levels[level_assignments[which]] < prop)
 	{
@@ -119,7 +118,17 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
-	do_mcmc();
+	while((saves < options.max_num_samples) || (options.max_num_samples == 0))
+	{
+		do_mcmc();
+		do_bookkeeping();
+	}
+}
+
+template<class ModelType>
+void Sampler<ModelType>::do_bookkeeping()
+{
+
 }
 
 } // namespace DNest4
