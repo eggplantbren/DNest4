@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <thread>
 #include "Utils.h"
 
 namespace DNest4
@@ -17,6 +18,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,levels(1, LikelihoodType())
 ,rngs(num_threads)
 ,log_likelihood_keep()
+,saves(0)
 {
 	assert(num_threads >= 1);
 	assert(compression > 1.);
@@ -29,7 +31,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 	RNG& rng = rngs[0];
 
 	std::cout<<"# Seeding random number generators. First seed = ";
-	std::cout<<first_seed<<"."<<std::endl<<std::endl;
+	std::cout<<first_seed<<"."<<std::endl;
 	// Seed the RNGs, incrementing the seed each time
 	for(RNG& rng: rngs)
 		rng.set_seed(first_seed++);
@@ -68,6 +70,18 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_mcmc(unsigned int thread)
 
 	return keep;
 }
+
+template<class ModelType>
+void Sampler<ModelType>::do_mcmc()
+{
+	std::vector<std::thread> threads;
+	for(unsigned int i=0; i<num_threads; ++i)
+		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc, this, i)));
+	for(std::thread& t: threads)
+		t.join();
+}
+
+
 
 template<class ModelType>
 void Sampler<ModelType>::update(unsigned int which, unsigned int thread)

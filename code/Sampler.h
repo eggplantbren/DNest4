@@ -37,12 +37,18 @@ class Sampler
 		// Log likelihood values accumulated (to create a new level)
 		std::vector<LikelihoodType> log_likelihood_keep;
 
+		// Number of saved particles
+		unsigned int saves;
+
 		/* Private methods */
 		// Do an MCMC step of particle 'which' on thread 'thread'
 		void update(unsigned int which, unsigned int thread);
 
-		// Do MCMC for a while
+		// Do MCMC for a while on thread 'thread'
 		std::vector<LikelihoodType> do_mcmc(unsigned int thread);
+
+		// Do MCMC for a while on multiple threads
+		void do_mcmc();
 
 	public:
 		// Constructor: Pass in Options object
