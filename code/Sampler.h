@@ -2,7 +2,6 @@
 #define DNest4_Sampler
 
 #include <vector>
-#include <list>
 #include <thread>
 #include "LikelihoodType.h"
 #include "Options.h"
@@ -30,7 +29,7 @@ class Sampler
 		std::vector<unsigned int> level_assignments; // j in the paper
 
 		// Levels
-		std::list<LikelihoodType> levels;
+		std::vector<LikelihoodType> levels;
 
 		// Random number generators
 		std::vector<RNG> rngs;

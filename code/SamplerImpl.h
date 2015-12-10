@@ -72,14 +72,30 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
-	// Do the proposal for the particle
-	ModelType proposal = particles[which];
-	double log_H = particles[which].perturb();
+	// Reference to the particle being moved
+	ModelType& p = particles[which];
+	double& tb = tiebreakers[which];
 
-	// and for the tiebreaker
-	double tiebreaker_proposal = tiebreakers[which];
+	// Do the proposal for the particle
+	ModelType proposal = p;
+	double log_H = p.perturb();
+	if(log_H > 0.)
+		log_H = 0.;
+
+	// Do the proposal for the tiebreaker
+	double tiebreaker_proposal = tb;
 	tiebreaker_proposal += rng.randh();
 	wrap(tiebreaker_proposal, 0., 1.);
+
+	// Make a LikelihoodType for the proposal
+	LikelihoodType prop(p.log_likelihood(), tiebreaker_proposal);
+
+	if(rng.rand() <= exp(log_H) &&
+			levels[level_assignments[which]] < prop)
+	{
+		p = proposal;
+		tb = tiebreaker_proposal;
+	}
 }
 
 } // namespace DNest4
