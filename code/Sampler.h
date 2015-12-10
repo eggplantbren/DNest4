@@ -7,6 +7,7 @@
 #include "LikelihoodType.h"
 #include "Options.h"
 #include "Level.h"
+#include "RNG.h"
 
 namespace DNest4
 {
@@ -28,9 +29,13 @@ class Sampler
 		// Levels
 		std::list<LikelihoodType> levels;
 
+		// Random number generators
+		std::vector<RNG> rngs;
+
 	public:
 		// Constructor: Pass in Options object
-		Sampler(int num_threads, double compression, const Options& options);
+		Sampler(unsigned int num_threads,
+						double compression, const Options& options);
 
 };
 
