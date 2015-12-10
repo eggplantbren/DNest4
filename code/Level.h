@@ -32,6 +32,10 @@ class Level
 
 		// Specify log_likelihood
 		Level(const LikelihoodType& log_likelihood);
+
+		// Getter for the log_likelihood
+		const LikelihoodType& get_log_likelihood() const
+		{ return log_likelihood; }
 };
 
 } // namespace DNest4

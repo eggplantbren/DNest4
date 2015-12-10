@@ -50,8 +50,12 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-std::vector<LikelihoodType> Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
+void Sampler<ModelType>::do_mcmc_thread(unsigned int thread,
+										std::vector<Level>& levels_copy)
 {
+	// Copy the levels, accumulate results into the copy
+	levels_copy = levels;
+
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
@@ -68,16 +72,16 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_mcmc_thread(unsigned int thre
 		which = start_index + rng.rand_int(options.num_particles);
 		update(which, thread);
 	}
-
-	return keep;
 }
 
 template<class ModelType>
 void Sampler<ModelType>::do_mcmc()
 {
 	std::vector<std::thread> threads;
+	std::vector< std::vector<Level> > level_copies(num_threads, levels);
+
 	for(unsigned int i=0; i<num_threads; ++i)
-		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i)));
+		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i, std::ref(level_copies[i]))));
 	for(std::thread& t: threads)
 		t.join();
 }
@@ -108,7 +112,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 	// Make a LikelihoodType for the proposal
 	LikelihoodType prop(p.log_likelihood(), tiebreaker_proposal);
 	if(rng.rand() <= exp(log_H) &&
-			levels[level_assignments[which]] < prop)
+			levels[level_assignments[which]].get_log_likelihood() < prop)
 	{
 		p = proposal;
 		tb = tiebreaker_proposal;

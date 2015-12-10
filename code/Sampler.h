@@ -29,7 +29,7 @@ class Sampler
 		std::vector<unsigned int> level_assignments; // j in the paper
 
 		// Levels
-		std::vector<LikelihoodType> levels;
+		std::vector<Level> levels;
 
 		// Random number generators
 		std::vector<RNG> rngs;
@@ -45,7 +45,8 @@ class Sampler
 		void update(unsigned int which, unsigned int thread);
 
 		// Do MCMC for a while on thread 'thread'
-		std::vector<LikelihoodType> do_mcmc_thread(unsigned int thread);
+		void do_mcmc_thread(unsigned int thread,
+											std::vector<Level>& levels_copy);
 
 		// Do MCMC for a while on multiple threads
 		void do_mcmc();
