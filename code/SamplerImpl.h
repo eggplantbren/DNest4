@@ -28,6 +28,8 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 	// Reference to an RNG to use
 	RNG& rng = rngs[0];
 
+	std::cout<<"# Seeding random number generators. First seed = ";
+	std::cout<<first_seed<<"."<<std::endl<<std::endl;
 	// Seed the RNGs, incrementing the seed each time
 	for(RNG& rng: rngs)
 		rng.set_seed(first_seed++);
