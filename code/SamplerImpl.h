@@ -15,6 +15,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,particles(options.num_particles*num_threads)
 ,log_likelihoods(options.num_particles*num_threads)
 ,tiebreakers(options.num_particles*num_threads)
+,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
 ,rngs(num_threads)
 ,log_likelihood_keep()
