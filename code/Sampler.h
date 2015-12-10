@@ -51,6 +51,9 @@ class Sampler
 
 		// Set rng seeds, then draw all particles from the prior
 		void initialise(unsigned int first_seed);
+
+		// Launch everything
+		void run();
 };
 
 } // namespace DNest4

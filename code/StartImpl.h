@@ -19,8 +19,7 @@ template<class ModelType>
 Sampler<ModelType> setup(const CommandLineOptions& options)
 {
 	// Load sampler options from file
-	Options sampler_options(options.get_options_file().c_str(),
-									options.get_use_gzip());
+	Options sampler_options(options.get_options_file().c_str());
 
 	// Create sampler
 	Sampler<ModelType> sampler(options.get_num_threads(),

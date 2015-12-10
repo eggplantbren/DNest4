@@ -100,5 +100,11 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 	}
 }
 
+template<class ModelType>
+void Sampler<ModelType>::run()
+{
+
+}
+
 } // namespace DNest4
 

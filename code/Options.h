@@ -41,11 +41,8 @@ class Options
 			double beta,
 			unsigned int max_num_samples);
 
-		Options(const char* filename, bool use_gzip);
+		Options(const char* filename);
 		void load(const char* filename);
-                
-		// function to append ".gz" suffix to sample_file
-		void set_gzip_sample_file();
 };
 
 } // namespace DNest4
