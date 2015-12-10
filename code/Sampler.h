@@ -50,10 +50,8 @@ class Sampler
 											std::vector<Level>& levels_copy);
 
 		// Do MCMC for a while on multiple threads
+		// then come together and do book-keeping
 		void do_mcmc();
-
-		// Bookkeeping
-		void do_bookkeeping();
 
 	public:
 		// Constructor: Pass in Options object

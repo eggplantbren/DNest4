@@ -119,7 +119,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 
 	// Do the proposal for the particle
 	ModelType proposal = p;
-	double log_H = p.perturb(rng);
+	double log_H = proposal.perturb(rng);
 	if(log_H > 0.)
 		log_H = 0.;
 
@@ -143,13 +143,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
-//	while((saves < options.max_num_samples) || (options.max_num_samples == 0))
-//	{
-		do_mcmc();
-//	}
-
-	for(size_t i=0; i<levels.size(); ++i)
-		std::cout<<levels[i].get_accepts()<<' '<<levels[i].get_tries()<<std::endl;
+	do_mcmc();
 }
 
 } // namespace DNest4
