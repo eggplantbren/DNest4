@@ -8,14 +8,11 @@ namespace DNest4
 {
   
 CommandLineOptions::CommandLineOptions(int argc, char** argv)
-:levels_file("")
-,options_file("OPTIONS")
+:options_file("OPTIONS")
 ,seed("time")
 ,data_file("")
 ,compression("2.7182818284590451")
 ,num_threads(1)
-,config_file("")
-,use_gzip(false)
 {
 	// The following code is based on the example given at
 	// http://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
@@ -24,14 +21,11 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	std::stringstream s;
 
 	opterr = 0;
-	while((c = getopt(argc, argv, "hl:o:s:d:c:t:f:z")) != -1)
+	while((c = getopt(argc, argv, "hl:o:s:d:c:t")) != -1)
 	switch(c)
 	{
 		case 'h':
 			print_help();
-			break;
-		case 'l':
-			levels_file = std::string(optarg);
 			break;
 		case 'o':
 			options_file = std::string(optarg);
@@ -48,12 +42,6 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 		case 't':
 			s<<optarg;
 			s>>num_threads;
-			break;
-		case 'f':
-			config_file = std::string(optarg);
-			break;
-		case 'z':
-			use_gzip = true;
 			break;
 		case '?':
 			std::cerr<<"# Option "<<optopt<<" requires an argument."<<std::endl;
@@ -99,17 +87,12 @@ void CommandLineOptions::print_help() const
 {
 	std::cout<<"DNest4 Command Line Options: "<<std::endl;
 	std::cout<<"-h: display this message"<<std::endl;
-	std::cout<<"-l <filename>: load level structure from the specified file."<<std::endl;
 	std::cout<<"-o <filename>: load DNest3 options from the specified file. Default=OPTIONS"<<std::endl;
 	std::cout<<"-s <seed>: seed the random number generator with the specified value. If unspecified, the system time is used."<<std::endl;
 	std::cout<<"-d <filename>: Load data from the specified file, if required."<<std::endl;
 	std::cout<<"-c <value>: Specify a compression value (between levels) other than e."<<std::endl;
 	std::cout<<"-t <num_threads>: run on the specified number of threads. Default=1."<<std::endl;
-	std::cout<<"-f <filename>: a custom configuration file for adding problem specific options if required."<<std::endl;
-#ifdef DNest3_zlib
-	std::cout<<"-z: the output \"sample.txt\" file will be gzipped and have the suffix \".gz\"."<<std::endl;
-#endif
-        exit(0);
+	exit(0);
 }
 
 } // namespace DNest4

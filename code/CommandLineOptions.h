@@ -14,21 +14,14 @@ namespace DNest4
 class CommandLineOptions
 {
 	private:
-		std::string levels_file;
 		std::string options_file;
 		std::string seed;
 		std::string data_file;
 		std::string compression;
 		int num_threads;
-		std::string config_file;
-		bool use_gzip;
                 
 	public:
 		CommandLineOptions(int argc, char** argv);
-
-		// Getters
-		const std::string& get_levels_file() const
-		{ return levels_file; }
 
 		const std::string& get_options_file() const
 		{ return options_file; }
@@ -44,12 +37,6 @@ class CommandLineOptions
 
 		int get_num_threads() const
 		{ return num_threads; }
-
-		const std::string& get_config_file() const
-		{ return config_file; }
-
-		bool get_use_gzip() const
-		{ return use_gzip; }
 
 		// Convert seed string to an unsigned integer and return it
 		unsigned int get_seed_uint() const;
