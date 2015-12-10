@@ -13,7 +13,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 ,seed("time")
 ,data_file("")
 ,compression("2.7182818284590451")
-,numThreads(1)
+,num_threads(1)
 ,config_file("")
 ,use_gzip(false)
 {
@@ -28,7 +28,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	switch(c)
 	{
 		case 'h':
-			printHelp();
+			print_help();
 			break;
 		case 'l':
 			levels_file = std::string(optarg);
@@ -47,7 +47,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 			break;
 		case 't':
 			s<<optarg;
-			s>>numThreads;
+			s>>num_threads;
 			break;
 		case 'f':
 			config_file = std::string(optarg);
@@ -69,10 +69,10 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	for(int index = optind; index < argc; index++)
 		std::cout<<"# Non-option argument "<<argv[index]<<std::endl;
 
-	if(numThreads <= 0)
+	if(num_threads <= 0)
 	{
-		std::cerr<<"# Invalid number of threads: "<<numThreads<<"."<<std::endl;
-		numThreads = 1;
+		std::cerr<<"# Invalid number of threads: "<<num_threads<<"."<<std::endl;
+		num_threads = 1;
 	}
 }
 
@@ -95,7 +95,7 @@ unsigned int CommandLineOptions::get_seed_uint() const
 	return i;
 }
 
-void CommandLineOptions::printHelp() const
+void CommandLineOptions::print_help() const
 {
 	std::cout<<"DNest4 Command Line Options: "<<std::endl;
 	std::cout<<"-h: display this message"<<std::endl;

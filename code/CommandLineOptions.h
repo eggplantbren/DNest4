@@ -19,7 +19,7 @@ class CommandLineOptions
 		std::string seed;
 		std::string data_file;
 		std::string compression;
-		int numThreads;
+		int num_threads;
 		std::string config_file;
 		bool use_gzip;
                 
@@ -42,8 +42,8 @@ class CommandLineOptions
 		const std::string& get_compression() const
 		{ return compression; }
 
-		int get_numThreads() const
-		{ return numThreads; }
+		int get_num_threads() const
+		{ return num_threads; }
 
 		const std::string& get_config_file() const
 		{ return config_file; }
@@ -58,7 +58,7 @@ class CommandLineOptions
 		double get_compression_double() const;
 
 		// Print help message
-		void printHelp() const;
+		void print_help() const;
 
 };
 
