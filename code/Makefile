@@ -5,3 +5,4 @@ default:
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 
+	make -C Examples/SpikeSlab
