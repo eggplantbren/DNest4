@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic
+CXXFLAGS = -std=c++11 -O0 -g -Wall -Wextra -pedantic
 
 default:
 	g++ $(CXXFLAGS) -c *.cpp

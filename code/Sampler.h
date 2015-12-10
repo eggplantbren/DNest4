@@ -45,7 +45,7 @@ class Sampler
 		void update(unsigned int which, unsigned int thread);
 
 		// Do MCMC for a while on thread 'thread'
-		std::vector<LikelihoodType> do_mcmc(unsigned int thread);
+		std::vector<LikelihoodType> do_mcmc_thread(unsigned int thread);
 
 		// Do MCMC for a while on multiple threads
 		void do_mcmc();

@@ -49,7 +49,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-std::vector<LikelihoodType> Sampler<ModelType>::do_mcmc(unsigned int thread)
+std::vector<LikelihoodType> Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -76,7 +76,7 @@ void Sampler<ModelType>::do_mcmc()
 {
 	std::vector<std::thread> threads;
 	for(unsigned int i=0; i<num_threads; ++i)
-		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc, this, i)));
+		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i)));
 	for(std::thread& t: threads)
 		t.join();
 }
@@ -95,7 +95,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 
 	// Do the proposal for the particle
 	ModelType proposal = p;
-	double log_H = p.perturb();
+	double log_H = p.perturb(rng);
 	if(log_H > 0.)
 		log_H = 0.;
 
@@ -118,7 +118,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread)
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
-
+	do_mcmc();
 }
 
 } // namespace DNest4

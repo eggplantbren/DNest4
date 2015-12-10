@@ -16,7 +16,7 @@ LikelihoodType::LikelihoodType(double log_likelihood, double tiebreaker)
 :log_likelihood(log_likelihood)
 ,tiebreaker(tiebreaker)
 {
-	assert(tiebreaker < 0. && tiebreaker > 1.);
+	assert(tiebreaker > 0. && tiebreaker < 1.);
 }
 
 // Less-than operator
