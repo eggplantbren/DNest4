@@ -18,6 +18,12 @@ Sampler<ModelType> setup(int argc, char** argv)
 template<class ModelType>
 Sampler<ModelType> setup(const CommandLineOptions& options)
 {
+	std::cout<<"# Using "<<options.get_num_threads()<<" thread"<<
+		((options.get_num_threads() == 1)?("."):("s."))<<std::endl;
+
+	std::cout<<"# Target compression factor between levels = ";
+	std::cout<<options.get_compression()<<std::endl;
+
 	// Load sampler options from file
 	Options sampler_options(options.get_options_file().c_str());
 

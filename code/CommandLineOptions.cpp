@@ -23,7 +23,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	std::stringstream s;
 
 	opterr = 0;
-	while((c = getopt(argc, argv, "hl:o:s:d:c:t")) != -1)
+	while((c = getopt(argc, argv, "ho:s:d:c:t:")) != -1)
 	switch(c)
 	{
 		case 'h':
