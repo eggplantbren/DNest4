@@ -30,6 +30,7 @@ class Sampler
 
 		// Levels
 		std::vector<Level> levels;
+		std::vector< std::vector<Level> > copies_of_levels;
 
 		// Random number generators
 		std::vector<RNG> rngs;
@@ -42,23 +43,21 @@ class Sampler
 
 		/* Private methods */
 		// Do an MCMC step of particle 'which' on thread 'thread'
-		void update(unsigned int which, unsigned int thread,
-											std::vector<Level>& levels_copy);
+		void update_particle(unsigned int thread, unsigned int which);
 
 		// Do an MCMC step of the level assignment of particle 'which' on thread
 		// 'thread'
-		void update_level_assignment(unsigned int which, unsigned int thread);
+		void update_level_assignment(unsigned int thread, unsigned int which);
 
 		// Do MCMC for a while on thread 'thread'
-		void do_mcmc_thread(unsigned int thread,
-											std::vector<Level>& levels_copy);
+		void do_mcmc_thread(unsigned int thread);
 
 		// Do MCMC for a while on multiple threads
 		// then come together and do book-keeping
 		void do_mcmc();
 
 		// Weighting function
-		double log_push(unsigned int which_level) const;
+		double log_push(unsigned int thread, unsigned int which_level) const;
 
 	public:
 		// Constructor: Pass in Options object

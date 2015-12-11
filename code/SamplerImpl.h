@@ -17,6 +17,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,tiebreakers(options.num_particles*num_threads)
 ,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
+,copies_of_levels(num_threads, levels)
 ,rngs(num_threads)
 ,log_likelihood_keep()
 ,saves(0)
@@ -50,17 +51,10 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::do_mcmc_thread(unsigned int thread,
-										std::vector<Level>& levels_copy)
+void Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
 {
-	// Copy the levels, accumulate results into the copy
-	levels_copy = levels;
-
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
-
-	// Store log likelihood values observed
-	std::vector<LikelihoodType> keep(options.thread_steps);
 
 	// First particle belonging to this thread
 	const int start_index = thread*options.num_particles;
@@ -70,59 +64,54 @@ void Sampler<ModelType>::do_mcmc_thread(unsigned int thread,
 	for(unsigned int i=0; i<options.thread_steps; ++i)
 	{
 		which = start_index + rng.rand_int(options.num_particles);
-		if(rng.rand() <= 0.5)
-		{
-			update(which, thread, levels_copy);
-			update_level_assignment(which, thread);
-		}
-		else
-		{
-			update_level_assignment(which, thread);
-			update(which, thread, levels_copy);
-		}
+		update_particle(thread, which);
+		update_level_assignment(thread, which);
 	}
 }
 
 template<class ModelType>
 void Sampler<ModelType>::do_mcmc()
 {
-	std::vector<std::thread> threads;
-	std::vector< std::vector<Level> > levels_copies(num_threads, levels);
-
 	for(unsigned int i=0; i<num_threads; ++i)
-		threads.push_back(std::thread(std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i, std::ref(levels_copies[i]))));
+		copies_of_levels[i] = levels;
+
+	std::vector<std::thread> threads;
+	for(unsigned int i=0; i<num_threads; ++i)
+	{
+		auto func = std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i);
+		threads.push_back(std::thread(func));
+	}
 	for(std::thread& t: threads)
 		t.join();
 
-	// Go through level copies
-	std::vector<Level> levels_orig = levels;
-	for(const auto& lcps: levels_copies)
-	{
-		for(size_t i=0; i<levels.size(); ++i)
-		{
-			levels[i].increment_accepts(lcps[i].get_accepts()
-												- levels_orig[i].get_accepts());
-			levels[i].increment_tries(lcps[i].get_tries()
-												- levels_orig[i].get_tries());
-			levels[i].increment_visits(lcps[i].get_visits()
-												- levels_orig[i].get_visits());
-			levels[i].increment_exceeds(lcps[i].get_exceeds()
-												- levels_orig[i].get_exceeds());
-		}
-	}
+//	// Go through level copies
+//	std::vector<Level> levels_orig = levels;
+//	for(const auto& lcps: levels_copies)
+//	{
+//		for(size_t i=0; i<levels.size(); ++i)
+//		{
+//			levels[i].increment_accepts(lcps[i].get_accepts()
+//												- levels_orig[i].get_accepts());
+//			levels[i].increment_tries(lcps[i].get_tries()
+//												- levels_orig[i].get_tries());
+//			levels[i].increment_visits(lcps[i].get_visits()
+//												- levels_orig[i].get_visits());
+//			levels[i].increment_exceeds(lcps[i].get_exceeds()
+//												- levels_orig[i].get_exceeds());
+//		}
+//	}
 
 	
 }
 
 template<class ModelType>
-void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
-							std::vector<Level>& levels_copy)
+void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
 	// Reference to the level we're in
-	Level& level = levels_copy[level_assignments[which]];
+	Level& level = copies_of_levels[thread][level_assignments[which]];
 
 	// Reference to the particle being moved
 	ModelType& p = particles[which];
@@ -152,19 +141,19 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 	}
 	level.increment_tries(1);
 
-	// Count visits and exceeds
-	if(which != (levels.size()-1))
-	{
-		level.increment_visits(1);
-		LikelihoodType temp(logl, tb);
-		if(levels[level_assignments[which+1]].get_log_likelihood() < temp)
-			level.increment_exceeds(1);
-	}
+//	// Count visits and exceeds
+//	if(which != (copies_of_levels[thread].size()-1))
+//	{
+//		level.increment_visits(1);
+//		LikelihoodType temp(logl, tb);
+//		if(copies_of_levels[thread][level_assignments[which+1]].get_log_likelihood() < temp)
+//			level.increment_exceeds(1);
+//	}
 }
 
 template<class ModelType>
-void Sampler<ModelType>::update_level_assignment(unsigned int which,
-													unsigned int thread)
+void Sampler<ModelType>::update_level_assignment(unsigned int thread,
+													unsigned int which)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -178,18 +167,18 @@ void Sampler<ModelType>::update_level_assignment(unsigned int which,
 		proposal = ((rng.rand() < 0.5)?(proposal-1):(proposal+1));
 
 	// Wrap into allowed range
-	proposal = DNest4::mod(proposal, static_cast<int>(levels.size()));
+	proposal = DNest4::mod(proposal, static_cast<int>(copies_of_levels[thread].size()));
 
 	// Acceptance probability
-	double log_A = -levels[proposal].get_log_X()
-					+ levels[level_assignments[which]].get_log_X();
+	double log_A = -copies_of_levels[thread][proposal].get_log_X()
+					+ copies_of_levels[thread][level_assignments[which]].get_log_X();
 
 	// Pushing up part
-	log_A += log_push(proposal) - log_push(level_assignments[which]);
+	log_A += log_push(thread, proposal) - log_push(thread, level_assignments[which]);
 
 	// Enforce uniform exploration part (if all levels exist)
-	if(levels.size() == options.max_num_levels)
-		log_A += options.beta*log((double)(levels[level_assignments[which]].get_tries() + 1)/(double)(levels[proposal].get_tries() + 1));
+	if(copies_of_levels[thread].size() == options.max_num_levels)
+		log_A += options.beta*log((double)(copies_of_levels[thread][level_assignments[which]].get_tries() + 1)/(double)(copies_of_levels[thread][proposal].get_tries() + 1));
 
 	// Prevent exponentiation of huge numbers
 	if(log_A > 0.)
@@ -197,7 +186,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int which,
 
 	// Make a LikelihoodType for the proposal
 	LikelihoodType prop(log_likelihoods[which], tiebreakers[which]);
-	if(rng.rand() <= exp(log_A) && levels[proposal].get_log_likelihood() < prop)
+	if(rng.rand() <= exp(log_A) && copies_of_levels[thread][proposal].get_log_likelihood() < prop)
 	{
 		// Accept
 		level_assignments[which] = static_cast<int>(proposal);
@@ -211,13 +200,14 @@ void Sampler<ModelType>::run()
 }
 
 template<class ModelType>
-double Sampler<ModelType>::log_push(unsigned int which_level) const
+double Sampler<ModelType>::log_push(unsigned int thread,
+										unsigned int which_level) const
 {
-	assert(which_level < levels.size());
-	if(levels.size() == options.max_num_levels)
+	assert(which_level < copies_of_levels[thread].size());
+	if(copies_of_levels[thread].size() == options.max_num_levels)
 		return 0.;
 
-	int i = which_level - (static_cast<int>(levels.size()) - 1);
+	int i = which_level - (static_cast<int>(copies_of_levels[thread].size()) - 1);
 	return static_cast<double>(i)/options.lambda;
 }
 
