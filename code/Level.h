@@ -2,6 +2,7 @@
 #define DNest4_Level
 
 #include "LikelihoodType.h"
+#include <vector>
 
 namespace DNest4
 {
@@ -49,12 +50,18 @@ class Level
 		double get_log_X() const
 		{ return log_X; }
 
-
 		// Incrementors
 		void increment_visits(int diff) { visits += diff; }
 		void increment_exceeds(int diff) { exceeds += diff; }
 		void increment_accepts(int diff) { accepts += diff; }
 		void increment_tries(int diff) { tries += diff; }
+
+		// Operations on sets of levels
+		static void recalculate_log_X(std::vector<Level>& levels,
+										double compression,
+										unsigned int regularisation);
+		static void renormalise_visits(std::vector<Level>& levels,
+										unsigned int regularisation);
 };
 
 } // namespace DNest4

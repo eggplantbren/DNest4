@@ -104,16 +104,15 @@ void Sampler<ModelType>::do_mcmc()
 												- levels_orig[i].get_accepts());
 			levels[i].increment_tries(lcps[i].get_tries()
 												- levels_orig[i].get_tries());
-
 			levels[i].increment_visits(lcps[i].get_visits()
 												- levels_orig[i].get_visits());
 			levels[i].increment_exceeds(lcps[i].get_exceeds()
 												- levels_orig[i].get_exceeds());
 		}
 	}
+
+	
 }
-
-
 
 template<class ModelType>
 void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
