@@ -71,9 +71,11 @@ void Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
 template<class ModelType>
 void Sampler<ModelType>::do_mcmc()
 {
+	// Each thread will write over its own copy of the levels
 	for(unsigned int i=0; i<num_threads; ++i)
 		copies_of_levels[i] = levels;
 
+	// Create the threads
 	std::vector<std::thread> threads;
 	for(unsigned int i=0; i<num_threads; ++i)
 	{
@@ -83,7 +85,7 @@ void Sampler<ModelType>::do_mcmc()
 	for(std::thread& t: threads)
 		t.join();
 
-	// Go through level copies
+	// Go through copies of levels and apply diffs to levels
 	std::vector<Level> levels_orig = levels;
 	for(const auto& _levels: copies_of_levels)
 	{
@@ -99,8 +101,6 @@ void Sampler<ModelType>::do_mcmc()
 												- levels_orig[i].get_exceeds());
 		}
 	}
-
-	
 }
 
 template<class ModelType>
