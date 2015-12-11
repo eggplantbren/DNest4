@@ -13,21 +13,21 @@ namespace DNest4
 class LikelihoodType
 {
 	private:
-		double log_likelihood;
+		double value;
 		double tiebreaker;
 
 	public:
-		// Sets log_likelihood to "-Infinity"
+		// Sets value to "-Infinity"
 		// and tiebreaker to zero
 		LikelihoodType();
-		LikelihoodType(double log_likelihood, double tiebreaker);
+		LikelihoodType(double value, double tiebreaker);
 
 		// Perturb the tiebreaker
 		double perturb(RNG& rng);
 
 		// Getters
 		double get_value() const
-		{ return log_likelihood; }
+		{ return value; }
 		double get_tiebreaker() const
 		{ return tiebreaker; }
 

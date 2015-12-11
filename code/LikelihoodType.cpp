@@ -7,14 +7,14 @@ namespace DNest4
 {
 
 LikelihoodType::LikelihoodType()
-:log_likelihood(std::numeric_limits<double>::lowest())
+:value(std::numeric_limits<double>::lowest())
 ,tiebreaker(0.)
 {
 
 }
 
-LikelihoodType::LikelihoodType(double log_likelihood, double tiebreaker)
-:log_likelihood(log_likelihood)
+LikelihoodType::LikelihoodType(double value, double tiebreaker)
+:value(value)
 ,tiebreaker(tiebreaker)
 {
 	assert(tiebreaker > 0. && tiebreaker < 1.);
@@ -30,9 +30,9 @@ double LikelihoodType::perturb(RNG& rng)
 // Less-than operator
 bool LikelihoodType::operator < (const LikelihoodType& other) const
 {
-	if(log_likelihood < other.log_likelihood)
+	if(value < other.value)
 		return true;
-	if((log_likelihood == other.log_likelihood) &&
+	if((value == other.value) &&
 		(tiebreaker < other.tiebreaker))
 		return true;
 	return false;
