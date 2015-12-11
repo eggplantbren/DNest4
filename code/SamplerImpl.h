@@ -122,6 +122,9 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
+	// Reference to the level we're in
+	Level& level = levels_copy[level_assignments[which]];
+
 	// Reference to the particle being moved
 	ModelType& p = particles[which];
 	double& logl = log_likelihoods[which];
@@ -141,15 +144,23 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 
 	// Make a LikelihoodType for the proposal
 	LikelihoodType prop(logl_proposal, tiebreaker_proposal);
-	if(rng.rand() <= exp(log_H) &&
-			levels[level_assignments[which]].get_log_likelihood() < prop)
+	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < prop)
 	{
 		p = proposal;
 		logl = logl_proposal;
 		tb = tiebreaker_proposal;
-		levels_copy[level_assignments[which]].increment_accepts(1);
+		level.increment_accepts(1);
 	}
-	levels_copy[level_assignments[which]].increment_tries(1);
+	level.increment_tries(1);
+
+	// Count visits and exceeds
+	if(which != (levels.size()-1))
+	{
+		level.increment_visits(1);
+		LikelihoodType temp(logl, tb);
+		if(levels[level_assignments[which+1]].get_log_likelihood() < temp)
+			level.increment_exceeds(1);
+	}
 }
 
 template<class ModelType>
