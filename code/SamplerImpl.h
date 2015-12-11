@@ -174,8 +174,13 @@ void Sampler<ModelType>::update_level_assignment(unsigned int which,
 	double log_A = -levels[proposal].get_log_X()
 					+ levels[level_assignments[which]].get_log_X();
 
-	// TODO: Pushing up part
-	// TODO: Enforce uniform exploration part
+	// Pushing up part
+	log_A += log_push(proposal) - log_push(level_assignments[which]);
+
+	// Enforce uniform exploration part (if all levels exist)
+	if(levels.size() == options.max_num_levels)
+		log_A += options.beta*log((double)(levels[level_assignments[which]].get_tries() + 1)/(double)(levels[proposal].get_tries() + 1));
+
 	// Prevent exponentiation of huge numbers
 	if(log_A > 0.)
 		log_A = 0.;
@@ -193,6 +198,17 @@ template<class ModelType>
 void Sampler<ModelType>::run()
 {
 	do_mcmc();
+}
+
+template<class ModelType>
+double Sampler<ModelType>::log_push(unsigned int which_level) const
+{
+	assert(which_level < levels.size());
+	if(levels.size() == options.max_num_levels)
+		return 0.;
+
+	int i = which_level - (static_cast<int>(levels.size()) - 1);
+	return static_cast<double>(i)/options.lambda;
 }
 
 } // namespace DNest4

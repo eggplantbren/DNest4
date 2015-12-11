@@ -57,6 +57,9 @@ class Sampler
 		// then come together and do book-keeping
 		void do_mcmc();
 
+		// Weighting function
+		double log_push(unsigned int which_level) const;
+
 	public:
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,
