@@ -1,6 +1,8 @@
 #ifndef DNest4_LikelihoodType
 #define DNest4_LikelihoodType
 
+#include "RNG.h"
+
 namespace DNest4
 {
 
@@ -19,6 +21,9 @@ class LikelihoodType
 		// and tiebreaker to zero
 		LikelihoodType();
 		LikelihoodType(double log_likelihood, double tiebreaker);
+
+		// Perturb the tiebreaker
+		double perturb(RNG& rng);
 
 		// Less-than operator
 		bool operator < (const LikelihoodType& other) const;

@@ -1,4 +1,5 @@
 #include "LikelihoodType.h"
+#include "Utils.h"
 #include <limits>
 #include <cassert>
 
@@ -17,6 +18,13 @@ LikelihoodType::LikelihoodType(double log_likelihood, double tiebreaker)
 ,tiebreaker(tiebreaker)
 {
 	assert(tiebreaker > 0. && tiebreaker < 1.);
+}
+
+double LikelihoodType::perturb(RNG& rng)
+{
+	tiebreaker += rng.randh();
+	wrap(tiebreaker, 0., 1.);
+	return 0.;
 }
 
 // Less-than operator
