@@ -24,8 +24,7 @@ class Sampler
 
 		// Particles, tiebreaker values, and level assignments
 		std::vector<ModelType> particles;
-		std::vector<double> log_likelihoods;
-		std::vector<double> tiebreakers;
+		std::vector<LikelihoodType> log_likelihoods;
 		std::vector<unsigned int> level_assignments; // j in the paper
 
 		// Levels

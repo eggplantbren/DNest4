@@ -14,7 +14,6 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,options(options)
 ,particles(options.num_particles*num_threads)
 ,log_likelihoods(options.num_particles*num_threads)
-,tiebreakers(options.num_particles*num_threads)
 ,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
 ,copies_of_levels(num_threads, levels)
@@ -43,9 +42,9 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 	std::cout<<" from the prior..."<<std::flush;
 	for(size_t i=0; i<particles.size(); ++i)
 	{
-		particles[i].from_prior(rngs[0]);
-		log_likelihoods[i] = particles[i].log_likelihood();
-		tiebreakers[i] = rng.rand();
+		particles[i].from_prior(rng);
+		log_likelihoods[i] = LikelihoodType(particles[i].log_likelihood(),
+																rng.rand());
 	}
 	std::cout<<"done."<<std::endl<<std::endl;
 }
@@ -114,29 +113,26 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	Level& level = copies_of_levels[thread][level_assignments[which]];
 
 	// Reference to the particle being moved
-	ModelType& p = particles[which];
-	double& logl = log_likelihoods[which];
-	double& tb = tiebreakers[which];
+	ModelType& particle = particles[which];
+	LikelihoodType& logl = log_likelihoods[which];
 
 	// Do the proposal for the particle
-	ModelType proposal = p;
+	ModelType proposal = particle;
 	double log_H = proposal.perturb(rng);
-	if(log_H > 0.)
-		log_H = 0.;
-	double logl_proposal = proposal.log_likelihood();
+	LikelihoodType logl_proposal(proposal.log_likelihood(),
+												logl.get_tiebreaker());
 
 	// Do the proposal for the tiebreaker
-	double tiebreaker_proposal = tb;
-	tiebreaker_proposal += rng.randh();
-	wrap(tiebreaker_proposal, 0., 1.);
+	log_H += logl_proposal.perturb(rng);
+
+	if(log_H > 0.)
+		log_H = 0.;
 
 	// Make a LikelihoodType for the proposal
-	LikelihoodType prop(logl_proposal, tiebreaker_proposal);
-	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < prop)
+	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
 	{
-		p = proposal;
+		particle = proposal;
 		logl = logl_proposal;
-		tb = tiebreaker_proposal;
 		level.increment_accepts(1);
 	}
 	level.increment_tries(1);
@@ -185,8 +181,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 		log_A = 0.;
 
 	// Make a LikelihoodType for the proposal
-	LikelihoodType prop(log_likelihoods[which], tiebreakers[which]);
-	if(rng.rand() <= exp(log_A) && copies_of_levels[thread][proposal].get_log_likelihood() < prop)
+	if(rng.rand() <= exp(log_A) && copies_of_levels[thread][proposal].get_log_likelihood() < log_likelihoods[which])
 	{
 		// Accept
 		level_assignments[which] = static_cast<int>(proposal);

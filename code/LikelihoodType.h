@@ -25,6 +25,12 @@ class LikelihoodType
 		// Perturb the tiebreaker
 		double perturb(RNG& rng);
 
+		// Getters
+		double get_value() const
+		{ return log_likelihood; }
+		double get_tiebreaker() const
+		{ return tiebreaker; }
+
 		// Less-than operator
 		bool operator < (const LikelihoodType& other) const;
 }; // class LikelihoodType
