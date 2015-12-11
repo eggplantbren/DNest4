@@ -83,22 +83,22 @@ void Sampler<ModelType>::do_mcmc()
 	for(std::thread& t: threads)
 		t.join();
 
-//	// Go through level copies
-//	std::vector<Level> levels_orig = levels;
-//	for(const auto& lcps: levels_copies)
-//	{
-//		for(size_t i=0; i<levels.size(); ++i)
-//		{
-//			levels[i].increment_accepts(lcps[i].get_accepts()
-//												- levels_orig[i].get_accepts());
-//			levels[i].increment_tries(lcps[i].get_tries()
-//												- levels_orig[i].get_tries());
-//			levels[i].increment_visits(lcps[i].get_visits()
-//												- levels_orig[i].get_visits());
-//			levels[i].increment_exceeds(lcps[i].get_exceeds()
-//												- levels_orig[i].get_exceeds());
-//		}
-//	}
+	// Go through level copies
+	std::vector<Level> levels_orig = levels;
+	for(const auto& _levels: copies_of_levels)
+	{
+		for(size_t i=0; i<levels.size(); ++i)
+		{
+			levels[i].increment_accepts(_levels[i].get_accepts()
+												- levels_orig[i].get_accepts());
+			levels[i].increment_tries(_levels[i].get_tries()
+												- levels_orig[i].get_tries());
+			levels[i].increment_visits(_levels[i].get_visits()
+												- levels_orig[i].get_visits());
+			levels[i].increment_exceeds(_levels[i].get_exceeds()
+												- levels_orig[i].get_exceeds());
+		}
+	}
 
 	
 }
@@ -140,14 +140,14 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	}
 	level.increment_tries(1);
 
-//	// Count visits and exceeds
-//	if(which != (_levels.size()-1))
-//	{
-//		level.increment_visits(1);
-//		LikelihoodType temp(logl, tb);
-//		if(_levels[level_assignments[which+1]].get_log_likelihood() < temp)
-//			level.increment_exceeds(1);
-//	}
+	// Count visits and exceeds
+	if(level_assignments[which] != (_levels.size()-1))
+	{
+		level.increment_visits(1);
+		if(_levels[level_assignments[which+1]].get_log_likelihood() < 
+						log_likelihoods[which])
+			level.increment_exceeds(1);
+	}
 }
 
 template<class ModelType>
