@@ -70,7 +70,16 @@ void Sampler<ModelType>::do_mcmc_thread(unsigned int thread,
 	for(unsigned int i=0; i<options.thread_steps; ++i)
 	{
 		which = start_index + rng.rand_int(options.num_particles);
-		update(which, thread, levels_copy);
+		if(rng.rand() <= 0.5)
+		{
+			update(which, thread, levels_copy);
+			update_level_assignment(which, thread);
+		}
+		else
+		{
+			update_level_assignment(which, thread);
+			update(which, thread, levels_copy);
+		}
 	}
 }
 
@@ -115,6 +124,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 
 	// Reference to the particle being moved
 	ModelType& p = particles[which];
+	double& logl = log_likelihoods[which];
 	double& tb = tiebreakers[which];
 
 	// Do the proposal for the particle
@@ -122,6 +132,7 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 	double log_H = proposal.perturb(rng);
 	if(log_H > 0.)
 		log_H = 0.;
+	double logl_proposal = proposal.log_likelihood();
 
 	// Do the proposal for the tiebreaker
 	double tiebreaker_proposal = tb;
@@ -129,15 +140,53 @@ void Sampler<ModelType>::update(unsigned int which, unsigned int thread,
 	wrap(tiebreaker_proposal, 0., 1.);
 
 	// Make a LikelihoodType for the proposal
-	LikelihoodType prop(p.log_likelihood(), tiebreaker_proposal);
+	LikelihoodType prop(logl_proposal, tiebreaker_proposal);
 	if(rng.rand() <= exp(log_H) &&
 			levels[level_assignments[which]].get_log_likelihood() < prop)
 	{
 		p = proposal;
+		logl = logl_proposal;
 		tb = tiebreaker_proposal;
 		levels_copy[level_assignments[which]].increment_accepts(1);
 	}
 	levels_copy[level_assignments[which]].increment_tries(1);
+}
+
+template<class ModelType>
+void Sampler<ModelType>::update_level_assignment(unsigned int which,
+													unsigned int thread)
+{
+	// Reference to the RNG for this thread
+	RNG& rng = rngs[thread];
+
+	// Generate proposal
+	int proposal = static_cast<int>(level_assignments[which])
+						+ static_cast<int>(pow(10., 2.*rng.rand()));
+
+	// If the proposal was to not move, go +- one level
+	if(proposal == static_cast<int>(level_assignments[which]))
+		proposal = ((rng.rand() < 0.5)?(proposal-1):(proposal+1));
+
+	// Wrap into allowed range
+	proposal = DNest4::mod(proposal, static_cast<int>(levels.size()));
+
+	// Acceptance probability
+	double log_A = -levels[proposal].get_log_X()
+					+ levels[level_assignments[which]].get_log_X();
+
+	// TODO: Pushing up part
+	// TODO: Enforce uniform exploration part
+	// Prevent exponentiation of huge numbers
+	if(log_A > 0.)
+		log_A = 0.;
+
+	// Make a LikelihoodType for the proposal
+	LikelihoodType prop(log_likelihoods[which], tiebreakers[which]);
+	if(rng.rand() <= exp(log_A) && levels[proposal].get_log_likelihood() < prop)
+	{
+		// Accept
+		level_assignments[which] = static_cast<int>(proposal);
+	}
 }
 
 template<class ModelType>

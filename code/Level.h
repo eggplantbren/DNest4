@@ -46,6 +46,8 @@ class Level
 		{ return accepts; }
 		unsigned int get_tries() const
 		{ return tries; }
+		double get_log_X() const
+		{ return log_X; }
 
 
 		// Incrementors
