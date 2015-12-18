@@ -245,7 +245,16 @@ void Sampler<ModelType>::save_levels() const
 	std::fstream fout;
 
 	fout.open("levels.txt", std::ios::out|std::ios::app);
-
+	for(const Level& level: levels)
+	{
+		fout<<level.get_log_X()<<' ';
+		fout<<level.get_log_likelihood().get_value()<<' ';
+		fout<<level.get_log_likelihood().get_tiebreaker()<<' ';
+		fout<<level.get_accepts()<<' ';
+		fout<<level.get_tries()<<' ';
+		fout<<level.get_visits()<<' ';
+		fout<<level.get_exceeds()<<std::endl;
+	}
 	fout.close();
 }
 
