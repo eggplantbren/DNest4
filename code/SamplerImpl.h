@@ -199,7 +199,11 @@ template<class ModelType>
 void Sampler<ModelType>::run()
 {
 	initialise_output_files();
-	do_some_mcmc();
+
+	while(true)
+	{
+		do_some_mcmc();
+	}
 }
 
 template<class ModelType>
@@ -255,6 +259,26 @@ void Sampler<ModelType>::save_levels() const
 		fout<<level.get_visits()<<' ';
 		fout<<level.get_exceeds()<<std::endl;
 	}
+	fout.close();
+}
+
+template<class ModelType>
+void Sampler<ModelType>::save_particle() const
+{
+	// Output file
+	std::fstream fout;
+
+	int which = rngs[0].rand_int(particles.size());
+	fout.open("sample.txt", std::ios::out|std::ios::app);
+	particles[which].print(fout);
+	fout<<std::endl;
+	fout.close();
+
+	fout.open("sample_info.txt", std::ios::out|std::ios::app);
+	fout<<level_assignments[which]<<' ';
+	fout<<log_likelihoods[which].get_value()<<' ';
+	fout<<log_likelihoods[which].get_tiebreaker()<<' ';
+	fout<<which<<std::endl;
 	fout.close();
 }
 

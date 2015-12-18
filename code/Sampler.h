@@ -62,6 +62,7 @@ class Sampler
 		// Save the levels file
 		void initialise_output_files() const;
 		void save_levels() const;
+		void save_particle() const;
 
 	public:
 		// Constructor: Pass in Options object
