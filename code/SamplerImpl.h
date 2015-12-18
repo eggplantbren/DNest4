@@ -50,7 +50,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
+void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -69,7 +69,7 @@ void Sampler<ModelType>::do_mcmc_thread(unsigned int thread)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::do_mcmc()
+void Sampler<ModelType>::do_some_mcmc()
 {
 	// Each thread will write over its own copy of the levels
 	for(unsigned int i=0; i<num_threads; ++i)
@@ -79,7 +79,7 @@ void Sampler<ModelType>::do_mcmc()
 	std::vector<std::thread> threads;
 	for(unsigned int i=0; i<num_threads; ++i)
 	{
-		auto func = std::bind(&Sampler<ModelType>::do_mcmc_thread, this, i);
+		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i);
 		threads.push_back(std::thread(func));
 	}
 	for(std::thread& t: threads)
@@ -197,7 +197,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
-	do_mcmc();
+	do_some_mcmc();
 }
 
 template<class ModelType>
