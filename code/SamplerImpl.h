@@ -19,7 +19,6 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,levels(1, LikelihoodType())
 ,copies_of_levels(num_threads, levels)
 ,rngs(num_threads)
-,log_likelihood_keep()
 ,saves(0)
 {
 	assert(num_threads >= 1);
@@ -199,6 +198,10 @@ template<class ModelType>
 void Sampler<ModelType>::run()
 {
 	initialise_output_files();
+
+	// Log likelihood values accumulated (to create a new level)
+	std::vector<LikelihoodType> log_likelihood_keep;
+	log_likelihood_keep.reserve(2*options.new_level_interval);
 
 	while(true)
 	{

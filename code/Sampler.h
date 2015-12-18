@@ -34,9 +34,6 @@ class Sampler
 		// Random number generators
 		std::vector<RNG> rngs;
 
-		// Log likelihood values accumulated (to create a new level)
-		std::vector<LikelihoodType> log_likelihood_keep;
-
 		// Number of saved particles
 		unsigned int saves;
 
