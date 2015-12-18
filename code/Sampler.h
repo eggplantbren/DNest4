@@ -46,11 +46,11 @@ class Sampler
 		void update_level_assignment(unsigned int thread, unsigned int which);
 
 		// Do MCMC for a while on thread 'thread'
-		void mcmc_thread(unsigned int thread);
+		void mcmc_thread(unsigned int thread, std::vector<LikelihoodType>& keep);
 
 		// Do MCMC for a while on multiple threads
 		// then come together and do book-keeping
-		void do_some_mcmc();
+		std::vector<LikelihoodType> do_some_mcmc();
 
 		// Weighting function
 		double log_push(unsigned int thread, unsigned int which_level) const;

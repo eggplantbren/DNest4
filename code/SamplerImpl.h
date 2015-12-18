@@ -50,10 +50,14 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::mcmc_thread(unsigned int thread)
+void Sampler<ModelType>::mcmc_thread(unsigned int thread,
+										std::vector<LikelihoodType>& keep)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
+
+	// Reference to this thread's copy of levels
+	std::vector<Level>& _levels = copies_of_levels[thread];
 
 	// First particle belonging to this thread
 	const int start_index = thread*options.num_particles;
@@ -65,21 +69,29 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 		which = start_index + rng.rand_int(options.num_particles);
 		update_particle(thread, which);
 		update_level_assignment(thread, which);
+		if(_levels.back().get_log_likelihood() < log_likelihoods[which])
+			keep.push_back(log_likelihoods[which]);
 	}
 }
 
 template<class ModelType>
-void Sampler<ModelType>::do_some_mcmc()
+std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 {
 	// Each thread will write over its own copy of the levels
 	for(unsigned int i=0; i<num_threads; ++i)
 		copies_of_levels[i] = levels;
 
+	// Vectors to store results in
+	std::vector< std::vector<LikelihoodType> > keep(num_threads);
+	for(auto& k: keep)
+		k.reserve(options.thread_steps);
+
 	// Create the threads
 	std::vector<std::thread> threads;
 	for(unsigned int i=0; i<num_threads; ++i)
 	{
-		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i);
+		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
+								std::ref(keep[i]));
 		threads.push_back(std::thread(func));
 	}
 	for(std::thread& t: threads)
@@ -101,6 +113,13 @@ void Sampler<ModelType>::do_some_mcmc()
 												- levels_orig[i].get_exceeds());
 		}
 	}
+
+	// Combine into a single vector
+	std::vector<LikelihoodType> keep_all;
+	for(const auto& k: keep)
+		for(const auto& element: k)
+			keep_all.push_back(element);
+	return keep_all;
 }
 
 template<class ModelType>
@@ -201,12 +220,8 @@ void Sampler<ModelType>::run()
 
 	// Log likelihood values accumulated (to create a new level)
 	std::vector<LikelihoodType> log_likelihood_keep;
-	log_likelihood_keep.reserve(2*options.new_level_interval);
 
-	while(true)
-	{
-		do_some_mcmc();
-	}
+	do_some_mcmc();
 }
 
 template<class ModelType>
