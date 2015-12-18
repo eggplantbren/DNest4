@@ -58,6 +58,11 @@ class Sampler
 		// Weighting function
 		double log_push(unsigned int thread, unsigned int which_level) const;
 
+		// Functions to do with the files
+		// Save the levels file
+		void initialise_output_files() const;
+		void save_levels() const;
+
 	public:
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,

@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include "Utils.h"
 
@@ -197,6 +198,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
+	initialise_output_files();
 	do_some_mcmc();
 }
 
@@ -213,6 +215,38 @@ double Sampler<ModelType>::log_push(unsigned int thread,
 
 	int i = which_level - (static_cast<int>(_levels.size()) - 1);
 	return static_cast<double>(i)/options.lambda;
+}
+
+template<class ModelType>
+void Sampler<ModelType>::initialise_output_files() const
+{
+	std::fstream fout;
+
+	// Output headers
+	fout.open("levels.txt", std::ios::out);
+	fout<<"# log_X, log_likelihood, tiebreaker, accepts, tries, exceeds, visits";
+	fout<<std::endl;
+	fout.close();
+
+	fout.open("sample_info.txt", std::ios::out);
+	fout<<"# level assignment, log likelihood, tiebreaker, ID."<<std::endl;
+	fout.close();
+
+	fout.open("sample.txt", std::ios::out);
+	fout<<"# "<<particles[0].description().c_str()<<std::endl;
+	fout.close();
+}
+
+
+template<class ModelType>
+void Sampler<ModelType>::save_levels() const
+{
+	// Output file
+	std::fstream fout;
+
+	fout.open("levels.txt", std::ios::out|std::ios::app);
+
+	fout.close();
 }
 
 } // namespace DNest4
