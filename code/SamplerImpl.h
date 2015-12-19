@@ -21,7 +21,8 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,copies_of_levels(num_threads, levels)
 ,keep()
 ,rngs(num_threads)
-,saves(0)
+,count_saves(0)
+,count_mcmc_steps(0)
 {
 	assert(num_threads >= 1);
 	assert(compression > 1.);
@@ -102,6 +103,7 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 	}
 	for(std::thread& t: threads)
 		t.join();
+	count_mcmc_steps += num_threads*options.thread_steps;
 
 	// Go through copies of levels and apply diffs to levels
 	std::vector<Level> levels_orig = levels;
@@ -264,7 +266,9 @@ void Sampler<ModelType>::do_bookkeeping()
 
 	// Save info to disk
 	save_levels();
-	save_particle();
+
+	if(count_mcmc_steps >= count_saves*options.save_interval)
+		save_particle();
 }
 
 template<class ModelType>
@@ -325,6 +329,9 @@ void Sampler<ModelType>::save_levels() const
 template<class ModelType>
 void Sampler<ModelType>::save_particle()
 {
+	std::cout<<"# Saving particle to disk. N = "<<(count_saves+1)<<".";
+	std::cout<<std::endl;
+
 	// Output file
 	std::fstream fout;
 
@@ -340,6 +347,10 @@ void Sampler<ModelType>::save_particle()
 	fout<<log_likelihoods[which].get_tiebreaker()<<' ';
 	fout<<which<<std::endl;
 	fout.close();
+
+	++count_saves;
+	if(count_saves == options.max_num_samples)
+		exit(0);
 }
 
 } // namespace DNest4

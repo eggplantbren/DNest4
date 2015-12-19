@@ -38,7 +38,8 @@ class Sampler
 		std::vector<RNG> rngs;
 
 		// Number of saved particles
-		unsigned int saves;
+		unsigned int count_saves;
+		unsigned long long int count_mcmc_steps;
 
 		/* Private methods */
 		// Do an MCMC step of particle 'which' on thread 'thread'
