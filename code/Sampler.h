@@ -52,11 +52,16 @@ class Sampler
 		// then come together and do book-keeping
 		std::vector<LikelihoodType> do_some_mcmc();
 
+		// Add new levels, save output files, etc
+		void do_bookkeeping(std::vector<LikelihoodType>& keep);
+
+		// Create one level
+		void create_level(std::vector<LikelihoodType>& keep);
+
 		// Weighting function
 		double log_push(unsigned int thread, unsigned int which_level) const;
 
-		// Functions to do with the files
-		// Save the levels file
+		// Functions to do with the output files
 		void initialise_output_files() const;
 		void save_levels() const;
 		void save_particle() const;

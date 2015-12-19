@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <algorithm>
 #include "Utils.h"
 
 namespace DNest4
@@ -69,7 +70,8 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread,
 		which = start_index + rng.rand_int(options.num_particles);
 		update_particle(thread, which);
 		update_level_assignment(thread, which);
-		if(_levels.back().get_log_likelihood() < log_likelihoods[which])
+		if(_levels.size() != options.max_num_levels &&
+				_levels.back().get_log_likelihood() < log_likelihoods[which])
 			keep.push_back(log_likelihoods[which]);
 	}
 }
@@ -218,10 +220,27 @@ void Sampler<ModelType>::run()
 {
 	initialise_output_files();
 
-	// Log likelihood values accumulated (to create a new level)
-	std::vector<LikelihoodType> log_likelihood_keep;
+	// Alternate between MCMC and bookkeeping
+	std::vector<LikelihoodType> keep = do_some_mcmc();
+	do_bookkeeping(keep);
+}
 
-	do_some_mcmc();
+template<class ModelType>
+void Sampler<ModelType>::do_bookkeeping(std::vector<LikelihoodType>& keep)
+{
+	// Create a new level?
+	if(levels.size() != options.max_num_levels
+		&& keep.size() >= options.new_level_interval)
+		create_level(keep);
+}
+
+template<class ModelType>
+void Sampler<ModelType>::create_level(std::vector<LikelihoodType>& keep)
+{
+	// Create the level
+	std::sort(keep.begin(), keep.end());
+	int index = static_cast<int>((1. - 1./compression)*keep.size());
+	levels.push_back(Level(keep[index]));
 }
 
 template<class ModelType>
