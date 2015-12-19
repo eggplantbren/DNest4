@@ -240,6 +240,8 @@ void Sampler<ModelType>::run()
 template<class ModelType>
 void Sampler<ModelType>::do_bookkeeping()
 {
+	bool saved_levels = false;
+
 	// Create a new level?
 	if(levels.size() != options.max_num_levels
 		&& keep.size() >= options.new_level_interval)
@@ -259,16 +261,20 @@ void Sampler<ModelType>::do_bookkeeping()
 				static_cast<int>(0.1*options.new_level_interval));
 			keep.clear();
 		}
+
+		save_levels();
+		saved_levels = true;
 	}
 
 	// Recalculate log_X values of levels
 	Level::recalculate_log_X(levels, compression, options.new_level_interval);
 
-	// Save info to disk
-	save_levels();
-
 	if(count_mcmc_steps >= (count_saves+1)*options.save_interval)
+	{
 		save_particle();
+		if(!saved_levels)
+			save_levels();
+	}
 }
 
 template<class ModelType>
@@ -296,7 +302,6 @@ void Sampler<ModelType>::initialise_output_files() const
 	fout<<"# level assignment, log likelihood, tiebreaker, ID."<<std::endl;
 	fout.close();
 
-
 	fout.open("sample.txt", std::ios::out);
 	fout<<"# "<<particles[0].description().c_str()<<std::endl;
 	fout.close();
@@ -320,8 +325,8 @@ void Sampler<ModelType>::save_levels() const
 		fout<<level.get_log_likelihood().get_tiebreaker()<<' ';
 		fout<<level.get_accepts()<<' ';
 		fout<<level.get_tries()<<' ';
-		fout<<level.get_visits()<<' ';
-		fout<<level.get_exceeds()<<std::endl;
+		fout<<level.get_exceeds()<<' ';
+		fout<<level.get_visits()<<std::endl;
 	}
 	fout.close();
 }
