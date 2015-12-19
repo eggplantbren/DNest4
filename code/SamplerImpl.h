@@ -19,6 +19,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
 ,copies_of_levels(num_threads, levels)
+,keep()
 ,rngs(num_threads)
 ,saves(0)
 {
@@ -31,6 +32,9 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 {
 	// Reference to an RNG to use
 	RNG& rng = rngs[0];
+
+	// Assign memory for storage
+	keep.reserve(2*options.new_level_interval);
 
 	std::cout<<"# Seeding random number generators. First seed = ";
 	std::cout<<first_seed<<"."<<std::endl;
@@ -52,7 +56,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 
 template<class ModelType>
 void Sampler<ModelType>::mcmc_thread(unsigned int thread,
-										std::vector<LikelihoodType>& keep)
+										std::vector<LikelihoodType>& above)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -72,7 +76,7 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread,
 		update_level_assignment(thread, which);
 		if(_levels.size() != options.max_num_levels &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
-			keep.push_back(log_likelihoods[which]);
+			above.push_back(log_likelihoods[which]);
 	}
 }
 
@@ -84,16 +88,16 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 		copies_of_levels[i] = levels;
 
 	// Vectors to store results in
-	std::vector< std::vector<LikelihoodType> > keep(num_threads);
-	for(auto& k: keep)
-		k.reserve(options.thread_steps);
+	std::vector< std::vector<LikelihoodType> > above(num_threads);
+	for(auto& a: above)
+		a.reserve(options.thread_steps);
 
 	// Create the threads
 	std::vector<std::thread> threads;
 	for(unsigned int i=0; i<num_threads; ++i)
 	{
 		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
-								std::ref(keep[i]));
+								std::ref(above[i]));
 		threads.push_back(std::thread(func));
 	}
 	for(std::thread& t: threads)
@@ -117,11 +121,11 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 	}
 
 	// Combine into a single vector
-	std::vector<LikelihoodType> keep_all;
-	for(const auto& k: keep)
-		for(const auto& element: k)
-			keep_all.push_back(element);
-	return keep_all;
+	std::vector<LikelihoodType> all_above;
+	for(const auto& a: above)
+		for(const auto& element: a)
+			all_above.push_back(element);
+	return all_above;
 }
 
 template<class ModelType>
@@ -165,7 +169,7 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	if(level_assignments[which] != (_levels.size()-1))
 	{
 		level.increment_visits(1);
-		if(_levels[level_assignments[which+1]].get_log_likelihood() < 
+		if(_levels[level_assignments[which]+1].get_log_likelihood() < 
 						log_likelihoods[which])
 			level.increment_exceeds(1);
 	}
@@ -211,7 +215,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 	if(rng.rand() <= exp(log_A) && _levels[proposal].get_log_likelihood() < log_likelihoods[which])
 	{
 		// Accept
-		level_assignments[which] = static_cast<int>(proposal);
+		level_assignments[which] = static_cast<unsigned int>(proposal);
 	}
 }
 
@@ -221,19 +225,19 @@ void Sampler<ModelType>::run()
 	initialise_output_files();
 
 	// Alternate between MCMC and bookkeeping
-	std::vector<LikelihoodType> keep;
 
 	while(true)
 	{
-		keep = do_some_mcmc();
-		do_bookkeeping(keep);
+		auto above = do_some_mcmc();
+		for(const auto& a: above)
+			keep.push_back(a);
+		do_bookkeeping();
 	}
 }
 
 template<class ModelType>
-void Sampler<ModelType>::do_bookkeeping(std::vector<LikelihoodType>& keep)
+void Sampler<ModelType>::do_bookkeeping()
 {
-
 	// Create a new level?
 	if(levels.size() != options.max_num_levels
 		&& keep.size() >= options.new_level_interval)
@@ -241,9 +245,9 @@ void Sampler<ModelType>::do_bookkeeping(std::vector<LikelihoodType>& keep)
 		// Create the level
 		std::sort(keep.begin(), keep.end());
 		int index = static_cast<int>((1. - 1./compression)*keep.size());
-		levels.push_back(Level(keep[index]));
 		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
-		std::cout<<keep[index].get_value()<<"."<<std::endl; 
+		std::cout<<keep[index].get_value()<<"."<<std::endl;
+		levels.push_back(Level(keep[index]));
 		keep.erase(keep.begin(), keep.begin() + index + 1);
 
 		// If last level
@@ -300,7 +304,7 @@ void Sampler<ModelType>::initialise_output_files() const
 
 
 template<class ModelType>
-void Sampler<ModelType>::save_levels()
+void Sampler<ModelType>::save_levels() const
 {
 	// Output file
 	std::fstream fout;

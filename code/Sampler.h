@@ -31,6 +31,9 @@ class Sampler
 		std::vector<Level> levels;
 		std::vector< std::vector<Level> > copies_of_levels;
 
+		// Storage for creating new levels
+		std::vector<LikelihoodType> keep;
+
 		// Random number generators
 		std::vector<RNG> rngs;
 
@@ -46,24 +49,21 @@ class Sampler
 		void update_level_assignment(unsigned int thread, unsigned int which);
 
 		// Do MCMC for a while on thread 'thread'
-		void mcmc_thread(unsigned int thread, std::vector<LikelihoodType>& keep);
+		void mcmc_thread(unsigned int thread, std::vector<LikelihoodType>& above);
 
 		// Do MCMC for a while on multiple threads
 		// then come together and do book-keeping
 		std::vector<LikelihoodType> do_some_mcmc();
 
 		// Add new levels, save output files, etc
-		void do_bookkeeping(std::vector<LikelihoodType>& keep);
-
-		// Create one level
-		void create_level(std::vector<LikelihoodType>& keep);
+		void do_bookkeeping();
 
 		// Weighting function
 		double log_push(unsigned int thread, unsigned int which_level) const;
 
 		// Functions to do with the output files
 		void initialise_output_files() const;
-		void save_levels();
+		void save_levels() const;
 		void save_particle();
 
 	public:
