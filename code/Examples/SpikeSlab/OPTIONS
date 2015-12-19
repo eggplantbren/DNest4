@@ -6,6 +6,6 @@
 200	# threadSteps - how many steps each thread should do independently before communication
 100	# maximum number of levels
 10	# Backtracking scale length (lambda in the paper)
-10	# Strength of effect to force histogram to equal push. 0-10 is best. (beta in the paper)
+100	# Strength of effect to force histogram to equal push. 0-10 is best. (beta in the paper)
 0	# Maximum number of saves (0 = infinite)
 

@@ -267,7 +267,7 @@ void Sampler<ModelType>::do_bookkeeping()
 	// Save info to disk
 	save_levels();
 
-	if(count_mcmc_steps >= count_saves*options.save_interval)
+	if(count_mcmc_steps >= (count_saves+1)*options.save_interval)
 		save_particle();
 }
 
@@ -292,18 +292,16 @@ void Sampler<ModelType>::initialise_output_files() const
 	std::fstream fout;
 
 	// Output headers
-	fout.open("levels.txt", std::ios::out);
-	fout<<"# log_X, log_likelihood, tiebreaker, accepts, tries, exceeds, visits";
-	fout<<std::endl;
-	fout.close();
-
 	fout.open("sample_info.txt", std::ios::out);
 	fout<<"# level assignment, log likelihood, tiebreaker, ID."<<std::endl;
 	fout.close();
 
+
 	fout.open("sample.txt", std::ios::out);
 	fout<<"# "<<particles[0].description().c_str()<<std::endl;
 	fout.close();
+
+	save_levels();
 }
 
 
@@ -312,7 +310,9 @@ void Sampler<ModelType>::save_levels() const
 {
 	// Output file
 	std::fstream fout;
-	fout.open("levels.txt", std::ios::out|std::ios::app);
+	fout.open("levels.txt", std::ios::out);
+	fout<<"# log_X, log_likelihood, tiebreaker, accepts, tries, exceeds, visits";
+	fout<<std::endl;
 	for(const Level& level: levels)
 	{
 		fout<<level.get_log_X()<<' ';
