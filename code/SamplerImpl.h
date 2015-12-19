@@ -221,26 +221,46 @@ void Sampler<ModelType>::run()
 	initialise_output_files();
 
 	// Alternate between MCMC and bookkeeping
-	std::vector<LikelihoodType> keep = do_some_mcmc();
-	do_bookkeeping(keep);
+	std::vector<LikelihoodType> keep;
+
+	while(true)
+	{
+		keep = do_some_mcmc();
+		do_bookkeeping(keep);
+	}
 }
 
 template<class ModelType>
 void Sampler<ModelType>::do_bookkeeping(std::vector<LikelihoodType>& keep)
 {
+
 	// Create a new level?
 	if(levels.size() != options.max_num_levels
 		&& keep.size() >= options.new_level_interval)
-		create_level(keep);
-}
+	{
+		// Create the level
+		std::sort(keep.begin(), keep.end());
+		int index = static_cast<int>((1. - 1./compression)*keep.size());
+		levels.push_back(Level(keep[index]));
+		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
+		std::cout<<keep[index].get_value()<<"."<<std::endl; 
+		keep.erase(keep.begin(), keep.begin() + index + 1);
 
-template<class ModelType>
-void Sampler<ModelType>::create_level(std::vector<LikelihoodType>& keep)
-{
-	// Create the level
-	std::sort(keep.begin(), keep.end());
-	int index = static_cast<int>((1. - 1./compression)*keep.size());
-	levels.push_back(Level(keep[index]));
+		// If last level
+		if(levels.size() == options.new_level_interval)
+		{
+			Level::renormalise_visits(levels,
+				static_cast<int>(0.1*options.new_level_interval));
+			keep.clear();
+		}
+	}
+
+	// Recalculate log_X values of levels
+	Level::recalculate_log_X(levels, compression, options.new_level_interval);
+
+	// Save info to disk
+	save_levels();
+	save_particle();
 }
 
 template<class ModelType>
@@ -280,11 +300,10 @@ void Sampler<ModelType>::initialise_output_files() const
 
 
 template<class ModelType>
-void Sampler<ModelType>::save_levels() const
+void Sampler<ModelType>::save_levels()
 {
 	// Output file
 	std::fstream fout;
-
 	fout.open("levels.txt", std::ios::out|std::ios::app);
 	for(const Level& level: levels)
 	{
@@ -300,7 +319,7 @@ void Sampler<ModelType>::save_levels() const
 }
 
 template<class ModelType>
-void Sampler<ModelType>::save_particle() const
+void Sampler<ModelType>::save_particle()
 {
 	// Output file
 	std::fstream fout;

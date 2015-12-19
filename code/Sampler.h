@@ -63,8 +63,8 @@ class Sampler
 
 		// Functions to do with the output files
 		void initialise_output_files() const;
-		void save_levels() const;
-		void save_particle() const;
+		void save_levels();
+		void save_particle();
 
 	public:
 		// Constructor: Pass in Options object
