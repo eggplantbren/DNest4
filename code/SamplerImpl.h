@@ -52,7 +52,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 		log_likelihoods[i] = LikelihoodType(particles[i].log_likelihood(),
 																rng.rand());
 	}
-	std::cout<<"done."<<std::endl<<std::endl;
+	std::cout<<"done."<<std::endl;
 }
 
 template<class ModelType>
@@ -167,7 +167,7 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	if(log_H > 0.)
 		log_H = 0.;
 
-	// Make a LikelihoodType for the proposal
+	// Accept?
 	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
 	{
 		particle = proposal;
