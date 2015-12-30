@@ -73,8 +73,17 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread,
 	for(unsigned int i=0; i<options.thread_steps; ++i)
 	{
 		which = start_index + rng.rand_int(options.num_particles);
-		update_particle(thread, which);
-		update_level_assignment(thread, which);
+
+		if(rng.rand() <= 0.5)
+		{
+			update_particle(thread, which);
+			update_level_assignment(thread, which);
+		}
+		else
+		{
+			update_level_assignment(thread, which);
+			update_particle(thread, which);
+		}
 		if(_levels.size() != options.max_num_levels &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
 			above.push_back(log_likelihoods[which]);
@@ -189,7 +198,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 
 	// Generate proposal
 	int proposal = static_cast<int>(level_assignments[which])
-						+ static_cast<int>(pow(10., 2.*rng.rand()));
+						+ static_cast<int>(pow(10., 2.*rng.rand())*rng.randn());
 
 	// If the proposal was to not move, go +- one level
 	if(proposal == static_cast<int>(level_assignments[which]))
