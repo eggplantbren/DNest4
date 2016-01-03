@@ -177,12 +177,15 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	level.increment_tries(1);
 
 	// Count visits and exceeds
-	if(level_assignments[which] != (_levels.size()-1))
+	unsigned int current_level = level_assignments[which];
+	for(; current_level < (_levels.size()-1); ++current_level)
 	{
-		level.increment_visits(1);
-		if(_levels[level_assignments[which]+1].get_log_likelihood() < 
-						log_likelihoods[which])
-			level.increment_exceeds(1);
+		_levels[current_level].increment_visits(1);
+		if(_levels[current_level+1].get_log_likelihood() <
+											log_likelihoods[which])
+			_levels[current_level].increment_exceeds(1);
+		else
+			break;
 	}
 }
 
