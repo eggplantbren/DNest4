@@ -5,6 +5,7 @@ default:
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 	make nolib -C Examples/SpikeSlab
+	make nolib -C Examples/StraightLine
 
 noexample:
 	g++ $(CXXFLAGS) -c *.cpp
