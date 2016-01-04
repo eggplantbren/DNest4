@@ -7,3 +7,5 @@ os.sys.path.insert(0, parentdir)
 import postprocess
 postprocess.postprocess()
 
+import display
+
