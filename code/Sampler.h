@@ -59,8 +59,11 @@ class Sampler
 		// Add new levels, save output files, etc
 		void do_bookkeeping();
 
+		// Kill lagging particles
+		void kill_lagging_particles();
+
 		// Weighting function
-		double log_push(unsigned int thread, unsigned int which_level) const;
+		double log_push(unsigned int which_level) const;
 
 		// Functions to do with the output files
 		void initialise_output_files() const;

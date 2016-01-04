@@ -215,7 +215,7 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 					+ _levels[level_assignments[which]].get_log_X();
 
 	// Pushing up part
-	log_A += log_push(thread, proposal) - log_push(thread, level_assignments[which]);
+	log_A += log_push(proposal) - log_push(level_assignments[which]);
 
 	// Enforce uniform exploration part (if all levels exist)
 	if(_levels.size() == options.max_num_levels)
@@ -273,6 +273,11 @@ void Sampler<ModelType>::do_bookkeeping()
 				static_cast<int>(0.1*options.new_level_interval));
 			keep.clear();
 		}
+		else
+		{
+			// If it's not the last level, look for lagging particles
+			kill_lagging_particles();
+		}
 
 		save_levels();
 		saved_levels = true;
@@ -290,17 +295,14 @@ void Sampler<ModelType>::do_bookkeeping()
 }
 
 template<class ModelType>
-double Sampler<ModelType>::log_push(unsigned int thread,
-										unsigned int which_level) const
+double Sampler<ModelType>::log_push(unsigned int which_level) const
 {
 	// Reference to this thread's copy of levels
-	const std::vector<Level>& _levels = copies_of_levels[thread];
-
-	assert(which_level < _levels.size());
-	if(_levels.size() == options.max_num_levels)
+	assert(which_level < levels.size());
+	if(levels.size() == options.max_num_levels)
 		return 0.;
 
-	int i = which_level - (static_cast<int>(_levels.size()) - 1);
+	int i = which_level - (static_cast<int>(levels.size()) - 1);
 	return static_cast<double>(i)/options.lambda;
 }
 
@@ -368,6 +370,46 @@ void Sampler<ModelType>::save_particle()
 	++count_saves;
 	if(count_saves == options.max_num_samples)
 		exit(0);
+}
+
+template<class ModelType>
+void Sampler<ModelType>::kill_lagging_particles()
+{
+	// Flag each particle as good or bad
+	std::vector<bool> good(options.num_particles, true);
+	unsigned int num_bad = 0;
+	for(unsigned int i=0; i<options.num_particles; ++i)
+	{
+		if(log_push(level_assignments[i]) < -5.)
+		{
+			good[i] = false;
+			++num_bad;
+		}
+	}
+
+	if(num_bad < options.num_particles)
+	{
+		// Replace bad particles with copies of good ones
+		for(unsigned int i=0; i<options.num_particles; ++i)
+		{
+			if(!good[i])
+			{
+				int copy;
+				do
+				{
+					copy = rngs[0].rand_int(options.num_particles);
+				}while(!good[copy]);
+
+				particles[i] = particles[copy];
+				log_likelihoods[i] = log_likelihoods[copy];
+				level_assignments[i] = level_assignments[copy];
+				std::cout<<"# Deleting a particle. Replacing"<<
+				" it with a copy of a good survivor."<<std::endl;
+			}
+		}
+	}
+	else
+		std::cerr<<"# Warning: all particles lagging! Very rare!"<<std::endl;
 }
 
 } // namespace DNest4
