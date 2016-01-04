@@ -1,3 +1,4 @@
+#include "Data.h"
 #include "StraightLine.h"
 #include "Utils.h"
 
@@ -5,52 +6,83 @@ using namespace std;
 using namespace DNest4;
 
 StraightLine::StraightLine()
-:mu()
 {
 
+}
+
+void StraightLine::calculate_mu()
+{
+	const auto& x = Data::get_instance().get_x();
+	mu = m*x + b;
 }
 
 void StraightLine::from_prior(RNG& rng)
 {
-//	mu = 
-//	b = 
+	// Naive diffuse prior
+	m = 1E3*rng.randn();
+	b = 1E3*rng.randn();
+
+	// Log-uniform prior
+	sigma = exp(-10. + 20.*rng.rand());
+
+	// Compute the model line
+	calculate_mu();
 }
 
 double StraightLine::perturb(RNG& rng)
 {
-//	int which = rng.rand_int(params.size());
-//	params[which] += rng.randh();
-//	wrap(params[which], -0.5, 0.5);
-	return 0.;
+	double log_H = 0.;
+
+	// Proposals explore the prior
+	// For normal priors I usually use the hastings factor to do it
+	int which = rng.rand_int(3);
+	if(which == 0)
+	{
+		log_H -= -0.5*pow(m/1E3, 2);
+		m += 1E3*rng.randh();
+		log_H += -0.5*pow(m/1E3, 2);
+	}
+	else if(which == 1)
+	{
+		log_H -= -0.5*pow(b/1E3, 2);
+		b += 1E3*rng.randh();
+		log_H += -0.5*pow(b/1E3, 2);
+	}
+	else
+	{
+		// Usual log-uniform prior trick
+		sigma = log(sigma);
+		sigma += 20.*rng.randh();
+		wrap(sigma, -10., 10.);
+		sigma = exp(sigma);
+	}
+
+	// Calculate mu again if m or b changed
+	if(which == 0 || which == 1)
+		calculate_mu();
+
+	return log_H;
 }
 
 double StraightLine::log_likelihood() const
 {
-	return 0.;
-//	constexpr double u = 0.01;
-//	constexpr double v = 0.1;
-//	constexpr double C = log(1.0/sqrt(2*M_PI));
+	// Grab the y-values from the dataset
+	const auto& y = Data::get_instance().get_y();
 
-//	double logl1 = params.size()*(C - log(u));
-//	double logl2 = params.size()*(C - log(v));
+	// Variance
+	double var = sigma*sigma;
 
-//	for(const double& x: params)
-//	{
-//		logl1 += -0.5*pow((x - 0.031)/u, 2);
-//		logl2 += -0.5*pow(x/v, 2);
-//	}
-//	logl1 += log(100.);
-
-//	return logsumexp(logl1, logl2);
+	// Conventional gaussian sampling distribution
+	return -0.5*y.size()*log(2*M_PI*var) - 0.5*pow(y - mu, 2).sum()/var;
 }
 
 void StraightLine::print(std::ostream& out) const
 {
-	out<<m<<' '<<b;
+	out<<m<<' '<<b<<' '<<sigma;
 }
 
 string StraightLine::description() const
 {
-	return string("m, b");
+	return string("m, b, sigma");
 }
 

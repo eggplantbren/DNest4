@@ -11,8 +11,14 @@ class StraightLine
 		// The slope and intercept
 		double m, b;
 
+		// Noise sd
+		double sigma;
+
 		// Model prediction
 		std::valarray<double> mu;
+
+		// Compute the model line given the current values of m and b
+		void calculate_mu();
 
 	public:
 		// Constructor

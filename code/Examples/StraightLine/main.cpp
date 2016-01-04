@@ -9,8 +9,7 @@ using namespace DNest4;
 int main(int argc, char** argv)
 {
 	Data::get_instance().load("road.txt");
-
-//	start<SpikeSlab>(argc, argv);
+	start<StraightLine>(argc, argv);
 	return 0;
 }
 
