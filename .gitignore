@@ -2,4 +2,9 @@
 *.gch
 *.a
 main
-
+sample.txt
+sample_info.txt
+weights.txt
+posterior_sample.txt
+levels.txt
+*.pyc
