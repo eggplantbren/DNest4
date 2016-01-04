@@ -375,36 +375,51 @@ void Sampler<ModelType>::save_particle()
 template<class ModelType>
 void Sampler<ModelType>::kill_lagging_particles()
 {
+	// Count the number of deletions
+	static unsigned int deletions = 0;
+
 	// Flag each particle as good or bad
-	std::vector<bool> good(options.num_particles, true);
+	std::vector<bool> good(num_threads*options.num_particles, true);
+
+	// How good is the best particle?
+	double max_log_push = -std::numeric_limits<double>::max();
+
 	unsigned int num_bad = 0;
-	for(unsigned int i=0; i<options.num_particles; ++i)
+	for(size_t i=0; i<particles.size(); ++i)
 	{
-		if(log_push(level_assignments[i]) < -5.)
+		if(log_push(level_assignments[i]) > max_log_push)
+			max_log_push = log_push(level_assignments[i]);
+		if(log_push(level_assignments[i]) < -6.)
 		{
 			good[i] = false;
 			++num_bad;
 		}
 	}
 
-	if(num_bad < options.num_particles)
+	if(num_bad < num_threads*options.num_particles)
 	{
 		// Replace bad particles with copies of good ones
-		for(unsigned int i=0; i<options.num_particles; ++i)
+		for(size_t i=0; i<particles.size(); ++i)
 		{
 			if(!good[i])
 			{
-				int copy;
+				// Choose a replacement particle. Higher prob
+				// of selecting better particles.
+				int i_copy;
 				do
 				{
-					copy = rngs[0].rand_int(options.num_particles);
-				}while(!good[copy]);
+					i_copy = rngs[0].rand_int(num_threads);
+				}while(!good[i_copy] ||
+			rngs[0].rand() >= exp(log_push(level_assignments[i]) - max_log_push));
 
-				particles[i] = particles[copy];
-				log_likelihoods[i] = log_likelihoods[copy];
-				level_assignments[i] = level_assignments[copy];
-				std::cout<<"# Deleting a particle. Replacing"<<
-				" it with a copy of a good survivor."<<std::endl;
+				particles[i] = particles[i_copy];
+				log_likelihoods[i] = log_likelihoods[i_copy];
+				level_assignments[i] = level_assignments[i_copy];
+				++deletions;
+
+				std::cout<<"# Replacing languishing particle.";
+				std::cout<<" This has happened "<<deletions;
+				std::cout<<" times."<<std::endl;
 			}
 		}
 	}
