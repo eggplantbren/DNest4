@@ -4,6 +4,9 @@
 
 using namespace std;
 
+// The static instance
+Data Data::instance;
+
 Data::Data()
 {
 

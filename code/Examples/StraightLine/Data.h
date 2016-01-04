@@ -25,6 +25,15 @@ class Data
 		{ return x; }
 		const std::valarray<double>& get_y() const
 		{ return y; }
+
+	private:
+		// Static "global" instance
+		static Data instance;
+
+	public:
+		// Getter for the global instance
+		static Data& get_instance()
+		{ return instance; }
 };
 
 #endif
