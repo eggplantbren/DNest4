@@ -7,7 +7,7 @@ default:
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
 
-noexample:
+noexamples:
 	g++ $(CXXFLAGS) -c *.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
