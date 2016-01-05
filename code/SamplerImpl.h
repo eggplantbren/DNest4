@@ -102,16 +102,25 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 	for(auto& a: above)
 		a.reserve(options.thread_steps);
 
-	// Create the threads
-	std::vector<std::thread> threads;
-	for(unsigned int i=0; i<num_threads; ++i)
+	if(num_threads > 1)
 	{
-		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
-								std::ref(above[i]));
-		threads.emplace_back(std::thread(func));
+		// Create the threads
+		std::vector<std::thread> threads;
+		for(unsigned int i=0; i<num_threads; ++i)
+		{
+			auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
+									std::ref(above[i]));
+			threads.emplace_back(std::thread(func));
+		}
+		for(std::thread& t: threads)
+			t.join();
 	}
-	for(std::thread& t: threads)
-		t.join();
+	else
+	{
+		// Single thread version
+		mcmc_thread(0, above[0]);
+	}
+
 	count_mcmc_steps += num_threads*options.thread_steps;
 
 	// Go through copies of levels and apply diffs to levels
