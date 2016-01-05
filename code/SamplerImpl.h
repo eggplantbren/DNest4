@@ -108,7 +108,7 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 	{
 		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
 								std::ref(above[i]));
-		threads.push_back(std::thread(func));
+		threads.emplace_back(std::thread(func));
 	}
 	for(std::thread& t: threads)
 		t.join();
