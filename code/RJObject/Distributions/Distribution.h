@@ -16,6 +16,9 @@
 #include <ostream>
 #include "RNG.h"
 
+namespace DNest4
+{
+
 class Distribution
 {
 	private:
@@ -42,11 +45,11 @@ class Distribution
 		virtual void to_uniform(std::vector<double>& vec) const = 0;
 
 		// Type 1 proposal as defined above
-		double perturb1(const std::vector< std::vector<double> >& components,
+		double perturb1(RNG& rng, const std::vector< std::vector<double> >& components,
 				std::vector< std::vector<double> >& u_components);
 
 		// Type 2 proposal as defined above
-		double perturb2(std::vector< std::vector<double> >& components,
+		double perturb2(RNG& rng, std::vector< std::vector<double> >& components,
 				const std::vector< std::vector<double> >& u_components);
 
 		// Print parameters to stream
@@ -56,6 +59,8 @@ class Distribution
 		// faster proposals? Set to -1 if undefined.
 		static const int weight_parameter = -1;
 };
+
+} // namespace DNest4
 
 #endif
 
