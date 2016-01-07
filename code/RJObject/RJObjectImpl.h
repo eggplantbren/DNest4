@@ -17,7 +17,7 @@ void RJObject<Distribution>::from_prior(RNG& rng)
 	removed.resize(0);
 
 	// Generate the hyperparameters from their prior
-	dist.from_prior();
+	dist.from_prior(rng);
 
 	int num = max_num_components;
 	// Generate from {0, 1, 2, ..., max_num_components}
@@ -31,7 +31,7 @@ void RJObject<Distribution>::from_prior(RNG& rng)
 	// Generate components
 	num_components = 0;
 	for(int i=0; i<num; i++)
-		add_component();
+		add_component(rng);
 }
 
 template<class Distribution>
@@ -134,12 +134,12 @@ double RJObject<Distribution>::perturb_num_components(RNG& rng, double scale)
 	if(difference > 0)
 	{
 		for(int i=0; i<difference; i++)
-			logH += add_component();
+			logH += add_component(rng);
 	}
 	else
 	{
 		for(int i=0; i<-difference; i++)
-			logH += remove_component();
+			logH += remove_component(rng);
 	}
 
 	return logH;
@@ -161,26 +161,25 @@ double RJObject<Distribution>::perturb(RNG& rng)
 	if(which == 0)
 	{
 		// Do some birth or death
-		logH += perturb_num_components(
-				pow(10., 1.5 - 6.*rng.rand()));
+		logH += perturb_num_components(rng,	pow(10., 1.5 - 6.*rng.rand()));
 	}
 	else if(which == 1)
 	{
 		// Change the hyperparameters
 		if(rng.rand() <= 0.5)
 		{
-			logH += dist.perturb1(components, u_components);
+			logH += dist.perturb1(rng, components, u_components);
 		}
 		else
 		{
 			removed = components;
-			logH += dist.perturb2(components, u_components);
+			logH += dist.perturb2(rng, components, u_components);
 			added = components;
 		}
 	}
 	else if(which == 2)
 	{
-		logH += perturb_components(pow(10., 0.5 - 4.*rng.rand()));
+		logH += perturb_components(rng, pow(10., 0.5 - 4.*rng.rand()));
 	}
 
 	return logH;

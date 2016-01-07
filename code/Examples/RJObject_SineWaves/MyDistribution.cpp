@@ -1,9 +1,8 @@
 #include "MyDistribution.h"
-#include "RandomNumberGenerator.h"
 #include "Utils.h"
 #include <cmath>
 
-using namespace DNest3;
+using namespace DNest4;
 
 MyDistribution::MyDistribution(double x_min, double x_max,
 					double mu_min, double mu_max)
@@ -15,17 +14,17 @@ MyDistribution::MyDistribution(double x_min, double x_max,
 
 }
 
-void MyDistribution::fromPrior()
+void MyDistribution::from_prior(RNG& rng)
 {
-	mu = exp(log(mu_min) + log(mu_max/mu_min)*randomU());
+	mu = exp(log(mu_min) + log(mu_max/mu_min)*rng.rand());
 }
 
-double MyDistribution::perturb_parameters()
+double MyDistribution::perturb_parameters(RNG& rng)
 {
 	double logH = 0.;
 
 	mu = log(mu);
-	mu += log(mu_max/mu_min)*pow(10., 1.5 - 6.*randomU())*randn();
+	mu += log(mu_max/mu_min)*rng.randh();
 	mu = mod(mu - log(mu_min), log(mu_max/mu_min)) + log(mu_min);
 	mu = exp(mu);
 

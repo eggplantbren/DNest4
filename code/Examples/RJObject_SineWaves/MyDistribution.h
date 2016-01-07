@@ -1,12 +1,13 @@
-#ifndef _MyDistribution_
-#define _MyDistribution_
+#ifndef DNest4_MyDistribution
+#define DNest4_MyDistribution
 
-#include <Distributions/Distribution.h>
+#include "RNG.h"
+#include "RJObject/Distributions/Distribution.h"
 
 // Based on ClassicMassInf1D from RJObject
 // Think of "position x" as log-period
 // and mass as amplitude
-class MyDistribution:public Distribution
+class MyDistribution:public DNest4::Distribution
 {
 	private:
 		// Limits
@@ -16,13 +17,13 @@ class MyDistribution:public Distribution
 		// Mean of exponential distribution for amplitudes
 		double mu;
 
-		double perturb_parameters();
+		double perturb_parameters(DNest4::RNG& rng);
 
 	public:
 		MyDistribution(double x_min, double x_max,
 					double mu_min, double mu_max);
 
-		void fromPrior();
+		void from_prior(DNest4::RNG& rng);
 
 		double log_pdf(const std::vector<double>& vec) const;
 		void from_uniform(std::vector<double>& vec) const;

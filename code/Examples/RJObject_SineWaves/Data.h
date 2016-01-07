@@ -1,5 +1,5 @@
-#ifndef _Data_
-#define _Data_
+#ifndef DNest4_Data
+#define DNest4_Data
 
 #include <vector>
 

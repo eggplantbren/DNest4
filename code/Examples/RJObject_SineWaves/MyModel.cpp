@@ -1,11 +1,10 @@
 #include "MyModel.h"
-#include "RandomNumberGenerator.h"
 #include "Utils.h"
 #include "Data.h"
 #include <cmath>
 
 using namespace std;
-using namespace DNest3;
+using namespace DNest4;
 
 MyModel::MyModel()
 :objects(3, 10, false, MyDistribution(-10., 10., 1E-3, 1E3))
@@ -14,11 +13,11 @@ MyModel::MyModel()
 
 }
 
-void MyModel::fromPrior()
+void MyModel::from_prior(RNG& rng)
 {
-	objects.fromPrior();
+	objects.from_prior(rng);
 	objects.consolidate_diff();
-	sigma = exp(log(1E-3) + log(1E6)*randomU());
+	sigma = exp(log(1E-3) + log(1E6)*rng.rand());
 	calculate_mu();
 }
 
@@ -49,20 +48,20 @@ void MyModel::calculate_mu()
 	}
 }
 
-double MyModel::perturb()
+double MyModel::perturb(RNG& rng)
 {
 	double logH = 0.;
 
-	if(randomU() <= 0.75)
+	if(rng.rand() <= 0.75)
 	{
-		logH += objects.perturb();
+		logH += objects.perturb(rng);
 		objects.consolidate_diff();
 		calculate_mu();
 	}
 	else
 	{
 		sigma = log(sigma);
-		sigma += log(1E6)*randh();
+		sigma += log(1E6)*rng.randh();
 		sigma = mod(sigma - log(1E-3), log(1E6)) + log(1E-3);
 		sigma = exp(sigma);
 	}
@@ -70,7 +69,7 @@ double MyModel::perturb()
 	return logH;
 }
 
-double MyModel::logLikelihood() const
+double MyModel::log_likelihood() const
 {
 	// Get the data
 	const vector<double>& y = Data::get_instance().get_y();

@@ -6,6 +6,7 @@ default:
 	rm -f *.o
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
+	make nolib -C Examples/RJObject_SineWaves
 
 noexamples:
 	g++ $(CXXFLAGS) -c *.cpp
