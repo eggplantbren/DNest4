@@ -11,7 +11,7 @@ functions in the model classes. However, you should be able to infer the
 relevant changes by inspecting the DNest4 version
 of SpikeSlab.h and SpikeSlab.cpp.
 
-(c) 2015 Brendon J. Brewer
+(c) 2015--2016 Brendon J. Brewer
 LICENCE: MIT.
 See the LICENSE file for details.
 
