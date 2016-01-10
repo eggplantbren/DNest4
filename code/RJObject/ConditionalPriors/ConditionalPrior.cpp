@@ -22,7 +22,7 @@ double ConditionalPrior::perturb1(RNG& rng, const vector< vector<double> >& comp
 	for(size_t i=0; i<components.size(); i++)
 		logH -= log_pdf(components[i]);
 
-	logH += perturb_parameters(rng);
+	logH += perturb_hyperparameters(rng);
 
 	// (new density)
 	for(size_t i=0; i<components.size(); i++)
@@ -40,7 +40,7 @@ double ConditionalPrior::perturb2(RNG& rng, vector< vector<double> >& components
 {
 	double logH = 0.;
 
-	logH += perturb_parameters(rng);
+	logH += perturb_hyperparameters(rng);
 
 	// Find new positions
 	for(size_t i=0; i<components.size(); i++)

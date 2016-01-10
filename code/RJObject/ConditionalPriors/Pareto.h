@@ -17,7 +17,7 @@ class Pareto:public ConditionalPrior
 		// Lower limit and slope of Pareto ConditionalPrior
 		double f0, alpha;
 
-		double perturb_parameters(RNG& rng);
+		double perturb_hyperparameters(RNG& rng);
 
 	public:
 		Pareto(double x_min, double x_max,

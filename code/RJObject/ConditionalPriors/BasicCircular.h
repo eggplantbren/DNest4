@@ -22,7 +22,7 @@ class BasicCircular:public ConditionalPrior
 		// Mean of exponential ConditionalPrior for masses
 		double mu;
 
-		double perturb_parameters(DNest4::RNG& rng);
+		double perturb_hyperparameters(DNest4::RNG& rng);
 
 	public:
 		BasicCircular(double x_min, double x_max,

@@ -25,7 +25,7 @@ class ConditionalPrior
 
 
 		// How to move the parameters (gets called by other proposals)
-		virtual double perturb_parameters(DNest4::RNG& rng) = 0;
+		virtual double perturb_hyperparameters(DNest4::RNG& rng) = 0;
 
 	public:
 		ConditionalPrior();

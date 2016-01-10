@@ -17,7 +17,7 @@ class MyConditionalPrior:public DNest4::ConditionalPrior
 		// Mean of exponential ConditionalPrior for amplitudes
 		double mu;
 
-		double perturb_parameters(DNest4::RNG& rng);
+		double perturb_hyperparameters(DNest4::RNG& rng);
 
 	public:
 		MyConditionalPrior(double x_min, double x_max,

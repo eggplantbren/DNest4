@@ -23,7 +23,7 @@ void Pareto::from_prior(RNG& rng)
 	alpha = 1. + 4.*rng.rand();
 }
 
-double Pareto::perturb_parameters(RNG& rng)
+double Pareto::perturb_hyperparameters(RNG& rng)
 {
 	double logH = 0.;
 

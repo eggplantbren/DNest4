@@ -17,7 +17,7 @@ class ClassicMassInf:public ConditionalPrior
 		// Mean of exponential ConditionalPrior for masses
 		double mu;
 
-		double perturb_parameters(RNG& rng);
+		double perturb_hyperparameters(RNG& rng);
 
 	public:
 		ClassicMassInf(double x_min, double x_max,

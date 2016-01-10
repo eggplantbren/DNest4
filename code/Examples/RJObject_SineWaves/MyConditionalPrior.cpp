@@ -19,7 +19,7 @@ void MyConditionalPrior::from_prior(RNG& rng)
 	mu = exp(log(mu_min) + log(mu_max/mu_min)*rng.rand());
 }
 
-double MyConditionalPrior::perturb_parameters(RNG& rng)
+double MyConditionalPrior::perturb_hyperparameters(RNG& rng)
 {
 	double logH = 0.;
 

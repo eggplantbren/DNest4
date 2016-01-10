@@ -27,7 +27,7 @@ void BasicCircular::from_prior(RNG& rng)
 	mu = exp(log(mu_min) + log(mu_max/mu_min)*rng.rand());
 }
 
-double BasicCircular::perturb_parameters(RNG& rng)
+double BasicCircular::perturb_hyperparameters(RNG& rng)
 {
 	double logH = 0.;
 	int which = rng.rand_int(3);
