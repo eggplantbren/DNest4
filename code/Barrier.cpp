@@ -14,7 +14,7 @@ void Barrier::wait()
 {
 	unsigned int gen = generation;
 	std::unique_lock<std::mutex> lock{the_mutex};
-	if (!--count)
+	if(!--count)
 	{
 		generation++;
 		count = threshold;
