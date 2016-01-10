@@ -1,10 +1,10 @@
 template<class ConditionalPrior>
 RJObject<ConditionalPrior>::RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const ConditionalPrior& dist)
+				const ConditionalPrior& conditional_prior)
 :num_dimensions(num_dimensions)
 ,max_num_components(max_num_components)
 ,fixed(fixed)
-,dist(dist)
+,conditional_prior(conditional_prior)
 ,num_components(0)
 {
 
@@ -17,7 +17,7 @@ void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 	removed.resize(0);
 
 	// Generate the hyperparameters from their prior
-	dist.from_prior(rng);
+	conditional_prior.from_prior(rng);
 
 	int num = max_num_components;
 	// Generate from {0, 1, 2, ..., max_num_components}
@@ -74,7 +74,7 @@ double RJObject<ConditionalPrior>::perturb_components(RNG& rng, double chance)
 							u_components[i][j], 1.);
 				components[i][j] = u_components[i][j];
 			}
-			dist.from_uniform(components[i]);
+			conditional_prior.from_uniform(components[i]);
 
 			// Accumulate added/removed component info
 			added.push_back(components[i]);
@@ -102,7 +102,7 @@ double RJObject<ConditionalPrior>::add_component(RNG& rng)
 	for(int j=0; j<num_dimensions; j++)
 		component[j] = rng.rand();
 	u_components.push_back(component);
-	dist.from_uniform(component);
+	conditional_prior.from_uniform(component);
 	components.push_back(component);
 
 	// Accumulate added/removed component info
@@ -168,12 +168,12 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng)
 		// Change the hyperparameters
 		if(rng.rand() <= 0.5)
 		{
-			logH += dist.perturb1(rng, components, u_components);
+			logH += conditional_prior.perturb1(rng, components, u_components);
 		}
 		else
 		{
 			removed = components;
-			logH += dist.perturb2(rng, components, u_components);
+			logH += conditional_prior.perturb2(rng, components, u_components);
 			added = components;
 		}
 	}
@@ -215,7 +215,7 @@ template<class ConditionalPrior>
 void RJObject<ConditionalPrior>::print(std::ostream& out) const
 {
 	out<<num_dimensions<<' '<<max_num_components<<' ';
-	dist.print(out); out<<' ';
+	conditional_prior.print(out); out<<' ';
 	out<<num_components<<' ';
 
 	// Write out components

@@ -38,7 +38,7 @@ class RJObject
 
 		// The hyperparameters that specify the conditional prior
 		// for the components
-		ConditionalPrior dist;
+		ConditionalPrior conditional_prior;
 
 		// The components
 		int num_components;
@@ -70,7 +70,7 @@ class RJObject
 		* max_num_components
 		*/
 		RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const ConditionalPrior& dist);
+				const ConditionalPrior& conditional_prior);
 
 		// Generate everything from the prior
 		void from_prior(RNG& rng);
@@ -98,8 +98,8 @@ class RJObject
 		{ return removed; }
 
 		// Getter for hyperparameters
-		const ConditionalPrior& get_dist() const
-		{ return dist; }
+		const ConditionalPrior& get_conditional_prior() const
+		{ return conditional_prior; }
 };
 
 #include "RJObjectImpl.h"
