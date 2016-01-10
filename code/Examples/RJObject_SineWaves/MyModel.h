@@ -2,14 +2,14 @@
 #define DNest4_MyModel
 
 #include <vector>
-#include "MyDistribution.h"
+#include "MyConditionalPrior.h"
 #include "RJObject/RJObject.h"
 #include "RNG.h"
 
 class MyModel
 {
 	private:
-		DNest4::RJObject<MyDistribution> objects;
+		DNest4::RJObject<MyConditionalPrior> objects;
 		double sigma; // Noise standard deviation
 
 		// The signal

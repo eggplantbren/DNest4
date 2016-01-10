@@ -1,28 +1,28 @@
-#ifndef DNest4_ClassicMassInf
-#define DNest4_ClassicMassInf
+#ifndef DNest4_Pareto
+#define DNest4_Pareto
 
-#include "Distribution.h"
+#include "ConditionalPrior.h"
 #include "RNG.h"
 
 namespace DNest4
 {
 
-class ClassicMassInf:public Distribution
+class Pareto:public ConditionalPrior
 {
 	private:
 		// Limits
 		double x_min, x_max, y_min, y_max;
-		double mu_min, mu_max;
+		double f0_min, f0_max;
 
-		// Mean of exponential distribution for masses
-		double mu;
+		// Lower limit and slope of Pareto ConditionalPrior
+		double f0, alpha;
 
 		double perturb_parameters(RNG& rng);
 
 	public:
-		ClassicMassInf(double x_min, double x_max,
+		Pareto(double x_min, double x_max,
 					double y_min, double y_max,
-					double mu_min, double mu_max);
+					double f0_min, double f0_max);
 
 		void from_prior(RNG& rng);
 
@@ -33,7 +33,7 @@ class ClassicMassInf:public Distribution
 		void print(std::ostream& out) const;
 };
 
-} // namespace DNest4
+}
 
 #endif
 

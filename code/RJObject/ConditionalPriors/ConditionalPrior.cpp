@@ -1,19 +1,19 @@
-#include "Distribution.h"
+#include "ConditionalPrior.h"
 
 using namespace std;
 using namespace DNest4;
 
-Distribution::Distribution()
+ConditionalPrior::ConditionalPrior()
 {
 
 }
 
-Distribution::~Distribution()
+ConditionalPrior::~ConditionalPrior()
 {
 
 }
 
-double Distribution::perturb1(RNG& rng, const vector< vector<double> >& components,
+double ConditionalPrior::perturb1(RNG& rng, const vector< vector<double> >& components,
 				vector< vector<double> >& u_components)
 {
 	double logH = 0.;
@@ -35,7 +35,7 @@ double Distribution::perturb1(RNG& rng, const vector< vector<double> >& componen
 	return logH;
 }
 
-double Distribution::perturb2(RNG& rng, vector< vector<double> >& components,
+double ConditionalPrior::perturb2(RNG& rng, vector< vector<double> >& components,
 				const vector< vector<double> >& u_components)
 {
 	double logH = 0.;

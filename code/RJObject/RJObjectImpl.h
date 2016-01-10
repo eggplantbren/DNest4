@@ -1,6 +1,6 @@
-template<class Distribution>
-RJObject<Distribution>::RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const Distribution& dist)
+template<class ConditionalPrior>
+RJObject<ConditionalPrior>::RJObject(int num_dimensions, int max_num_components, bool fixed,
+				const ConditionalPrior& dist)
 :num_dimensions(num_dimensions)
 ,max_num_components(max_num_components)
 ,fixed(fixed)
@@ -10,8 +10,8 @@ RJObject<Distribution>::RJObject(int num_dimensions, int max_num_components, boo
 
 }
 
-template<class Distribution>
-void RJObject<Distribution>::from_prior(RNG& rng)
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 {
 	added.resize(0);
 	removed.resize(0);
@@ -34,8 +34,8 @@ void RJObject<Distribution>::from_prior(RNG& rng)
 		add_component(rng);
 }
 
-template<class Distribution>
-double RJObject<Distribution>::perturb_components(RNG& rng, double chance)
+template<class ConditionalPrior>
+double RJObject<ConditionalPrior>::perturb_components(RNG& rng, double chance)
 {
 	if(num_components == 0)
 		return 0.;
@@ -84,8 +84,8 @@ double RJObject<Distribution>::perturb_components(RNG& rng, double chance)
 	return 0.;
 }
 
-template<class Distribution>
-double RJObject<Distribution>::add_component(RNG& rng)
+template<class ConditionalPrior>
+double RJObject<ConditionalPrior>::add_component(RNG& rng)
 {
 	if(num_components >= max_num_components)
 	{
@@ -111,8 +111,8 @@ double RJObject<Distribution>::add_component(RNG& rng)
 	return 0.;
 }
 
-template<class Distribution>
-double RJObject<Distribution>::perturb_num_components(RNG& rng, double scale)
+template<class ConditionalPrior>
+double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng, double scale)
 {
 	double logH = 0.;
 
@@ -145,8 +145,8 @@ double RJObject<Distribution>::perturb_num_components(RNG& rng, double scale)
 	return logH;
 }
 
-template<class Distribution>
-double RJObject<Distribution>::perturb(RNG& rng)
+template<class ConditionalPrior>
+double RJObject<ConditionalPrior>::perturb(RNG& rng)
 {
 	if(max_num_components == 0)
 		return 0.;
@@ -185,8 +185,8 @@ double RJObject<Distribution>::perturb(RNG& rng)
 	return logH;
 }
 
-template<class Distribution>
-double RJObject<Distribution>::remove_component(RNG& rng)
+template<class ConditionalPrior>
+double RJObject<ConditionalPrior>::remove_component(RNG& rng)
 {
 	if(num_components <= 0)
 	{
@@ -211,8 +211,8 @@ double RJObject<Distribution>::remove_component(RNG& rng)
 	return 0.;
 }
 
-template<class Distribution>
-void RJObject<Distribution>::print(std::ostream& out) const
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::print(std::ostream& out) const
 {
 	out<<num_dimensions<<' '<<max_num_components<<' ';
 	dist.print(out); out<<' ';
@@ -230,10 +230,10 @@ void RJObject<Distribution>::print(std::ostream& out) const
 	}
 }
 
-template<class Distribution>
-void RJObject<Distribution>::consolidate_diff()
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::consolidate_diff()
 {
-	if(Distribution::weight_parameter == -1)
+	if(ConditionalPrior::weight_parameter == -1)
 	{
 		std::cerr<<"# WARNING: consolidate_diff() failed."<<std::endl;
 		return;
@@ -241,7 +241,7 @@ void RJObject<Distribution>::consolidate_diff()
 
 	for(size_t i=0; i<removed.size(); i++)
 	{
-		removed[i][Distribution::weight_parameter] *= -1;
+		removed[i][ConditionalPrior::weight_parameter] *= -1;
 		added.push_back(removed[i]);
 	}
 	removed.clear();

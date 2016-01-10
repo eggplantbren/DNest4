@@ -1,12 +1,12 @@
-#ifndef DNest4_Distribution
-#define DNest4_Distribution
+#ifndef DNest4_ConditionalPrior
+#define DNest4_ConditionalPrior
 
 /*
 * An object of this class represents a probability
-* distribution over the space of possible "components"
+* ConditionalPrior over the space of possible "components"
 * in N dimensions.
 * They have parameters, and two kinds of proposal
-* distributions are available:
+* ConditionalPriors are available:
 * 1) Move the parameters, positions fixed
 * 2) Move the parameters, move the positions as well
 * or you can just keep it fixed.
@@ -19,7 +19,7 @@
 namespace DNest4
 {
 
-class Distribution
+class ConditionalPrior
 {
 	private:
 
@@ -28,9 +28,9 @@ class Distribution
 		virtual double perturb_parameters(DNest4::RNG& rng) = 0;
 
 	public:
-		Distribution();
+		ConditionalPrior();
 
-		virtual ~Distribution();
+		virtual ~ConditionalPrior();
 
 		// Generate parameters from the prior
 		virtual void from_prior(DNest4::RNG& rng) = 0;
@@ -39,7 +39,7 @@ class Distribution
 		virtual double log_pdf(const std::vector<double>& vec) const = 0;
 
 		// Method to transform uniform(0, 1)s to and from
-		// the distribution
+		// the ConditionalPrior
 		// (analogous to cdf and inverse cdf)
 		virtual void from_uniform(std::vector<double>& vec) const = 0;
 		virtual void to_uniform(std::vector<double>& vec) const = 0;

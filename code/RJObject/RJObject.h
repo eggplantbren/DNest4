@@ -23,7 +23,7 @@ namespace DNest4
 * you may derive from this class or store them externally.
 */
 
-template<class Distribution>
+template<class ConditionalPrior>
 class RJObject
 {
 	protected:
@@ -38,7 +38,7 @@ class RJObject
 
 		// The hyperparameters that specify the conditional prior
 		// for the components
-		Distribution dist;
+		ConditionalPrior dist;
 
 		// The components
 		int num_components;
@@ -70,7 +70,7 @@ class RJObject
 		* max_num_components
 		*/
 		RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const Distribution& dist);
+				const ConditionalPrior& dist);
 
 		// Generate everything from the prior
 		void from_prior(RNG& rng);
@@ -98,7 +98,7 @@ class RJObject
 		{ return removed; }
 
 		// Getter for hyperparameters
-		const Distribution& get_dist() const
+		const ConditionalPrior& get_dist() const
 		{ return dist; }
 };
 

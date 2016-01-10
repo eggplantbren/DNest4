@@ -1,19 +1,19 @@
 #ifndef DNest4_ClassicMassInf1D
 #define DNest4_ClassicMassInf1D
 
-#include "Distribution.h"
+#include "ConditionalPrior.h"
 
 namespace DNest4
 {
 
-class ClassicMassInf1D:public Distribution
+class ClassicMassInf1D:public ConditionalPrior
 {
 	private:
 		// Limits
 		double x_min, x_max;
 		double mu_min, mu_max;
 
-		// Mean of exponential distribution for masses
+		// Mean of exponential ConditionalPrior for masses
 		double mu;
 
 		double perturb_parameters(RNG& rng);
