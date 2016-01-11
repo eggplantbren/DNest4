@@ -1,23 +1,23 @@
 #ifndef DNest4_Pareto
 #define DNest4_Pareto
 
-#include "Distribution.h"
+#include "ConditionalPrior.h"
 #include "RNG.h"
 
 namespace DNest4
 {
 
-class Pareto:public Distribution
+class Pareto:public ConditionalPrior
 {
 	private:
 		// Limits
 		double x_min, x_max, y_min, y_max;
 		double f0_min, f0_max;
 
-		// Lower limit and slope of Pareto distribution
+		// Lower limit and slope of Pareto ConditionalPrior
 		double f0, alpha;
 
-		double perturb_parameters(RNG& rng);
+		double perturb_hyperparameters(RNG& rng);
 
 	public:
 		Pareto(double x_min, double x_max,

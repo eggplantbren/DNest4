@@ -22,7 +22,7 @@ void ClassicMassInf::from_prior(RNG& rng)
 	mu = exp(log(mu_min) + log(mu_max/mu_min)*rng.rand());
 }
 
-double ClassicMassInf::perturb_parameters(RNG& rng)
+double ClassicMassInf::perturb_hyperparameters(RNG& rng)
 {
 	double logH = 0.;
 

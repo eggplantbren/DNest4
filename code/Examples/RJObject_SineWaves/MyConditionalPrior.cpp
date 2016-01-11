@@ -1,10 +1,10 @@
-#include "MyDistribution.h"
+#include "MyConditionalPrior.h"
 #include "Utils.h"
 #include <cmath>
 
 using namespace DNest4;
 
-MyDistribution::MyDistribution(double x_min, double x_max,
+MyConditionalPrior::MyConditionalPrior(double x_min, double x_max,
 					double mu_min, double mu_max)
 :x_min(x_min)
 ,x_max(x_max)
@@ -14,12 +14,12 @@ MyDistribution::MyDistribution(double x_min, double x_max,
 
 }
 
-void MyDistribution::from_prior(RNG& rng)
+void MyConditionalPrior::from_prior(RNG& rng)
 {
 	mu = exp(log(mu_min) + log(mu_max/mu_min)*rng.rand());
 }
 
-double MyDistribution::perturb_parameters(RNG& rng)
+double MyConditionalPrior::perturb_hyperparameters(RNG& rng)
 {
 	double logH = 0.;
 
@@ -35,7 +35,7 @@ double MyDistribution::perturb_parameters(RNG& rng)
 // vec[1] = amplitude
 // vec[2] = phase
 
-double MyDistribution::log_pdf(const std::vector<double>& vec) const
+double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
 {
 	if(vec[0] < x_min || vec[0] > x_max || vec[1] < 0. ||
 			vec[2] < 0. || vec[2] > 2.*M_PI)
@@ -44,21 +44,21 @@ double MyDistribution::log_pdf(const std::vector<double>& vec) const
 	return -log(mu) - vec[1]/mu;
 }
 
-void MyDistribution::from_uniform(std::vector<double>& vec) const
+void MyConditionalPrior::from_uniform(std::vector<double>& vec) const
 {
 	vec[0] = x_min + (x_max - x_min)*vec[0];
 	vec[1] = -mu*log(1. - vec[1]);
 	vec[2] = 2.*M_PI*vec[2];
 }
 
-void MyDistribution::to_uniform(std::vector<double>& vec) const
+void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
 {
 	vec[0] = (vec[0] - x_min)/(x_max - x_min);
 	vec[1] = 1. - exp(-vec[1]/mu);
 	vec[2] = vec[2]/(2.*M_PI);
 }
 
-void MyDistribution::print(std::ostream& out) const
+void MyConditionalPrior::print(std::ostream& out) const
 {
 	out<<mu<<' ';
 }

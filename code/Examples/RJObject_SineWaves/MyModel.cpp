@@ -7,7 +7,7 @@ using namespace std;
 using namespace DNest4;
 
 MyModel::MyModel()
-:objects(3, 10, false, MyDistribution(-10., 10., 1E-3, 1E3))
+:objects(3, 10, false, MyConditionalPrior(-10., 10., 1E-3, 1E3))
 ,mu(Data::get_instance().get_t().size())
 {
 

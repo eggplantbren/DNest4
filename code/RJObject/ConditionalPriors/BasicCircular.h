@@ -1,14 +1,14 @@
 #ifndef DNest4_BasicCircular
 #define DNest4_BasicCircular
 
-#include "Distribution.h"
+#include "ConditionalPrior.h"
 #include "RNG.h"
 #include "Utils.h"
 
 namespace DNest4
 {
 
-class BasicCircular:public Distribution
+class BasicCircular:public ConditionalPrior
 {
 	private:
 		// Limits
@@ -19,10 +19,10 @@ class BasicCircular:public Distribution
 		double xc, yc;
 		double width;
 
-		// Mean of exponential distribution for masses
+		// Mean of exponential ConditionalPrior for masses
 		double mu;
 
-		double perturb_parameters(DNest4::RNG& rng);
+		double perturb_hyperparameters(DNest4::RNG& rng);
 
 	public:
 		BasicCircular(double x_min, double x_max,
