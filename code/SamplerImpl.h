@@ -102,24 +102,16 @@ std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
 	for(auto& a: above)
 		a.reserve(options.thread_steps);
 
-	if(num_threads > 1)
+	// Create the threads
+	std::vector<std::thread> threads;
+	for(unsigned int i=0; i<num_threads; ++i)
 	{
-		// Create the threads
-		std::vector<std::thread> threads;
-		for(unsigned int i=0; i<num_threads; ++i)
-		{
-			auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
-									std::ref(above[i]));
-			threads.emplace_back(std::thread(func));
-		}
-		for(std::thread& t: threads)
-			t.join();
+		auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
+								std::ref(above[i]));
+		threads.emplace_back(std::thread(func));
 	}
-	else
-	{
-		// Single thread version
-		mcmc_thread(0, above[0]);
-	}
+	for(std::thread& t: threads)
+		t.join();
 
 	count_mcmc_steps += num_threads*options.thread_steps;
 
