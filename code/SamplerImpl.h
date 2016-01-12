@@ -11,7 +11,9 @@ namespace DNest4
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 							const Options& options)
-:num_threads(num_threads)
+:threads(num_threads, nullptr)
+,barrier(nullptr)
+,num_threads(num_threads)
 ,compression(compression)
 ,options(options)
 ,particles(options.num_particles*num_threads)
@@ -19,10 +21,11 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
 ,copies_of_levels(num_threads, levels)
-,keep()
+,all_above()
 ,rngs(num_threads)
 ,count_saves(0)
 ,count_mcmc_steps(0)
+,above(num_threads)
 {
 	assert(num_threads >= 1);
 	assert(compression > 1.);
@@ -35,7 +38,9 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 	RNG& rng = rngs[0];
 
 	// Assign memory for storage
-	keep.reserve(2*options.new_level_interval);
+	all_above.reserve(2*options.new_level_interval);
+	for(auto& a: above)
+		a.reserve(2*options.new_level_interval);
 
 	std::cout<<"# Seeding random number generators. First seed = ";
 	std::cout<<first_seed<<"."<<std::endl;
@@ -56,8 +61,40 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::mcmc_thread(unsigned int thread,
-										std::vector<LikelihoodType>& above)
+void Sampler<ModelType>::run()
+{
+	// Set up threads and barrier
+	// Delete if necessary (shouldn't be needed!)
+	if(barrier != nullptr)
+		delete barrier;
+	for(auto& thread: threads)
+	{
+		if(thread != nullptr)
+			delete thread;
+	}
+
+	// Create the barrier
+	barrier = new Barrier(num_threads);
+
+	// Create and launch threads
+	for(size_t i=0; i<threads.size(); ++i)
+	{
+		// Function to run on each thread
+		auto func = std::bind(&Sampler<ModelType>::run_thread, this, i);
+
+		// Allocate and create the thread
+		threads[i] = new std::thread(func);
+	}
+	// Join and de-allocate all threads and barrier
+	for(auto& t: threads)
+		t->join();
+	delete barrier;
+	for(auto& t: threads)
+		delete t;
+}
+
+template<class ModelType>
+void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 {
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
@@ -86,66 +123,8 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread,
 		}
 		if(_levels.size() != options.max_num_levels &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
-			above.push_back(log_likelihoods[which]);
+			above[thread].push_back(log_likelihoods[which]);
 	}
-}
-
-template<class ModelType>
-std::vector<LikelihoodType> Sampler<ModelType>::do_some_mcmc()
-{
-	// Each thread will write over its own copy of the levels
-	for(unsigned int i=0; i<num_threads; ++i)
-		copies_of_levels[i] = levels;
-
-	// Vectors to store results in
-	std::vector< std::vector<LikelihoodType> > above(num_threads);
-	for(auto& a: above)
-		a.reserve(options.thread_steps);
-
-	if(num_threads > 1)
-	{
-		// Create the threads
-		std::vector<std::thread> threads;
-		for(unsigned int i=0; i<num_threads; ++i)
-		{
-			auto func = std::bind(&Sampler<ModelType>::mcmc_thread, this, i,
-									std::ref(above[i]));
-			threads.emplace_back(std::thread(func));
-		}
-		for(std::thread& t: threads)
-			t.join();
-	}
-	else
-	{
-		// Single thread version
-		mcmc_thread(0, above[0]);
-	}
-
-	count_mcmc_steps += num_threads*options.thread_steps;
-
-	// Go through copies of levels and apply diffs to levels
-	std::vector<Level> levels_orig = levels;
-	for(const auto& _levels: copies_of_levels)
-	{
-		for(size_t i=0; i<levels.size(); ++i)
-		{
-			levels[i].increment_accepts(_levels[i].get_accepts()
-												- levels_orig[i].get_accepts());
-			levels[i].increment_tries(_levels[i].get_tries()
-												- levels_orig[i].get_tries());
-			levels[i].increment_visits(_levels[i].get_visits()
-												- levels_orig[i].get_visits());
-			levels[i].increment_exceeds(_levels[i].get_exceeds()
-												- levels_orig[i].get_exceeds());
-		}
-	}
-
-	// Combine into a single vector
-	std::vector<LikelihoodType> all_above;
-	for(const auto& a: above)
-		for(const auto& element: a)
-			all_above.push_back(element);
-	return all_above;
 }
 
 template<class ModelType>
@@ -173,6 +152,7 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	// Do the proposal for the tiebreaker
 	log_H += logl_proposal.perturb(rng);
 
+	// Prevent unnecessary exponentiation of a large number
 	if(log_H > 0.)
 		log_H = 0.;
 
@@ -243,18 +223,67 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 }
 
 template<class ModelType>
-void Sampler<ModelType>::run()
+void Sampler<ModelType>::run_thread(unsigned int thread)
 {
-	initialise_output_files();
+	// Thread zero takes full responsibility for some tasks
+	if(thread == 0)
+		initialise_output_files();
 
 	// Alternate between MCMC and bookkeeping
-
 	while(true)
 	{
-		auto above = do_some_mcmc();
-		for(const auto& a: above)
-			keep.push_back(a);
-		do_bookkeeping();
+		// Thread zero takes full responsibility for some tasks
+		// Setting up copies of levels
+		if(thread == 0)
+		{
+			// Each thread will write over its own copy of the levels
+			for(unsigned int i=0; i<num_threads; ++i)
+				copies_of_levels[i] = levels;
+		}
+
+		// Wait for all threads to get here before proceeding
+		barrier->wait();
+
+		// Do the MCMC (all threads do this!)
+		mcmc_thread(thread);
+
+		// Check for termination
+		if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
+			return;
+
+		barrier->wait();
+
+		// Thread zero takes full responsibility for some tasks
+		if(thread == 0)
+		{
+			// Count the MCMC steps done
+			count_mcmc_steps += num_threads*options.thread_steps;
+
+			// Go through copies of levels and apply diffs to levels
+			std::vector<Level> levels_orig = levels;
+			for(const auto& _levels: copies_of_levels)
+			{
+				for(size_t i=0; i<levels.size(); ++i)
+				{
+					levels[i].increment_accepts(_levels[i].get_accepts()
+														- levels_orig[i].get_accepts());
+					levels[i].increment_tries(_levels[i].get_tries()
+														- levels_orig[i].get_tries());
+					levels[i].increment_visits(_levels[i].get_visits()
+														- levels_orig[i].get_visits());
+					levels[i].increment_exceeds(_levels[i].get_exceeds()
+														- levels_orig[i].get_exceeds());
+				}
+			}
+
+			// Combine into a single vector
+			for(const auto& a: above)
+				for(const auto& element: a)
+					all_above.push_back(element);
+
+			// Do the bookkeeping
+			do_bookkeeping();
+		}
 	}
 }
 
@@ -265,22 +294,24 @@ void Sampler<ModelType>::do_bookkeeping()
 
 	// Create a new level?
 	if(levels.size() != options.max_num_levels
-		&& keep.size() >= options.new_level_interval)
+		&& all_above.size() >= options.new_level_interval)
 	{
 		// Create the level
-		std::sort(keep.begin(), keep.end());
-		int index = static_cast<int>((1. - 1./compression)*keep.size());
+		std::sort(all_above.begin(), all_above.end());
+		int index = static_cast<int>((1. - 1./compression)*all_above.size());
 		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
-		std::cout<<keep[index].get_value()<<"."<<std::endl;
-		levels.push_back(Level(keep[index]));
-		keep.erase(keep.begin(), keep.begin() + index + 1);
+		std::cout<<all_above[index].get_value()<<"."<<std::endl;
+		levels.push_back(Level(all_above[index]));
+		all_above.erase(all_above.begin(), all_above.begin() + index + 1);
+		for(auto& a:above)
+			a.clear();
 
 		// If last level
 		if(levels.size() == options.max_num_levels)
 		{
 			Level::renormalise_visits(levels,
 				static_cast<int>(0.1*options.new_level_interval));
-			keep.clear();
+			all_above.clear();
 		}
 		else
 		{
@@ -377,8 +408,6 @@ void Sampler<ModelType>::save_particle()
 	fout.close();
 
 	++count_saves;
-	if(count_saves == options.max_num_samples)
-		exit(0);
 }
 
 template<class ModelType>
