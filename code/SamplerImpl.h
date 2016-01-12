@@ -301,6 +301,8 @@ void Sampler<ModelType>::do_bookkeeping()
 		std::cout<<all_above[index].get_value()<<"."<<std::endl;
 		levels.push_back(Level(all_above[index]));
 		all_above.erase(all_above.begin(), all_above.begin() + index + 1);
+		for(auto& a:above)
+			a.clear();
 
 		// If last level
 		if(levels.size() == options.max_num_levels)
