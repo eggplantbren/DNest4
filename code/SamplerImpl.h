@@ -290,7 +290,7 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 template<class ModelType>
 void Sampler<ModelType>::do_bookkeeping()
 {
-	bool saved_levels = false;
+	bool created_level = false;
 
 	// Create a new level?
 	if(levels.size() != options.max_num_levels
@@ -301,6 +301,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		int index = static_cast<int>((1. - 1./compression)*all_above.size());
 		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
 		std::cout<<all_above[index].get_value()<<"."<<std::endl;
+
 		levels.push_back(Level(all_above[index]));
 		all_above.erase(all_above.begin(), all_above.begin() + index + 1);
 		for(auto& a:above)
@@ -319,17 +320,22 @@ void Sampler<ModelType>::do_bookkeeping()
 			kill_lagging_particles();
 		}
 
-		save_levels();
-		saved_levels = true;
+		created_level = true;
 	}
 
 	// Recalculate log_X values of levels
 	Level::recalculate_log_X(levels, compression, options.new_level_interval);
 
+	// Save levels if one was created
+	if(created_level)
+		save_levels();
+
 	if(count_mcmc_steps >= (count_saves+1)*options.save_interval)
 	{
 		save_particle();
-		if(!saved_levels)
+
+		// If a level was not created, save anyway because of the time
+		if(!created_level)
 			save_levels();
 	}
 }
