@@ -276,7 +276,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		keep.erase(keep.begin(), keep.begin() + index + 1);
 
 		// If last level
-		if(levels.size() == options.new_level_interval)
+		if(levels.size() == options.max_num_levels)
 		{
 			Level::renormalise_visits(levels,
 				static_cast<int>(0.1*options.new_level_interval));
