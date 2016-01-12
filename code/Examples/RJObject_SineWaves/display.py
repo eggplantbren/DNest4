@@ -9,7 +9,7 @@ if saveFrames:
   os.system('rm Frames/*.png')
 
 ion()
-for i in xrange(0, posterior_sample.shape[0]):
+for i in range(0, posterior_sample.shape[0]):
   hold(False)
   plot(data[:,0], data[:,1], 'b.')
   hold(True)
@@ -20,7 +20,6 @@ for i in xrange(0, posterior_sample.shape[0]):
   if saveFrames:
     savefig('Frames/' + '%0.4d'%(i+1) + '.png', bbox_inches='tight')
     print('Frames/' + '%0.4d'%(i+1) + '.png')
-
 
 ioff()
 show()
