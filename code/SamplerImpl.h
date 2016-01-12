@@ -247,6 +247,12 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
 
+		// Check for termination
+		if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
+			return;
+
+		barrier->wait();
+
 		// Thread zero takes full responsibility for some tasks
 		if(thread == 0)
 		{
@@ -277,10 +283,6 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 
 			// Do the bookkeeping
 			do_bookkeeping();
-
-			// Check for termination
-			if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
-				return;
 		}
 	}
 }
