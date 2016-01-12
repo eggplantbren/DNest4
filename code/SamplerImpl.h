@@ -77,11 +77,13 @@ void Sampler<ModelType>::run()
 	barrier = new Barrier(num_threads);
 
 	// Create and launch threads
-	for(auto& thread: threads)
+	for(size_t i=0; i<threads.size(); ++i)
 	{
 		// Function to run on each thread
-		auto func = std::bind(&Sampler<ModelType>::run_thread, this, thread);
-		thread = new std::thread(func);
+		auto func = std::bind(&Sampler<ModelType>::run_thread, this, i);
+
+		// Allocate and create the thread
+		threads[i] = new std::thread(func);
 	}
 	// The threads are joined in the termination condition
 }
@@ -145,6 +147,7 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	// Do the proposal for the tiebreaker
 	log_H += logl_proposal.perturb(rng);
 
+	// Prevent unnecessary exponentiation of a large number
 	if(log_H > 0.)
 		log_H = 0.;
 
@@ -232,6 +235,9 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 			for(unsigned int i=0; i<num_threads; ++i)
 				copies_of_levels[i] = levels;
 		}
+
+		// Wait for all threads to get here before proceeding
+		barrier->wait();
 
 		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
