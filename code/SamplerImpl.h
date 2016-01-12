@@ -85,7 +85,12 @@ void Sampler<ModelType>::run()
 		// Allocate and create the thread
 		threads[i] = new std::thread(func);
 	}
-	// The threads are joined in the termination condition
+	// Join and de-allocate all threads and barrier
+	for(auto& t: threads)
+		t->join();
+	delete barrier;
+	for(auto& t: threads)
+		delete t;
 }
 
 template<class ModelType>
@@ -272,6 +277,10 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 
 			// Do the bookkeeping
 			do_bookkeeping();
+
+			// Check for termination
+			if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
+				return;
 		}
 	}
 }
@@ -294,7 +303,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		all_above.erase(all_above.begin(), all_above.begin() + index + 1);
 
 		// If last level
-		if(levels.size() == options.new_level_interval)
+		if(levels.size() == options.max_num_levels)
 		{
 			Level::renormalise_visits(levels,
 				static_cast<int>(0.1*options.new_level_interval));
@@ -395,19 +404,6 @@ void Sampler<ModelType>::save_particle()
 	fout.close();
 
 	++count_saves;
-
-	// Check for termination condition
-	if(count_saves == options.max_num_samples)
-	{
-		// Join and de-allocate all threads and barrier
-		for(auto& t: threads)
-			t->join();
-
-		delete barrier;
-		for(auto& t: threads)
-			delete t;
-		exit(0);
-	}
 }
 
 template<class ModelType>
