@@ -19,6 +19,7 @@ for i in range(posterior_sample.shape[0]):
 	xlabel('$x$', fontsize=20)
 	ylabel('$y$', fontsize=20)
 	title('Model {k}/{N}'.format(k=(i+1), N=posterior_sample.shape[0]))
+	axis([0, 100, 0, 800])
 	draw()
 ioff()
 show()
