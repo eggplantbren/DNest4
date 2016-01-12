@@ -11,7 +11,9 @@ namespace DNest4
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 							const Options& options)
-:num_threads(num_threads)
+:threads(num_threads, nullptr)
+,barrier(nullptr)
+,num_threads(num_threads)
 ,compression(compression)
 ,options(options)
 ,particles(options.num_particles*num_threads)
@@ -56,6 +58,32 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 																rng.rand());
 	}
 	std::cout<<"done."<<std::endl;
+}
+
+template<class ModelType>
+void Sampler<ModelType>::run()
+{
+	// Set up threads and barrier
+	// Delete if necessary (shouldn't be needed!)
+	if(barrier != nullptr)
+		delete barrier;
+	for(auto& thread: threads)
+	{
+		if(thread != nullptr)
+			delete thread;
+	}
+
+	// Create the barrier
+	barrier = new Barrier(num_threads);
+
+	// Create and launch threads
+	for(auto& thread: threads)
+	{
+		// Function to run on each thread
+		auto func = std::bind(&Sampler<ModelType>::run_thread, this, thread);
+		thread = new std::thread(func);
+	}
+	// The threads are joined in the termination condition
 }
 
 template<class ModelType>
@@ -205,6 +233,7 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 				copies_of_levels[i] = levels;
 		}
 
+		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
 
 		// Thread zero takes full responsibility for some tasks
@@ -360,8 +389,19 @@ void Sampler<ModelType>::save_particle()
 	fout.close();
 
 	++count_saves;
+
+	// Check for termination condition
 	if(count_saves == options.max_num_samples)
+	{
+		// Join and de-allocate all threads and barrier
+		for(auto& t: threads)
+			t->join();
+
+		delete barrier;
+		for(auto& t: threads)
+			delete t;
 		exit(0);
+	}
 }
 
 template<class ModelType>

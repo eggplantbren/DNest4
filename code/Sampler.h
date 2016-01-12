@@ -18,7 +18,7 @@ class Sampler
 {
 	private:
 		// Threads and barrier
-		std::vector< std::thread* > threads;
+		std::vector<std::thread*> threads;
 		Barrier* barrier;
 
 		// Number of threads and compression
@@ -82,9 +82,6 @@ class Sampler
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options);
-
-		// Destructor: join all threads if needed
-		~Sampler();
 
 		// Set rng seeds, then draw all particles from the prior
 		void initialise(unsigned int first_seed);
