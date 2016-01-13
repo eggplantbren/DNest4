@@ -30,20 +30,20 @@
 \dnest~is a multi-threaded C++ implementation of Diffusive Nested Sampling
 (DNS), a powerful Markov Chain Monte Carlo (MCMC) algorithm that is mainly
 useful for solving Bayesian Inference problems.
-\dnest~is free software,
-released under the terms of the GNU General Public Licence, version 3.
+\dnest~is free software, released under the terms of the MIT licence.
 For information about how the
-algorithm works, please see the paper, freely available from the following
-URL:\\
+algorithm works, please see the Diffusive Nested Sampling paper,
+available from the following URL:\\
 
 \begin{center}
 {\tt http://arxiv.org/abs/0912.238}\\
 \end{center}
 
-If you find \dnest~useful, please feel free to cite the paper.
+If you find \dnest~useful in a research project,
+please feel free to cite the paper.
 Throughout this manual I will assume that you have read the paper and have a
 reasonable understanding of how the algorithm works, as well as some
-understanding of Nested Sampling in general, as introduced by John Skilling.\\
+understanding of general Nested Sampling concepts.\\
 
 \section{Installation}
 Please note that I have only ever compiled \dnest~on GNU/Linux,
@@ -58,53 +58,18 @@ compiled \dnest~with a different compiler, such as the Intel C++
 compiler.\\
 
 \subsection{Dependencies}
-\dnest~depends on some other software that you will need to have installed on
-your system. These should be quite easy to obtain. I highly
-recommend obtaining these programs from your operating system's package manager,
-rather than installing them from the source code. Note that some OSs split up
-packages into binaries (the library files) and ``development'' packages,
-containing header files (part of a library's source code).
-In Ubuntu, Linux Mint, and Debian, the development packages have a -dev suffix.
-In Fedora, the development packages usually have a -devel suffix (e.g. Fedora).
-To compile \dnest, you will need both the libraries and the development packages
-for each of the dependencies. Here's a list of dependencies:\\
+One of the issues with DNest3 which inspired a new version was that many users
+found it annoying to compile on different operating systems because of the
+dependencies. For that reason, \dnest~now has much less dependencies.
+The C++ part of the code is written in pure C++11 and does not require any
+additional libraries --- you just have to have a modern C++ compiler that
+supports the C++11 standard.
 
-\begin{itemize}
-\item The GNU Scientific Library (GSL)
-\item Python 2, along with the NumPy and matplotlib packages
-\item The {\tt zlib} library (this is only required if wanting the ability to
-output samples to a {\tt gzipped} file, otherwise it can be excluded)
-\item The {\tt thread}, {\tt system} and {\tt iostreams} parts of the Boost C++ library.
-It may be easier to just install all of Boost.
-\item To compile \dnest, you need {\tt cmake}.\\
-\end{itemize}
-
-On Ubuntu, I can install these packages with the following commands:
-\begin{verbatim}
-sudo apt-get install libgsl0-dev
-sudo apt-get install python-numpy python-matplotlib
-sudo apt-get install zlib1g-dev
-sudo apt-get install libboost-thread-dev libboost-system-dev libboost-iostreams-dev
-sudo apt-get install cmake
-\end{verbatim}
-
-\dnest~uses GSL's random number generator. Python, NumPy and
-matplotlib are used for the postprocessing scripts and for
-plotting. Boost is used for parallelization (multithreading).
-While random number generation and
-multithreading is supported
-in the recent C++11 standard, I have not ported \dnest~to C++11 and have no
-intention of doing so in the near future.\\
-
-It is also possible to compile \dnest~without Boost, however this is not
-recommended, and you will not be able to use any of the multi-threaded options
-or the {\tt gzip} option.\\
+The Python postprocessing scripts use the Python packages
+{\tt numpy} and {\tt matplotlib}. They work with both Python 2 or 3.
 
 \subsection{Compiling}
-Please follow the instructions in README.md to compile \dnest~using cmake.
-This is the recommended option.\\
-
-%Go into the \dnest~directory and type {\tt make}. Everything should compile.
+Go into the {\tt code} directory and run {\tt make}. Everything should compile.
 To
 verify that the compilation was successful,
 go into the {\tt Examples/SpikeSlab} directory
