@@ -567,6 +567,11 @@ to do is add the path to your \dnest~directory to an environment variable called
 DNEST4\_PATH so that the compiler knows where \dnest~is on your system.
 For example, on my laptop, \dnest~is located in /home/brewer/Projects/DNest4.
 So I set DNEST4\_PATH to /home/brewer/Projects.
+{\bf Note: }The \#include statements in the working examples expect to find
+the \dnest~header files two directories up: i.e. the working examples will only
+successfully compile without modification from within the Examples directory.
+However, the Template should compile from anywhere on your system provided you
+have set DNEST4\_PATH correctly.
 
 If everything worked well then after running {\tt make},
 the executable {\tt main} should exist, which you can use to run
