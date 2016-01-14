@@ -6,9 +6,8 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
-#include "Utils.h"
-
-#include "RNG.h"
+#include "../Utils.h"
+#include "../RNG.h"
 
 namespace DNest4
 {
