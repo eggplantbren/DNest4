@@ -200,7 +200,7 @@ zero. If it does, the proposal distributions might be too aggressive, or maybe
 you just created too many levels (and the high level distributions are just
 extremely narrow). The other key plot for diagnostics is the posterior
 weights. On most problems, these will peak at some point, and begin to
-come back down towards zero (See Figure~\ref{fig3}).
+come back down towards zero (See Figure~\ref{fig:fig3}).
 Once this occurs, you probably have enough levels.
 It is wasteful to create large amounts of levels extending well beyond the peak.
 However, on problems with phase transitions more than one peak may occur.
@@ -333,7 +333,7 @@ information.\\
 
 \section{Implementing models}
 \dnest~currently includes three example models: SpikeSlab, StraightLine, and
-RJObject_SineWaves. It also contains an empty Template example which you can use
+RJObject\_SineWaves. It also contains an empty Template example which you can use
 to implement your own models.\\
 
 To use \dnest~on a particular problem, you need to implement a C++ class
@@ -341,13 +341,13 @@ which describes the features of the model (e.g. what the parameters are,
 what the prior is, and what the likelihood is). Specifically, an object
 (instance) of your class represents a point in the parameter space of your
 problem. The class must define several member functions which can be
-applied to any object. The first is {\tt from_prior(DNest4::RNG&)},
+applied to any object. The first is {\tt from\_prior(DNest4::RNG\&)},
 which when called,
 initialises the object with parameter values from the prior distribution
 (the argument is a random number generator object, passed by reference).
-The second important member function is {\tt perturb(DNest4::RNG&)}, which is used to propose
+The second important member function is {\tt perturb(DNest4::RNG\&)}, which is used to propose
 a change to the parameters, as in the basic Metropolis algorithm. The third
-is {\tt log_likelihood()}, which returns (as you might expect)
+is {\tt log\_likelihood()}, which returns (as you might expect)
 the log of the likelihood function evaluated at the object's current position. Next,
 we have the {\tt print(std::ostream\&)} member function which defines how the model
 parameters are to be written to the file (i.e. which parameters are to be
@@ -392,7 +392,7 @@ SpikeSlab::SpikeSlab()
 \end{framed}
 
 This constructor does nothing except specify the size of the {\tt params}
-valarray, which in this example is 20. Next we have {\tt from_prior(DNest4::RNG&)}, the
+valarray, which in this example is 20. Next we have {\tt from\_prior(DNest4::RNG\&)}, the
 function which generates the 20 parameters from the prior. In the SpikeSlab
 example, the prior is Uniform$(-0.5, 0.5)$, so this function just has a loop
 which generates each value from this distribution. Here I'm making use of
@@ -411,7 +411,7 @@ void SpikeSlab::from_prior(RNG& rng)
 \end{verbatim}
 \end{framed}
 
-The next important member function is {\tt perturb(DNest4::RNG&}, which defines the Metropolis
+The next important member function is {\tt perturb(DNest4::RNG\&}, which defines the Metropolis
 proposals that are used to explore. Since \dnest~spends some time sampling
 the prior, and some time sampling narrow distributions like the posterior,
 it's a good idea to use very heavy tailed proposal distributions. In the
@@ -508,7 +508,7 @@ detailed balance, and it's possible to have proposals that explore the prior
 well but do not satisfy detailed balance. Most simple proposals do satisfy
 detailed balance).\\
 
-The {\tt log_likelihood} member does what you'd expect: evaluates and returns
+The {\tt log\_likelihood} member does what you'd expect: evaluates and returns
 the log likelihood based on the current setting of the parameters. In the
 SpikeSlab example, the likelihood is an invented mixture of two gaussians.
 However, in general, your likelihood will depend on a data set. When I'm using
@@ -565,7 +565,7 @@ by issuing the command {\tt make} in a terminal. The only preparation you need
 to do is add the path to your \dnest~directory to an environment variable called
 DNEST4\_PATH so that the compiler knows where \dnest~is on your system.
 For example, on my laptop, \dnest~is located in /home/brewer/Projects/DNest4.
-So I set DNEST4_PATH to /home/brewer/Projects.
+So I set DNEST4\_PATH to /home/brewer/Projects.
 
 If everything worked well then after running {\tt make},
 the executable {\tt main} should exist, which you can use to run
