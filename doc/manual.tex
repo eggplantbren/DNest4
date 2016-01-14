@@ -406,8 +406,8 @@ wrapper of C++11's random number generator, with more convenient function names.
 \begin{verbatim}
 void SpikeSlab::from_prior(RNG& rng)
 {
-	for(size_t i=0; i<params.size(); i++)
-		params[i] = -0.5 + rng.rand();
+    for(size_t i=0; i<params.size(); i++)
+        params[i] = -0.5 + rng.rand();
 }
 \end{verbatim}
 \end{framed}
@@ -429,7 +429,7 @@ and 0.5. The resulting proposal is:\\
 \begin{verbatim}
 double SpikeSlab::perturb(RNG& rng)
 {
-	int which = rng.rand_int(params.size());
+    int which = rng.rand_int(params.size());
     params[which] += pow(10., 1.5-6*rng.rand())*rng.randn();
     params[which] = mod(params[which] + 0.5, 1.) - 0.5;
     return 0.;
@@ -446,10 +446,10 @@ stuff). An equivalent version of {\tt perturb} is then:\\
 \begin{verbatim}
 double SpikeSlab::perturb(RNG& rng)
 {
-	int which = rng.rand_int(params.size());
-	params[which] += rng.randh();
-	wrap(params[which], -0.5, 0.5);
-	return 0.;
+    int which = rng.rand_int(params.size());
+    params[which] += rng.randh();
+    wrap(params[which], -0.5, 0.5);
+    return 0.;
 }
 \end{verbatim}
 \end{framed}
