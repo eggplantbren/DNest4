@@ -3,6 +3,7 @@
 #include <fstream>
 #include <thread>
 #include <algorithm>
+#include <iomanip>
 #include "Utils.h"
 
 namespace DNest4
@@ -300,6 +301,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		std::sort(all_above.begin(), all_above.end());
 		int index = static_cast<int>((1. - 1./compression)*all_above.size());
 		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
+		std::cout<<std::setprecision(10);
 		std::cout<<all_above[index].get_value()<<"."<<std::endl;
 
 		levels.push_back(Level(all_above[index]));
