@@ -1,5 +1,5 @@
 #include "Pareto.h"
-#include "Utils.h"
+#include "../../Utils.h"
 #include <cmath>
 
 using namespace DNest4;

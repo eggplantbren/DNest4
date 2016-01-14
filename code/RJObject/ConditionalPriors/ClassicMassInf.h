@@ -2,7 +2,7 @@
 #define DNest4_ClassicMassInf
 
 #include "ConditionalPrior.h"
-#include "RNG.h"
+#include "../../RNG.h"
 
 namespace DNest4
 {

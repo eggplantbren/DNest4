@@ -2,8 +2,8 @@
 #define DNest4_BasicCircular
 
 #include "ConditionalPrior.h"
-#include "RNG.h"
-#include "Utils.h"
+#include "../../RNG.h"
+#include "../../Utils.h"
 
 namespace DNest4
 {

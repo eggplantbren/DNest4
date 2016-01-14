@@ -14,7 +14,7 @@
 
 #include <vector>
 #include <ostream>
-#include "RNG.h"
+#include "../../RNG.h"
 
 namespace DNest4
 {

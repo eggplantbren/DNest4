@@ -2,7 +2,7 @@
 #define DNest4_Pareto
 
 #include "ConditionalPrior.h"
-#include "RNG.h"
+#include "../../RNG.h"
 
 namespace DNest4
 {
