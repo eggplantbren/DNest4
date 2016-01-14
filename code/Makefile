@@ -7,6 +7,7 @@ default:
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
 	make nolib -C Examples/RJObject_SineWaves
+	make nolib -C Examples/RJObject_GalaxyField
 
 noexamples:
 	g++ $(CXXFLAGS) -c *.cpp

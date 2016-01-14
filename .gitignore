@@ -9,4 +9,8 @@ posterior_sample.txt
 levels.txt
 *.pyc
 manual.pdf
+*.png
+logfile
+movie.avi
+*.pdf
 
