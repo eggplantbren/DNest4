@@ -3,10 +3,10 @@
 	and returns a Float64. You should assume that the priors for the
 	parameters are independent Uniform(0, 1) distributions. To use
 	a different prior, transform the parameters inside
-	your log_likelihood function before moving them.
+	your log_likelihood function before using them.
 
 2) You may add other functions to julia_model.jl, for example to load
-	a dataset to refer to in your log likelihood.
+	a dataset to refer to in your log_likelihood.
 
 3) Set an environmental variable JULIA_PATH to the directory on your system
 	which contains the Julia shared library files
