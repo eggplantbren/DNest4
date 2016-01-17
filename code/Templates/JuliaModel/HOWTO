@@ -1,0 +1,16 @@
+1) Implement your log likelihood in julia_model.jl, as a function
+	called log_likelihood that takes a Vector::Float64 as an argument
+	and returns a Float64. You should assume that the priors for the
+	parameters are independent Uniform(0, 1) distributions. To use
+	a different prior, transform the parameters inside
+	your log_likelihood function before moving them.
+
+2) You may add other functions to julia_model.jl, for example to load
+	a dataset to refer to in your log likelihood.
+
+3) Set an environmental variable JULIA_PATH to the directory on your system
+	which contains the Julia shared library files
+	(particularly, the files libjulia.so and sys.so).
+
+4) Compile by invoking 'make'. Note: only a single thread can be used.
+
