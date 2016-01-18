@@ -335,7 +335,8 @@ information.\\
 \section{Implementing models}
 \dnest~currently includes three example models: SpikeSlab, StraightLine,
 RJObject\_SineWaves, and RJObject\_GalaxyField.
-It also contains an empty Template example which you can use
+It also contains an empty Template example (in the Templates/BasicModel
+subdirectory) which you can use
 to implement your own models.\\
 
 To use \dnest~on a particular problem, you need to implement a C++ class
@@ -556,7 +557,8 @@ string MyModel::description() const
 \end{framed}
 
 \subsection{Compiling and running your model}
-Assuming you implemented your model in the Template directory, there's not
+Assuming you implemented your model in the Template directory
+(Templates/BasicModel), there's not
 much else for you to do. The file {\tt main.cpp} already contains all the code
 you need to construct a sampler and execute it. If your model involves a data
 set, you'll just need to make sure you load the dataset at the beginning
@@ -581,39 +583,10 @@ you should pay attention to the output plots and make sure everything is okay,
 such as the number of levels etc.
 
 
-%\subsection{Implementing a model using Julia}
-%Experimental support for models implemented in Julia is provided in the
-%{\tt Examples/JuliaModel} directory. To use this, follow these steps:
-
-%\begin{enumerate}
-%\item Implement your log likelihood in {\tt julia\_model.jl}, as a function
-%	called {\tt log\_likelihood} that takes a {\tt Vector::Float64} as an argument
-%	and returns a {\tt Float64}. You should assume that the priors for the
-%	parameters are independent Uniform(0, 1) distributions. To use
-%	a different prior, transform the parameters inside
-%	your log likelihood function before moving them.\\
-%\item You may add other functions to {\tt julia\_model.jl}, for example to load
-%	a dataset to refer to in your log likelihood.\\
-%\item Edit the constructor for {\tt MyModel} in {\tt MyModel.cpp} so the parameter
-%	vector has the correct length for your problem. The default given value
-%	is 20.\\
-%\item Open the {\tt Makefile} and make sure the {\tt -L} option passed to
-%	{\tt g++} points to the
-%	directory on your computer where the Julia shared library (such
-%	as {\tt libjulia.so}) is stored. You might also have to configure your
-%	system so that it searches for libraries here at runtime, e.g.
-%	by running ldconfig as root. The \dnest~library and include files should
-%	also be somewhere where the compiler will find them (or you can add them
-%	to the {\tt g++} calls in the {\tt Makefile} using {\tt -I} for header
-%	files and {\tt -L} for libraries).\\
-%\item Open {\tt main.cpp} and edit the first argument to the function
-%	{\tt jl\_init\_with\_image} to be the path to the file {\tt sys.so} associated with
-%	Julia on your system.\\
-%\item Compile by invoking '{\tt make}'.\\
-%\item Run the executable! Note: only a single thread can be used, so you might want
-%	to use the {\tt OPTIONS} file to have more than one particle. Five is a
-%	reasonable default.
-%\end{enumerate}
+\subsection{Implementing a model using Julia}
+Experimental support for models implemented in Julia is provided in the
+Templates/JuliaModel directory. There's a HOWTO file in that directory
+with instructions for how to use it.
 
 \end{document}
 
