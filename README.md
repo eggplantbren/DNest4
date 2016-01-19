@@ -39,3 +39,7 @@ The manual (in the doc directory) can be compiled with pdflatex.
 LICENCE: MIT.
 See the LICENSE file for details.
 
+*This work was supported by a Marsden Fast Start grant from the
+Royal Society of New Zealand.*
+
+
