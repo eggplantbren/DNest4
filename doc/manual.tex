@@ -72,7 +72,7 @@ The Python postprocessing scripts use the Python packages
 Go into the {\tt code} directory and run {\tt make}. Everything should compile.
 To
 verify that the compilation was successful,
-go into the {\tt Examples/SpikeSlab} directory
+go into the code/Examples/SpikeSlab directory
 and see if an executable file called {\tt main} has been created. If you
 execute this file, you should see a lot of output about ``levels'' and
 ``particles'' (see Figure~\ref{fig:output} for example output).
@@ -87,7 +87,7 @@ executable. The
 following discussion will involve running the ``SpikeSlab'' example, which is
 the example used in the paper.\\
 
-To run the SpikeSlab example, go into the {\tt Examples/Spikeslab}
+To run the SpikeSlab example, go into the code/Examples/Spikeslab
 directory and execute {\tt main}. You should see some output that looks like
 that shown in Figure~\ref{fig:output}.
 Note that you must terminate the process manually by pressing Ctrl+C
@@ -335,7 +335,7 @@ information.\\
 \section{Implementing models}
 \dnest~currently includes three example models: SpikeSlab, StraightLine,
 RJObject\_SineWaves, and RJObject\_GalaxyField.
-It also contains an empty Template example (in the Templates/BasicModel
+It also contains an empty Template example (in the code/Templates/BasicModel
 subdirectory) which you can use
 to implement your own models.\\
 
@@ -558,7 +558,7 @@ string MyModel::description() const
 
 \subsection{Compiling and running your model}
 Assuming you implemented your model in the Template directory
-(Templates/BasicModel), there's not
+(code/Templates/BasicModel), there's not
 much else for you to do. The file {\tt main.cpp} already contains all the code
 you need to construct a sampler and execute it. If your model involves a data
 set, you'll just need to make sure you load the dataset at the beginning
@@ -585,7 +585,7 @@ such as the number of levels etc.
 
 \subsection{Implementing a model using Julia}
 Experimental support for models implemented in Julia is provided in the
-Templates/JuliaModel directory. There's a HOWTO file in that directory
+code/Templates/JuliaModel directory. There's a HOWTO file in that directory
 with instructions for how to use it.
 
 \end{document}
