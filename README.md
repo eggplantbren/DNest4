@@ -1,15 +1,21 @@
 DNest4
 ======
 
-A rewrite of DNest3 in C++11, with minimal dependencies
-and a permissive licence. To compile, just use `make'.
-Usage is very similar to DNest3, whose manual you can get
-from the DNest3 repository: https://github.com/eggplantbren/DNest3.
+DNest4 is a C++11 implementation of Diffusive Nested Sampling.
 
-Some slight (yet important) differences from DNest3 are the names of the
-functions in the model classes. However, you should be able to infer the
-relevant changes by inspecting the DNest4 version
-of SpikeSlab.h and SpikeSlab.cpp.
+Improvements over DNest3:
+
+*	There are far fewer dependencies --- all you need is a C++ compiler that
+	supports the C++11 standard, along with Python, NumPy, and Matplotlib
+	for the post-processing scripts.
+
+*	The licence is now the permissive MIT licence.
+
+*	RJObject is now included in the same repository.
+
+Some functions have slightly different names and specifications compared to
+DNest3. These changes are purely cosmetic.
+The manual (in the doc directory) can be compiled with pdflatex.
 
 (c) 2015--2016 Brendon J. Brewer
 LICENCE: MIT.
