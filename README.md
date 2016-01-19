@@ -27,7 +27,9 @@ Improvements over DNest3:
 
 *	The licence is now the permissive MIT licence.
 
-*	RJObject is now included in the same repository.
+*	RJObject (which allows relatively straightforward implementation of
+	hierarchical and trans-dimensional mixture models)
+	is now included in the same repository.
 
 Some functions have slightly different names and specifications compared to
 DNest3. These changes are purely cosmetic.
