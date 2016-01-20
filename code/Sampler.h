@@ -8,7 +8,6 @@
 #include "Level.h"
 #include "RNG.h"
 #include "Barrier.h"
-#include <thread>
 
 namespace DNest4
 {
