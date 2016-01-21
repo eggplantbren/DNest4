@@ -1,7 +1,8 @@
+export CXX = g++
 CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
 
 default:
-	g++ -I. $(CXXFLAGS) -c *.cpp RJObject/ConditionalPriors/*.cpp
+	$(CXX) -I. $(CXXFLAGS) -c *.cpp RJObject/ConditionalPriors/*.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 	make nolib -C Examples/SpikeSlab
@@ -11,7 +12,7 @@ default:
 	make nolib -C Examples/ABC
 
 noexamples:
-	g++ $(CXXFLAGS) -c *.cpp
+	$(CXX) $(CXXFLAGS) -c *.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 

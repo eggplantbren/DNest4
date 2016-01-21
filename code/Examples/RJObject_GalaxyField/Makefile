@@ -3,12 +3,12 @@ LIBS = -ldnest4 -lpthread
 
 default:
 	make noexamples -C ../..
-	g++ -I../.. $(CXXFLAGS) -c *.cpp
-	g++ -L../.. -o main *.o $(LIBS)
+	$(CXX) -I../.. $(CXXFLAGS) -c *.cpp
+	$(CXX) -L../.. -o main *.o $(LIBS)
 	rm *.o
 
 nolib:
-	g++ -I../.. $(CXXFLAGS) -c *.cpp
-	g++ -L../.. -o main *.o $(LIBS)
+	$(CXX) -I../.. $(CXXFLAGS) -c *.cpp
+	$(CXX) -L../.. -o main *.o $(LIBS)
 	rm *.o
 
