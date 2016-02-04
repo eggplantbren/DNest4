@@ -278,9 +278,12 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 			}
 
 			// Combine into a single vector
-			for(const auto& a: above)
+			for(auto& a: above)
+			{
 				for(const auto& element: a)
 					all_above.push_back(element);
+				a.clear();
+			}
 
 			// Do the bookkeeping
 			do_bookkeeping();
