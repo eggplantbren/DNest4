@@ -69,5 +69,10 @@ double logdiffexp(double a, double b)
 	return log(exp(a) - exp(b)) + biggest;
 }
 
+double normal_cdf(double x)
+{
+	return 0.5*(1. + erf(x/sqrt(2.)));
+}
+
 } // namespace DNest4
 
