@@ -457,7 +457,7 @@ void Sampler<ModelType>::kill_lagging_particles()
 				int i_copy;
 				do
 				{
-					i_copy = rngs[0].rand_int(num_threads);
+					i_copy = rngs[0].rand_int(num_threads*options.num_particles);
 				}while(!good[i_copy] ||
 			rngs[0].rand() >= exp(log_push(level_assignments[i]) - max_log_push));
 
