@@ -60,6 +60,10 @@ class Sampler
 		// 'thread'
 		void update_level_assignment(unsigned int thread, unsigned int which);
 
+		// These versions work directly with the mixture of constrained priors
+		void update_particle2(unsigned int thread, unsigned int which);
+		void update_level_assignment2(unsigned int thread, unsigned int which);
+
 		// Do MCMC for a while on thread 'thread'
 		void mcmc_thread(unsigned int thread);
 
