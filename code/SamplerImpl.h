@@ -223,6 +223,66 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 	}
 }
 
+
+template<class ModelType>
+void Sampler<ModelType>::update_using_mixture(unsigned int thread, unsigned int which)
+{
+	// Reference to the RNG for this thread
+	RNG& rng = rngs[thread];
+
+	// Reference to copies_of_levels[thread]
+	std::vector<Level>& _levels = copies_of_levels[thread];
+
+	// Reference to the level we're in
+	Level& level = _levels[level_assignments[which]];
+
+	// Reference to the particle being moved
+	ModelType& particle = particles[which];
+	LikelihoodType& logl = log_likelihoods[which];
+
+	// Do the proposal for the particle
+	ModelType proposal = particle;
+	double log_H = proposal.perturb(rng);
+	LikelihoodType logl_proposal(proposal.log_likelihood(),
+												logl.get_tiebreaker());
+
+	// Do the proposal for the tiebreaker
+	log_H += logl_proposal.perturb(rng);
+
+	// Prevent unnecessary exponentiation of a large number
+	if(log_H > 0.)
+		log_H = 0.;
+
+	// Find sandwiching level for the proposal
+	unsigned int sandwich = _levels.size()/2;
+//	while()
+//	{
+
+//	}
+
+//	// Accept?
+//	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
+//	{
+//		particle = proposal;
+//		logl = logl_proposal;
+//		level.increment_accepts(1);
+//	}
+//	level.increment_tries(1);
+
+//	// Count visits and exceeds
+//	unsigned int current_level = level_assignments[which];
+//	for(; current_level < (_levels.size()-1); ++current_level)
+//	{
+//		_levels[current_level].increment_visits(1);
+//		if(_levels[current_level+1].get_log_likelihood() <
+//											log_likelihoods[which])
+//			_levels[current_level].increment_exceeds(1);
+//		else
+//			break;
+//	}
+}
+
+
 template<class ModelType>
 void Sampler<ModelType>::run_thread(unsigned int thread)
 {
