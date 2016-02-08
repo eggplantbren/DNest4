@@ -112,16 +112,17 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 	{
 		which = start_index + rng.rand_int(options.num_particles);
 
-		if(rng.rand() <= 0.5)
-		{
-			update_particle(thread, which);
-			update_level_assignment(thread, which);
-		}
-		else
-		{
-			update_level_assignment(thread, which);
-			update_particle(thread, which);
-		}
+//		if(rng.rand() <= 0.5)
+//		{
+//			update_particle(thread, which);
+//			update_level_assignment(thread, which);
+//		}
+//		else
+//		{
+//			update_level_assignment(thread, which);
+//			update_particle(thread, which);
+//		}
+		update_using_mixture(thread, which);
 		if(_levels.size() != options.max_num_levels &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
 			above[thread].push_back(log_likelihoods[which]);
@@ -253,12 +254,25 @@ void Sampler<ModelType>::update_using_mixture(unsigned int thread, unsigned int 
 	if(log_H > 0.)
 		log_H = 0.;
 
-	// Find sandwiching level for the proposal
-	unsigned int sandwich = _levels.size()/2;
-//	while()
-//	{
+	// Conditional probability distribution for level assignment
+	std::vector<double> logp(_levels.size(),
+									-std::numeric_limits<double>::max());
+	double top = -std::numeric_limits<double>::max();
+	unsigned int level_assignment_proposal = 0;
+	for(size_t i=0; i<_levels.size(); ++i)
+	{
+		if(_levels[i].get_log_likelihood() < logl_proposal)
+		{
+			level_assignment_proposal = i-1;
+			break;
+		}
+		logp[i] = log_push(i);
+		if(logp[i] > top)
+			top = logp[i];
+	}
+	for(double& _logp: logp)
+		_logp -= top;
 
-//	}
 
 //	// Accept?
 //	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
