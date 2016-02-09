@@ -20,8 +20,8 @@ function log_likelihood(params::Vector{Float64})
 	logl1 = length(params)*(C - log(u))
 	logl2 = length(params)*(C - log(v))
 	for(i in 1:length(params))
-		logl1 += -0.5*((params[i] - 0.031)/u)^2
-		logl2 += -0.5*(params[i]/v)^2
+		logl1 += -0.5*((params[i] - 0.5 - 0.031)/u)^2
+		logl2 += -0.5*((params[i] - 0.5)/v)^2
 	end
 	logl1 += log(100.0)
 	return logsumexp([logl1, logl2])
