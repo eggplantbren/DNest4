@@ -28,7 +28,7 @@ double SpikeSlab::log_likelihood() const
 {
 	constexpr double u = 0.01;
 	constexpr double v = 0.1;
-	constexpr double C = log(1.0/sqrt(2*M_PI));
+	const double C = log(1.0/sqrt(2*M_PI));
 
 	double logl1 = params.size()*(C - log(u));
 	double logl2 = params.size()*(C - log(v));
