@@ -76,7 +76,7 @@ if __name__ == "__main__":
         packages=["dnest4"],
         ext_modules=extensions,
         description="Face",
-        long_description="face",  # open("README.rst").read(),
+        long_description=open("README.rst").read(),
         # package_data={"": ["README.rst", "LICENSE",
         #                    "george/include/*.h", "hodlr/header/*.hpp", ]},
         include_package_data=True,
