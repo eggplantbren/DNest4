@@ -16,6 +16,10 @@ template<class ModelType>
 class Sampler
 {
 	private:
+		// Whether to save anything to disk or not
+		// Use 'true' for standard mode
+		bool save_to_disk;
+
 		// Threads and barrier
 		std::vector<std::thread*> threads;
 		Barrier* barrier;
@@ -81,6 +85,11 @@ class Sampler
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options);
+
+		// Constructor: Pass in Options object and save_to_disk
+		Sampler(unsigned int num_threads,
+						double compression, const Options& options,
+						bool save_to_disk);
 
 		// Set rng seeds, then draw all particles from the prior
 		void initialise(unsigned int first_seed);

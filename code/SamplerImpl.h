@@ -11,8 +11,9 @@ namespace DNest4
 
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
-							const Options& options)
-:threads(num_threads, nullptr)
+							const Options& options, bool save_to_disk)
+:save_to_disk(save_to_disk)
+,threads(num_threads, nullptr)
 ,barrier(nullptr)
 ,num_threads(num_threads)
 ,compression(compression)
@@ -371,6 +372,9 @@ double Sampler<ModelType>::log_push(unsigned int which_level) const
 template<class ModelType>
 void Sampler<ModelType>::initialise_output_files() const
 {
+	if(!save_to_disk)
+		return;
+
 	std::fstream fout;
 
 	// Output headers
@@ -389,6 +393,9 @@ void Sampler<ModelType>::initialise_output_files() const
 template<class ModelType>
 void Sampler<ModelType>::save_levels() const
 {
+	if(!save_to_disk)
+		return;
+
 	// Output file
 	std::fstream fout;
 	fout.open("levels.txt", std::ios::out);
@@ -410,6 +417,9 @@ void Sampler<ModelType>::save_levels() const
 template<class ModelType>
 void Sampler<ModelType>::save_particle()
 {
+	if(!save_to_disk)
+		return;
+
 	std::cout<<"# Saving particle to disk. N = "<<(count_saves+1)<<".";
 	std::cout<<std::endl;
 
