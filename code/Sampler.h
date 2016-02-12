@@ -87,6 +87,9 @@ class Sampler
 
 		// Launch everything
 		void run();
+
+		// Increase max_num_saves (allows continuation)
+		void increase_max_num_saves(unsigned int increment);
 };
 
 } // namespace DNest4
