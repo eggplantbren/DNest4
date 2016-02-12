@@ -256,8 +256,8 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 		mcmc_thread(thread);
 
 		// Check for termination
-		if(options.max_num_samples != 0 &&
-				count_saves != 0 && (count_saves%options.max_num_samples == 0))
+		if(options.max_num_saves != 0 &&
+				count_saves != 0 && (count_saves%options.max_num_saves == 0))
 			return;
 
 		barrier->wait();
@@ -302,7 +302,7 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 template<class ModelType>
 void Sampler<ModelType>::increase_max_num_saves(unsigned int increment)
 {
-	options.max_num_samples += increment;
+	options.max_num_saves += increment;
 }
 
 template<class ModelType>

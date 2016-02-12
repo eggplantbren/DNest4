@@ -24,7 +24,7 @@ class Options
 		unsigned int thread_steps;
 		unsigned int max_num_levels;
 		double lambda, beta;
-		unsigned int max_num_samples;
+		unsigned int max_num_saves;
 
 		// Filenames
 		std::string sample_file;
@@ -39,7 +39,7 @@ class Options
 			unsigned int max_num_levels,
 			double lambda,
 			double beta,
-			unsigned int max_num_samples);
+			unsigned int max_num_saves);
 
 		Options(const char* filename);
 		void load(const char* filename);

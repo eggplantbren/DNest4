@@ -14,7 +14,7 @@ Options::Options(unsigned int num_particles,
 		 unsigned int max_num_levels,
 		 double lambda,
 		 double beta,
-		 unsigned int max_num_samples)
+		 unsigned int max_num_saves)
 :num_particles(num_particles)
 ,new_level_interval(new_level_interval)
 ,save_interval(save_interval)
@@ -22,7 +22,7 @@ Options::Options(unsigned int num_particles,
 ,max_num_levels(max_num_levels)
 ,lambda(lambda)
 ,beta(beta)
-,max_num_samples(max_num_samples)
+,max_num_saves(max_num_saves)
 ,sample_file("sample.txt")
 ,sample_info_file("sample_info.txt")
 ,levels_file("levels.txt")
@@ -60,7 +60,7 @@ void Options::load(const char* filename)
 	fin>>max_num_levels;	fin.ignore(1000000, '\n');
 	fin>>lambda;		fin.ignore(1000000, '\n');
 	fin>>beta;		fin.ignore(1000000, '\n');
-	fin>>max_num_samples;
+	fin>>max_num_saves;
 
 	fin.close();
 
