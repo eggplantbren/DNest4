@@ -82,6 +82,8 @@ class Sampler
 		void save_particle();
 
 	public:
+		Sampler () {};
+
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options);

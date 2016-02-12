@@ -417,10 +417,12 @@ void Sampler<ModelType>::save_levels() const
 template<class ModelType>
 void Sampler<ModelType>::save_particle()
 {
+	++count_saves;
+
 	if(!save_to_disk)
 		return;
 
-	std::cout<<"# Saving particle to disk. N = "<<(count_saves+1)<<".";
+	std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
 	std::cout<<std::endl;
 
 	// Output file
@@ -438,8 +440,6 @@ void Sampler<ModelType>::save_particle()
 	fout<<log_likelihoods[which].get_tiebreaker()<<' ';
 	fout<<which<<std::endl;
 	fout.close();
-
-	++count_saves;
 }
 
 template<class ModelType>
