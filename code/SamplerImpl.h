@@ -59,6 +59,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 																rng.rand());
 	}
 	std::cout<<"done."<<std::endl;
+	initialise_output_files();
 }
 
 template<class ModelType>
@@ -233,10 +234,6 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 template<class ModelType>
 void Sampler<ModelType>::run_thread(unsigned int thread)
 {
-	// Thread zero takes full responsibility for some tasks
-	if(thread == 0 && count_saves == 0)
-		initialise_output_files();
-
 	// Alternate between MCMC and bookkeeping
 	while(true)
 	{
