@@ -42,7 +42,8 @@ cdef extern from "DNest4.h" namespace "DNest4":
 cdef extern from "PyModel.h":
 
     cdef cppclass PyModel:
-        pass
+        double m
+        double sigma
 
 
 class State(object):
@@ -72,8 +73,20 @@ def run(
     )
 
     cdef Sampler[PyModel] sampler = Sampler[PyModel](1, compression, options, 0)
+    cdef vector[PyModel] particles
 
-    sampler.run()
+    cdef int i, j, n
+    for i in range(10):
+        sampler.run()
+        sampler.increase_max_num_saves(1)
 
-    cdef vector[PyModel] particles = sampler.get_particles()
-    print(particles.size())
+        particles = sampler.get_particles()
+        n = particles.size()
+        result = dict(step=i, particles=[])
+        for j in range(n):
+            result["particles"].append(dict(
+                m=particles[j].m,
+                sigma=particles[j].sigma,
+            ))
+
+        yield result

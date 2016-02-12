@@ -7,14 +7,13 @@
 
 class PyModel
 {
-    private:
+    public:
         // The mean
         double m;
 
         // Noise sd
         double sigma;
 
-    public:
         // Constructor
         PyModel();
 
