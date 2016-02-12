@@ -20,6 +20,9 @@ Sampler<ModelType> setup(const CommandLineOptions& options);
 template<class ModelType>
 void start(int argc, char** argv);
 
+template<class ModelType>
+void start(const CommandLineOptions& options);
+
 } // namespace DNest4
 
 #include "StartImpl.h"
