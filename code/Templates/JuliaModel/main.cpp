@@ -1,5 +1,5 @@
 #include <iostream>
-#include "DNest4/code/Start.h"
+#include "DNest4/code/DNest4.h"
 #include "MyModel.h"
 #include <julia/julia.h>
 #include <cstdlib>

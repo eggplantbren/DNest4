@@ -1,5 +1,5 @@
 #include "MyModel.h"
-#include "DNest4/code/Utils.h"
+#include "DNest4/code/DNest4.h"
 #include <cmath>
 #include <julia/julia.h>
 

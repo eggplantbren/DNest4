@@ -1,5 +1,5 @@
 #include "MyModel.h"
-#include "DNest4/code/Utils.h"
+#include "DNest4/code/DNest4.h"
 
 using namespace std;
 using namespace DNest4;
