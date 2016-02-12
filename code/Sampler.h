@@ -90,6 +90,16 @@ class Sampler
 
 		// Increase max_num_saves (allows continuation)
 		void increase_max_num_saves(unsigned int increment);
+
+		// GETTERS!!!
+		const std::vector<ModelType>& get_particles() const
+		{ return particles; }
+
+		const std::vector<LikelihoodType>& get_log_likelihoods() const
+		{ return log_likelihoods; }
+
+		const std::vector<unsigned int> get_level_assignments() const
+		{ return level_assignments; }
 };
 
 } // namespace DNest4
