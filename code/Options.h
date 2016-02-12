@@ -32,6 +32,7 @@ class Options
 		std::string levels_file;
 
 	public:
+		Options() {};
 		Options(unsigned int num_particles,
 			unsigned int new_level_interval,
 			unsigned int save_interval,

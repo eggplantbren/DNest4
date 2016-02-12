@@ -26,7 +26,8 @@ if __name__ == "__main__":
     if os.name == "posix":
         libraries.append("m")
     include_dirs = [
-        os.path.join(basedir, "code", "DNest4"),
+        os.path.join("dnest4", "model"),
+        os.path.join(basedir, "code"),
         numpy.get_include(),
     ]
 
@@ -42,6 +43,7 @@ if __name__ == "__main__":
     src += [
         os.path.join("dnest4", "wrapper.cpp"),
         os.path.join("dnest4", "_dnest4.pyx"),
+        os.path.join("dnest4", "model", "PyModel.cpp"),
     ]
 
     ext = Extension(
