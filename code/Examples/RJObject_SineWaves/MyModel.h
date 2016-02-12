@@ -3,8 +3,7 @@
 
 #include <vector>
 #include "MyConditionalPrior.h"
-#include "RJObject/RJObject.h"
-#include "RNG.h"
+#include "DNest4/code/DNest4.h"
 
 class MyModel
 {

@@ -1,7 +1,7 @@
 #ifndef DNest4_SpikeSlab
 #define DNest4_SpikeSlab
 
-#include "RNG.h"
+#include "DNest4/code/DNest4.h"
 #include <valarray>
 #include <ostream>
 

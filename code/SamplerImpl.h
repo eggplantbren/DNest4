@@ -86,12 +86,19 @@ void Sampler<ModelType>::run()
 		// Allocate and create the thread
 		threads[i] = new std::thread(func);
 	}
+
 	// Join and de-allocate all threads and barrier
 	for(auto& t: threads)
 		t->join();
+
+	// Delete dynamically allocated stuff and point to nullptr
 	delete barrier;
+	barrier = nullptr;
 	for(auto& t: threads)
+	{
 		delete t;
+		t = nullptr;
+	}
 }
 
 template<class ModelType>
@@ -227,7 +234,7 @@ template<class ModelType>
 void Sampler<ModelType>::run_thread(unsigned int thread)
 {
 	// Thread zero takes full responsibility for some tasks
-	if(thread == 0)
+	if(thread == 0 && count_saves == 0)
 		initialise_output_files();
 
 	// Alternate between MCMC and bookkeeping
@@ -249,7 +256,8 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 		mcmc_thread(thread);
 
 		// Check for termination
-		if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
+		if(options.max_num_saves != 0 &&
+				count_saves != 0 && (count_saves%options.max_num_saves == 0))
 			return;
 
 		barrier->wait();
@@ -289,6 +297,12 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 			do_bookkeeping();
 		}
 	}
+}
+
+template<class ModelType>
+void Sampler<ModelType>::increase_max_num_saves(unsigned int increment)
+{
+	options.max_num_saves += increment;
 }
 
 template<class ModelType>

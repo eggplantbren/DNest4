@@ -1,5 +1,5 @@
 #include "MyConditionalPrior.h"
-#include "Utils.h"
+#include "DNest4/code/DNest4.h"
 #include <cmath>
 
 using namespace DNest4;

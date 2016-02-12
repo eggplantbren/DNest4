@@ -45,5 +45,12 @@ void start(int argc, char** argv)
 	sampler.run();
 }
 
+template<class ModelType>
+void start(const CommandLineOptions& options)
+{
+	Sampler<ModelType> sampler = setup<ModelType>(options);
+	sampler.run();
+}
+
 } // namespace DNest4
 
