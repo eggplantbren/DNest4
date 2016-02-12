@@ -1,5 +1,5 @@
 #include "SpikeSlab.h"
-#include "Utils.h"
+#include "DNest4/code/DNest4.h"
 
 using namespace std;
 using namespace DNest4;

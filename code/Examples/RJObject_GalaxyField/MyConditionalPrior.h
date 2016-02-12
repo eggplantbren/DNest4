@@ -1,7 +1,7 @@
 #ifndef DNest4_GalaxyField_MyConditionalPrior
 #define DNest4_GalaxyField_MyConditionalPrior
 
-#include "RJObject/ConditionalPriors/ConditionalPrior.h"
+#include "DNest4/code/DNest4.h"
 
 // Hyperparameters setting interim prior for galaxy properties
 class MyConditionalPrior:public DNest4::ConditionalPrior

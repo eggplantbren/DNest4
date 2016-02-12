@@ -1,5 +1,5 @@
 #include "MyModel.h"
-#include "Utils.h"
+#include "DNest4/code/DNest4.h"
 #include "Data.h"
 #include <cmath>
 

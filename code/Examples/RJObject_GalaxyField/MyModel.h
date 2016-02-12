@@ -2,7 +2,7 @@
 #define DNest4_GalaxyField_MyModel
 
 #include <vector>
-#include "RJObject/RJObject.h"
+#include "DNest4/code/DNest4.h"
 #include "MyConditionalPrior.h"
 
 class MyModel

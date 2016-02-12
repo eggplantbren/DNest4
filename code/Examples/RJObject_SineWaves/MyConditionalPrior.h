@@ -1,8 +1,7 @@
 #ifndef DNest4_MyConditionalPrior
 #define DNest4_MyConditionalPrior
 
-#include "RNG.h"
-#include "RJObject/ConditionalPriors/ConditionalPrior.h"
+#include "DNest4/code/DNest4.h"
 
 // Based on ClassicMassInf1D from RJObject
 // Think of "position x" as log-period
