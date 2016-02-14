@@ -8,4 +8,6 @@ except NameError:
     __DNEST4_SETUP__ = False
 
 if not __DNEST4_SETUP__:
-    __all__ = []
+    __all__ = ["sample"]
+
+    from ._dnest4 import sample
