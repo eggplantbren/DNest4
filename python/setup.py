@@ -41,9 +41,9 @@ if __name__ == "__main__":
         "Utils.cpp",
     ]]
     src += [
-        os.path.join("dnest4", "wrapper.cpp"),
+        # os.path.join("dnest4", "wrapper.cpp"),
         os.path.join("dnest4", "_dnest4.pyx"),
-        os.path.join("dnest4", "model", "PyModel.cpp"),
+        # os.path.join("dnest4", "model", "PyModel.cpp"),
     ]
 
     ext = Extension(
