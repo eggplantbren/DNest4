@@ -67,8 +67,8 @@ cdef extern from "PyModel.h":
         object get_npy_coords ()
 
 
-def run(
-    self,
+def sample(
+    model,
 
     int num_steps=-1,
     unsigned int num_per_step=10000,
@@ -86,12 +86,18 @@ def run(
     seed=None,
     double compression=np.exp(1.0),
 ):
+    """
+    Sample using a DNest4 model.
+
+    :
+
+    """
     # Check the model.
-    if not hasattr(self, "from_prior") or not callable(self.from_prior):
+    if not hasattr(model, "from_prior") or not callable(model.from_prior):
         raise ValueError("DNest4 models must have a callable 'from_prior' method")
-    if not hasattr(self, "perturb") or not callable(self.perturb):
+    if not hasattr(model, "perturb") or not callable(model.perturb):
         raise ValueError("DNest4 models must have a callable 'perturb' method")
-    if not hasattr(self, "log_likelihood") or not callable(self.log_likelihood):
+    if not hasattr(model, "log_likelihood") or not callable(model.log_likelihood):
         raise ValueError("DNest4 models must have a callable 'log_likelihood' method")
 
     # Set up the options.
@@ -118,7 +124,7 @@ def run(
     n = sampler.size()
     for j in range(n):
         particle = sampler.particle(j)
-        particle.set_py_self(self)
+        particle.set_py_self(model)
         error = particle.get_exception()
         if error != 0:
             raise DNest4Error(error)

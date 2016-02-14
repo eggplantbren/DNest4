@@ -1,5 +1,5 @@
+import dnest4
 import numpy as np
-from dnest4._dnest4 import run
 
 
 class Model(object):
@@ -18,4 +18,7 @@ class Model(object):
 
 
 model = Model()
-print(list(run(model, 100)))
+for sample in dnest4.sample(model, 100, num_particles=10):
+    print(sample["levels"])
+    print(sample["particles"])
+    assert 0
