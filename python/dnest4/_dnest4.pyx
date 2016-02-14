@@ -33,13 +33,28 @@ cdef extern from "DNest4.h" namespace "DNest4":
         Sampler(unsigned int num_threads, double compression,
                 const Options options, unsigned save_to_disk)
 
+        # Setup, running, etc.
         void initialise(unsigned int first_seed)
         void run()
         void increase_max_num_saves(unsigned int increment)
 
-        vector[T] get_particles()
+        # Interface.
         int size()
         T* particle(unsigned int i)
+        vector[Level] get_levels()
+
+    cdef cppclass LikelihoodType:
+        double get_value()
+        double get_tiebreaker()
+
+    cdef cppclass Level:
+        Level()
+        LikelihoodType get_log_likelihood()
+        unsigned int get_visits()
+        unsigned int get_exceeds()
+        unsigned int get_accepts()
+        unsigned int get_tries()
+        double get_log_X()
 
 
 cdef extern from "PyModel.h":
@@ -75,6 +90,8 @@ def run(
 
     cdef Sampler[PyModel] sampler = Sampler[PyModel](1, compression, options, 0)
     cdef PyModel* particle
+    cdef vector[Level] levels
+    cdef Level level
 
     # Initialize the particles.
     n = sampler.size()
@@ -109,9 +126,30 @@ def run(
 
             # Results.
             result["particles"].append(particle.get_npy_coords())
+        result["particles"] = np.array(result["particles"])
+
+        # Loop over levels and save them.
+        levels = sampler.get_levels()
+        n = levels.size()
+        result["levels"] = np.empty(n, dtype=[
+            ("log_X", np.float64), ("log_likelihood", np.float64),
+            ("tiebreaker", np.float64), ("accepts", np.uint16),
+            ("tries", np.uint16), ("exceeds", np.uint16),
+            ("visits", np.uint16)
+        ])
+        for j in range(n):
+            level = levels[j]
+            result["levels"][j]["log_X"] = level.get_log_X()
+            result["levels"][j]["log_likelihood"] = \
+                level.get_log_likelihood().get_value()
+            result["levels"][j]["tiebreaker"] = \
+                level.get_log_likelihood().get_tiebreaker()
+            result["levels"][j]["accepts"] = level.get_accepts()
+            result["levels"][j]["tries"] = level.get_tries()
+            result["levels"][j]["exceeds"] = level.get_exceeds()
+            result["levels"][j]["visits"] = level.get_visits()
 
         # Yield items as a generator.
-        result["particles"] = np.array(result["particles"])
         yield result
 
         # Hack to continue running.
