@@ -17,4 +17,5 @@ class Model(object):
         return -0.5*(np.sum(coords**2) + np.log(2*np.pi))
 
 
-print(list(run(Model(), 1234, 2.7182818284590451, 10, 10000, 100000, 200, 25, 10, 100)))
+model = Model()
+print(list(run(model, 100)))
