@@ -111,6 +111,9 @@ class Sampler
 
 		const std::vector<unsigned int> get_level_assignments() const
 		{ return level_assignments; }
+
+		int size () const { return particles.size(); };
+		ModelType* particle (unsigned int i) { return &(particles[i]); };
 };
 
 } // namespace DNest4

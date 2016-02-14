@@ -33,25 +33,27 @@ cdef extern from "DNest4.h" namespace "DNest4":
         Sampler(unsigned int num_threads, double compression,
                 const Options options, unsigned save_to_disk)
 
+        void initialise(unsigned int first_seed)
         void run()
         void increase_max_num_saves(unsigned int increment)
 
         vector[T] get_particles()
+        int size()
+        T* particle(unsigned int i)
 
 
 cdef extern from "PyModel.h":
 
     cdef cppclass PyModel:
-        double m
-        double sigma
-
-
-class State(object):
-
-    pass
+        void set_py_self (object py_self)
+        object get_py_self ()
+        int get_exception ()
+        object get_npy_coords ()
 
 
 def run(
+    self,
+
     # "command line" args
     unsigned int seed,
     double compression,
@@ -64,29 +66,57 @@ def run(
     unsigned int max_num_levels,
     double lam,
     double beta,
-    unsigned int max_num_saves
 ):
-
+    cdef int i, j, n, error
     cdef Options options = Options(
         num_particles, new_level_interval, save_interval, thread_steps,
-        max_num_levels, lam, beta, max_num_saves
+        max_num_levels, lam, beta, 1
     )
 
     cdef Sampler[PyModel] sampler = Sampler[PyModel](1, compression, options, 0)
-    cdef vector[PyModel] particles
+    cdef PyModel* particle
 
-    cdef int i, j, n
+    # Initialize the particles.
+    n = sampler.size()
+    for j in range(n):
+        particle = sampler.particle(j)
+        particle.set_py_self(self)
+        error = particle.get_exception()
+        if error != 0:
+            raise DNest4Error(error)
+
+    # Initialize the sampler.
+    sampler.initialise(seed)
+    n = sampler.size()
+    for j in range(n):
+        particle = sampler.particle(j)
+        error = particle.get_exception()
+        if error != 0:
+            raise DNest4Error(error)
+
     for i in range(10):
         sampler.run()
-        sampler.increase_max_num_saves(1)
 
-        particles = sampler.get_particles()
-        n = particles.size()
+        # Loop over particles, build the results list, and check for errors.
+        n = sampler.size()
         result = dict(step=i, particles=[])
         for j in range(n):
-            result["particles"].append(dict(
-                m=particles[j].m,
-                sigma=particles[j].sigma,
-            ))
+            # Errors?
+            particle = sampler.particle(j)
+            error = particle.get_exception()
+            if error != 0:
+                raise DNest4Error(error)
 
+            # Results.
+            result["particles"].append(particle.get_npy_coords())
+
+        # Yield items as a generator.
+        result["particles"] = np.array(result["particles"])
         yield result
+
+        # Hack to continue running.
+        sampler.increase_max_num_saves(1)
+
+
+class DNest4Error(Exception):
+    pass
