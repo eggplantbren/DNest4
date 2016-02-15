@@ -43,6 +43,8 @@ cdef extern from "DNest4.h" namespace "DNest4":
         int size()
         T* particle(unsigned int i)
         vector[Level] get_levels()
+        vector[unsigned] get_level_assignments()
+        vector[LikelihoodType] get_log_likelihoods()
 
     cdef cppclass LikelihoodType:
         double get_value()
@@ -70,6 +72,8 @@ cdef extern from "PyModel.h":
 def sample(
     model,
 
+    unsigned int max_num_levels,
+
     int num_steps=-1,
     unsigned int num_per_step=10000,
 
@@ -77,7 +81,6 @@ def sample(
     unsigned int num_particles=1,
     unsigned int new_level_interval=10000,
     unsigned int thread_steps=200,
-    unsigned int max_num_levels=100,
 
     double lam=10.0,
     double beta=100.0,
@@ -88,8 +91,6 @@ def sample(
 ):
     """
     Sample using a DNest4 model.
-
-    :
 
     """
     # Check the model.
@@ -119,6 +120,8 @@ def sample(
     cdef PyModel* particle
     cdef vector[Level] levels
     cdef Level level
+    cdef vector[unsigned] level_assignments
+    cdef vector[LikelihoodType] log_likelihoods
 
     # Initialize the particles.
     n = sampler.size()
@@ -147,7 +150,11 @@ def sample(
 
         # Loop over particles, build the results list, and check for errors.
         n = sampler.size()
-        result = dict(step=i, particles=[])
+        result = dict(step=i)
+        level_assignments = sampler.get_level_assignments()
+        log_likelihoods = sampler.get_log_likelihoods()
+        samples = []
+        sample_info = []
         for j in range(n):
             # Errors?
             particle = sampler.particle(j)
@@ -156,8 +163,18 @@ def sample(
                 raise DNest4Error(error)
 
             # Results.
-            result["particles"].append(particle.get_npy_coords())
-        result["particles"] = np.array(result["particles"])
+            samples.append(particle.get_npy_coords())
+            sample_info.append((
+                level_assignments[j],
+                log_likelihoods[j].get_value(),
+                log_likelihoods[j].get_tiebreaker(),
+            ))
+        result["samples"] = np.array(samples)
+        result["sample_info"] = np.array(sample_info, dtype=[
+            ("level_assignment", np.uint16),
+            ("log_likelihood", np.float64),
+            ("tiebreaker", np.float64),
+        ])
 
         # Loop over levels and save them.
         levels = sampler.get_levels()
