@@ -6,6 +6,117 @@ import matplotlib.pyplot as pl
 __all__ = ["postprocess"]
 
 
+def remove_burnin(samples, sample_info, nburn):
+    return (
+        samples[int(nburn * len(samples)):, :],
+        sample_info[int(nburn * len(sample_info)):, :],
+    )
+
+
+def subsample_particles(samples, sample_info):
+    if len(sample_info.shape) != 2:
+        raise ValueError("invalid dimensions")
+
+    # Subsample; one (randomly selected) particle for each time.
+    if samples.shape[1] != sample_info.shape[1]:
+        raise ValueError("dimension mismatch")
+
+    inds = (
+        np.arange(len(samples)),
+        np.random.randint(samples.shape[1], size=len(samples)),
+    )
+
+    return samples[inds], sample_info[inds]
+
+
+def interpolate_samples(levels, sample_info, resample=None):
+    # Work out the level assignments. This looks horrifying because we need
+    # to take tiebreakers into account; if two levels (or samples) have
+    # exactly the same likelihood, then the tiebreaker decides the assignment.
+    lev, order = 0, 0
+    assign = np.empty(len(sample_info), dtype=int)
+    argsort = np.empty(len(sample_info), dtype=int)
+    l_set = zip(levels["log_likelihood"], levels["tiebreaker"],
+                -np.arange(1, len(levels)+1))
+    s_set = zip(sample_info["log_likelihood"], sample_info["tiebreaker"],
+                range(len(sample_info)))
+    for ll, _, ind in sorted(list(l_set) + list(s_set)):
+        if ind < 0:
+            lev = -ind - 1
+            continue
+        assign[ind] = lev
+        argsort[ind] = order
+        order += 1
+
+    # Loop over levels and place the samples within each level.
+    sample_log_X = np.empty(len(sample_info))
+    x_min = np.exp(np.append(levels["log_X"][1:], -np.inf))
+    x_max = np.exp(levels["log_X"])
+    dx = x_max - x_min
+    for i, lev in enumerate(levels):
+        # Use the level assignments to get a mask of sample IDs in the correct
+        # order.
+        m = assign == i
+        inds = np.arange(len(sample_info))[m][np.argsort(argsort[m])]
+
+        if resample is not None:
+            # Re-sample the points uniformly---in X---between the level
+            # boundaries.
+            sample_log_X[inds] = np.sort(np.log(
+                np.random.uniform(x_min[i], x_max[i], size=len(inds))
+            ))[::-1]
+        else:
+            # Place the samples uniformly---in X not log(X)---between the
+            # level boundaries.
+            N = len(inds)
+            n = ((np.arange(N, 0, -1) - 0.5) / N)
+            sample_log_X[inds] = np.log(x_min[i] + dx[i] * n)
+
+    return sample_log_X
+
+
+def compute_stats(levels, sample_info, sample_log_X, temperature=1.0):
+    # pl.plot(sample_log_X, sample_info["log_likelihood"], ".b")
+    # pl.plot(levels["log_X"][1:], levels["log_likelihood"][1:], ".r")
+    # pl.savefig("levels.png")
+
+    # Use the log(X) estimates for the levels and the samples to estimate
+    # log(Z) using the trapezoid rule.
+    log_x = np.append(levels["log_X"], sample_log_X)
+    log_y = np.append(levels["log_likelihood"], sample_info["log_likelihood"])
+    inds = np.argsort(log_x)
+    log_x = log_x[inds]
+    log_y = log_y[inds] / temperature
+
+    # # Extend the integration region to X = 0.
+    # log_x = np.append(-np.inf, log_x)
+    # log_y = np.append(log_y[0], log_y)
+
+    # Compute log(exp(L_k+1) + exp(L_k)) using logsumexp rules...
+    d_log_y = log_y[1:] - log_y[:-1]
+    log_y_mean = np.log(0.5) + np.log(1+np.exp(d_log_y)) + log_y[:-1]
+
+    # ...and log(exp(log(X_k+1)) + exp(log(X_k))) using logsumexp rules.
+    log_x_diff = np.log(1. - np.exp(log_x[:-1] - log_x[1:])) + log_x[1:]
+
+    # TODO: should this be normalized to 1?
+    # It probably doesn't change the results...
+    # log_x_diff -= logsumexp(log_x_diff)
+
+    # Then from the trapezoid rule:
+    #   log(Z) = log(0.5) + logsumexp(log_x_diff + log_y_mean)
+    log_p = log_x_diff + log_y_mean
+    log_z = logsumexp(log_p)
+    log_p -= log_z
+    h = -log_z + np.sum(np.exp(log_p) * log_y_mean)
+    n_eff = np.exp(-np.sum(np.exp(log_p)*log_p))
+    return dict(
+        log_Z=log_z,
+        H=h,
+        N_eff=n_eff,
+    )
+
+
 def postprocess(levels, samples, sample_info, compression_assert=None, cut=0,
                 temperature=1.0, plot=True,
                 resample=1, compression_bias_min=1., compression_scatter=0.):
@@ -16,22 +127,23 @@ def postprocess(levels, samples, sample_info, compression_assert=None, cut=0,
 
     # Remove burn-in.
     if cut > 0:
-        samples = samples[int(cut*len(samples)):, :]
-        sample_info = sample_info[int(cut*len(sample_info)):, :]
+        samples, sample_info = remove_burnin(samples, sample_info, cut)
 
     # Subsample; one (randomly selected) particle for each time.
     if len(sample_info.shape) > 1:
-        assert samples.shape[1] == sample_info.shape[1], "dimension mismatch"
-
-        inds = (
-            np.arange(len(samples)),
-            np.random.randint(samples.shape[1], size=len(samples)),
-        )
-        samples = samples[inds]
-        sample_info = sample_info[inds]
+        samples, sample_info = subsample_particles(samples, sample_info)
 
     # Check dimensions.
     assert len(samples) == len(sample_info), "dimension mismatch"
+
+    sample_log_X = interpolate_samples(levels, sample_info)
+
+    return compute_stats(
+        levels, sample_info, sample_log_X,
+        temperature=temperature,
+    )
+
+    assert 0
 
     # Find the correct level assignments.
     assign = np.digitize(sample_info["log_likelihood"],
