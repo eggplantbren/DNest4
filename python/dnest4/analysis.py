@@ -108,10 +108,6 @@ def compute_stats(levels, sample_info, sample_log_X, temperature=1.0):
     # ...and log(exp(log(X_k+1)) + exp(log(X_k))) using logsumexp rules.
     log_x_diff = np.log(1. - np.exp(log_x[:-1] - log_x[1:])) + log_x[1:]
 
-    # TODO: should this be normalized to 1?
-    # It probably doesn't change the results...
-    # log_x_diff -= logsumexp(log_x_diff)
-
     # Then from the trapezoid rule:
     #   log(Z) = log(0.5) + logsumexp(log_x_diff + log_y_mean)
     log_p = log_x_diff + log_y_mean
