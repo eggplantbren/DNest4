@@ -130,7 +130,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 					left = -1E300
 				else:
 					left = levels[i+1][0]
-				
+
 				if j != 0:
 					right = logx_samples_thisLevel[j-1]
 				else:

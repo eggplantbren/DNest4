@@ -1,6 +1,12 @@
-import dnest4
+from matplotlib import rcParams
+rcParams["backend"] = "MacOSX"
+
 import numpy as np
 from scipy.special import erf
+
+import dnest4
+from dnest4.analysis import subsample_particles
+from dnest4 import deprecated
 
 RANGE = 5.0
 true_log_z = np.log(0.5*erf(RANGE/np.sqrt(2))/RANGE)
@@ -25,7 +31,7 @@ class Model(object):
 
 
 num_particles = 10
-num_steps = 1000
+num_steps = 2000
 
 model = Model()
 samples = []
@@ -38,7 +44,20 @@ for i, sample in enumerate(dnest4.sample(model, 100, num_steps=num_steps,
     samples.append(sample["samples"])
     sample_info.append(sample["sample_info"])
 
-    if (i + 1) % 500 == 0:
-        stats = dnest4.postprocess(levels, np.array(samples),
-                                   np.array(sample_info))
-        print(stats["log_Z"] - true_log_z)
+    if (i + 1) % 20 == 0:
+        s, si = subsample_particles(
+            np.array(samples), np.array(sample_info)
+        )
+        stats = dnest4.postprocess(levels, s, si,
+                                   # perturb=4,
+                                   # compression_scatter=0.01,
+                                   resample=1)
+        print(stats["log_Z"], true_log_z)
+        # print(stats)
+
+        deprecated.postprocess(loaded=[
+            np.array([row.tolist() for row in levels], dtype=float),
+            np.array([row.tolist() for row in si], dtype=float),
+            s,
+        ], plot=False)
+        # assert 0
