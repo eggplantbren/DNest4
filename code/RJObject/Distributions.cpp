@@ -14,6 +14,11 @@ int sign(double x)
 	return -1;
 }
 
+double laplacian_log_pdf(double x, double center, double width)
+{
+	return -log(2.*width) - std::abs(x - center)/width;
+}
+
 double laplacian_cdf(double x, double center, double width)
 {
 	assert(width > 0.);

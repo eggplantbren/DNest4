@@ -10,6 +10,11 @@ namespace DNest4
 	double laplacian_log_pdf(double x, double location, double scale);
 	double laplacian_cdf(double x, double location, double scale);
 	double laplacian_cdf_inverse(double x, double location, double scale);
+
+	// Cauchy distribution
+	double cauchy_log_pdf(double x, double location, double scale);
+	double cauchy_cdf(double x, double location, double scale);
+	double cauchy_cdf_inverse(double x, double location, double scale);
 } // namespace DNest4
 
 #endif
