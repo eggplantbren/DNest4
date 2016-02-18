@@ -10,52 +10,58 @@ except ImportError:
 
 if __name__ == "__main__":
     import sys
-    import numpy
-    from Cython.Build import cythonize
 
     # Publish the library to PyPI.
-    if "publish" in sys.argv[-1]:
+    if "publish" in sys.argv:
         os.system("python setup.py sdist upload")
         sys.exit()
 
-    # The root of the DNest4 repo.
-    basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if "--without-cext" in sys.argv:
+        sys.argv.remove("--without-cext")
+        extensions = []
 
-    # Set up the C++-extension.
-    libraries = []
-    if os.name == "posix":
-        libraries.append("m")
-    include_dirs = [
-        "dnest4",
-        os.path.join(basedir, "code"),
-        numpy.get_include(),
-    ]
+    else:
+        import numpy
+        from Cython.Build import cythonize
 
-    src = [os.path.join(basedir, "code", fn) for fn in [
-        "Barrier.cpp",
-        "CommandLineOptions.cpp",
-        "Level.cpp",
-        "LikelihoodType.cpp",
-        "Options.cpp",
-        "RNG.cpp",
-        "Utils.cpp",
-    ]]
-    src += [
-        os.path.join("dnest4", "_dnest4.pyx"),
-    ]
+        # The root of the DNest4 repo.
+        basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    ext = Extension(
-        "dnest4._dnest4",
-        sources=src,
-        language="c++",
-        libraries=libraries,
-        include_dirs=include_dirs,
-        extra_compile_args=["-std=c++11",
-                            "-Wno-unused-function",
-                            "-Wno-uninitialized"],
-        extra_link_args=["-std=c++11"],
-    )
-    extensions = cythonize([ext])
+        # Set up the C++-extension.
+        libraries = []
+        if os.name == "posix":
+            libraries.append("m")
+        include_dirs = [
+            "dnest4",
+            os.path.join(basedir, "code"),
+            numpy.get_include(),
+        ]
+
+        src = [os.path.join(basedir, "code", fn) for fn in [
+            "Barrier.cpp",
+            "CommandLineOptions.cpp",
+            "Level.cpp",
+            "LikelihoodType.cpp",
+            "Options.cpp",
+            "RNG.cpp",
+            "Utils.cpp",
+        ]]
+        src += [
+            os.path.join("dnest4", "_dnest4.pyx"),
+        ]
+
+        ext = Extension(
+            "dnest4._dnest4",
+            sources=src,
+            language="c++",
+            libraries=libraries,
+            include_dirs=include_dirs,
+            extra_compile_args=["-std=c++11",
+                                "-Wno-unused-function",
+                                "-Wno-uninitialized"],
+            extra_link_args=["-std=c++11"],
+        )
+        extensions = cythonize([ext])
 
     # Hackishly inject a constant into builtins to enable importing of the
     # package before the library is built.
@@ -75,11 +81,8 @@ if __name__ == "__main__":
         license="MIT",
         packages=["dnest4"],
         ext_modules=extensions,
-        description="Face",
+        description="Diffusive nested sampling in Python",
         long_description=open("README.rst").read(),
-        # package_data={"": ["README.rst", "LICENSE",
-        #                    "george/include/*.h", "hodlr/header/*.hpp", ]},
-        include_package_data=True,
         classifiers=[
             # "Development Status :: 5 - Production/Stable",
             "Intended Audience :: Developers",
