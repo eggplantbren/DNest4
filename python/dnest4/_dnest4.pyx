@@ -69,6 +69,10 @@ cdef extern from "PyModel.h":
         object get_npy_coords ()
 
 
+class DNest4Error(Exception):
+    pass
+
+
 def sample(
     model,
 
@@ -80,9 +84,9 @@ def sample(
     # sampler args
     unsigned int num_particles=1,
     unsigned int new_level_interval=10000,
-    unsigned int thread_steps=200,
+    # unsigned int thread_steps=1,
 
-    double lam=10.0,
+    double lam=5.0,
     double beta=100.0,
 
     # "command line" arguments
@@ -91,6 +95,38 @@ def sample(
 ):
     """
     Sample using a DNest4 model.
+
+    :param model:
+        A model class satisfying the DNest4 model protocol. This must
+        implement the ``from_prior``, ``perturb``, and ``log_likelihood``
+        methods.
+
+    :param max_num_levels:
+        The maximum number of levels to create.
+
+    :param num_steps: (optional)
+        The number of MCMC iterations (of ``num_per_step`` moves) to run. By
+        default, this will run forever.
+
+    :param num_particles: (optional)
+        The number of particles in the ensemble. (default: ``1``)
+
+    :param new_level_interval: (optional)
+        The number of moves to run before creating a new level.
+        (default: ``10000``)
+
+    :param lam: (optional)
+        Backtracking scale length. (default: ``5.0``)
+
+    :param beta: (optional)
+        Strength of effect to force histogram to equal push.
+        (default: ``100.0``)
+
+    :param seed: (optional)
+        Seed for the C++ random number generator.
+
+    :param compression: (optional)
+        The target compression factor. (default: ``np.exp(1)``)
 
     """
     # Check the model.
@@ -110,7 +146,7 @@ def sample(
     if lam <= 0.0 or beta < 0.0:
         raise ValueError("'lam' and 'beta' must be non-negative")
     cdef Options options = Options(
-        num_particles, new_level_interval, num_per_step, thread_steps,
+        num_particles, new_level_interval, num_per_step, 1,
         max_num_levels, lam, beta, 1
     )
 
@@ -169,6 +205,8 @@ def sample(
                 log_likelihoods[j].get_value(),
                 log_likelihoods[j].get_tiebreaker(),
             ))
+
+        # Convert the sampling results to arrays.
         result["samples"] = np.array(samples)
         result["sample_info"] = np.array(sample_info, dtype=[
             ("level_assignment", np.uint16),
@@ -203,7 +241,3 @@ def sample(
         # Hack to continue running.
         sampler.increase_max_num_saves(1)
         i += 1
-
-
-class DNest4Error(Exception):
-    pass
