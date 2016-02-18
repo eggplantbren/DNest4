@@ -12,7 +12,106 @@ except NameError:
 else:
     stringtype = basestring
 
-__all__ = ["postprocess"]
+__all__ = ["postprocess", "make_plots"]
+
+
+def postprocess(backend=None,
+                temperature=1.0, cut=0, compression_assert=None,
+                resample_log_X=0,
+                compression_bias_min=1, compression_scatter=0,
+                resample=0,
+                plot=False, plot_params=None):
+    # Deal with filename inputs.
+    if backend is None:
+        backend = "."
+    if isinstance(backend, stringtype):
+        backend = CSVBackend(backend)
+
+    # Unpack the backend's data.
+    levels = backend.levels
+    samples = backend.samples
+    sample_info = backend.sample_info
+
+    # Remove regularisation from levels if we asked for it.
+    if compression_assert is not None:
+        levels = np.array(levels)
+        levels["log_X"][1:] = \
+            -np.cumsum(compression_assert*np.ones(len(levels) - 1))
+
+    # Remove burn-in.
+    if cut > 0:
+        samples, sample_info = remove_burnin(samples, sample_info, cut)
+
+    # Subsample; one (randomly selected) particle for each time.
+    if len(sample_info.shape) > 1:
+        samples, sample_info = subsample_particles(samples, sample_info)
+
+    # Check dimensions.
+    assert len(samples) == len(sample_info), "dimension mismatch"
+
+    # Estimate the X values for the samples by interpolating from the levels.
+    if resample_log_X:
+        resample_count = resample_log_X
+    else:
+        resample_count = 1
+
+    log_z = np.empty(resample_count)
+    h = np.empty(resample_count)
+    n_eff = np.empty(resample_count)
+    log_post = np.empty((resample_count, len(sample_info)))
+    for i in range(resample_count):
+        # If requested, jitter the Xs of the levels.
+        if resample_log_X:
+            levels_2 = np.array(levels)
+            comp = -np.diff(levels_2["log_X"])
+            comp *= np.random.uniform(compression_bias_min, 1.0)
+            comp *= np.exp(compression_scatter*np.random.randn(len(comp)))
+            levels_2["log_X"][1:] = -comp
+            levels_2["log_X"] = np.cumsum(levels_2["log_X"])
+        else:
+            levels_2 = levels
+
+        sample_log_X = interpolate_samples(levels_2, sample_info,
+                                           resample=resample_log_X)
+        if i == 0:
+            backend.write_sample_log_X(sample_log_X)
+        log_z[i], h[i], n_eff[i], log_post[i] = compute_stats(
+            levels_2, sample_info, sample_log_X,
+            temperature=temperature,
+        )
+
+    # Re-sample the samples using the posterior weights.
+    log_post = logsumexp(log_post, axis=0) - np.log(resample_count)
+    backend.write_weights(np.exp(log_post))
+    if resample:
+        new_samples = generate_posterior_samples(
+            samples, log_post, int(resample * np.mean(n_eff))
+        )
+        backend.write_posterior_samples(new_samples)
+        log_post = np.zeros(len(new_samples))
+    else:
+        new_samples = samples
+
+    # Compute the final stats based on resampling.
+    stats = dict(
+        log_Z=np.mean(log_z), log_Z_std=np.std(log_z),
+        H=np.mean(h), H_std=np.std(h),
+        N_eff=np.mean(n_eff), N_eff_std=np.std(n_eff),
+    )
+    backend.write_stats(stats)
+
+    # Make the plots if requested.
+    if plot:
+        if plot_params is None:
+            plot_params = dict()
+        make_plots(backend, **plot_params)
+
+    return stats
+
+
+def logsumexp(x, axis=None):
+    mx = np.max(x, axis=axis)
+    return np.log(np.sum(np.exp(x - mx), axis=axis)) + mx
 
 
 def remove_burnin(samples, sample_info, nburn):
@@ -33,12 +132,14 @@ def subsample_particles(samples, sample_info):
     if samples.shape[1] != sample_info.shape[1]:
         raise ValueError("dimension mismatch")
 
-    inds = (
-        np.arange(len(samples)),
-        np.random.randint(samples.shape[1], size=len(samples)),
-    )
+    n = np.prod(sample_info.shape)
+    return samples.reshape((n, -1)), sample_info.reshape(n)
 
-    return samples[inds], sample_info[inds]
+    # inds = (
+    #     np.arange(len(samples)),
+    #     np.random.randint(samples.shape[1], size=len(samples)),
+    # )
+    # return samples[inds], sample_info[inds]
 
 
 def interpolate_samples(levels, sample_info, resample=False):
@@ -149,103 +250,69 @@ def generate_posterior_samples(samples, log_weights, N):
     return samples[inds]
 
 
-def postprocess(backend=None,
-                temperature=1.0, plot=True, cut=0, compression_assert=None,
-                perturb=0, compression_bias_min=1, compression_scatter=0,
-                resample=0):
-    # Deal with filename inputs.
-    if backend is None:
-        backend = "."
-    if isinstance(backend, stringtype):
-        backend = CSVBackend(backend)
+def make_plots(backend):
+    figs = dict()
 
-    # Unpack the backend's data.
+    figs["levels"] = make_levels_plot(backend)
+    figs["compression"] = make_compression_plot(backend)
+    figs["log_X_log_L"] = make_log_X_log_L_plot(backend)
+
+    return figs
+
+
+def make_levels_plot(backend):
+    fig, ax = pl.subplots(1, 1)
+
+    ax.plot(backend.sample_info["level_assignment"], color="k")
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Level")
+
+    return fig
+
+
+def make_compression_plot(backend):
+    fig, axes = pl.subplots(2, 1, sharex=True)
+
     levels = backend.levels
-    samples = backend.samples
+
+    ax = axes[0]
+    ax.plot(np.diff(levels["log_X"]), color="k")
+    ax.axhline(-1., color="r")
+    ax.axhline(-np.log(10.), color="g")
+    ax.set_ylim(ymax=0.05)
+    ax.set_ylabel("Compression")
+
+    ax = axes[1]
+    m = levels["tries"] > 0
+    ax.plot(np.arange(len(levels))[m],
+            levels[m]["accepts"]/levels[m]["tries"],
+            "ok")
+    ax.set_ylabel("MH Acceptance")
+    ax.set_xlabel("level")
+
+    return fig
+
+
+def make_log_X_log_L_plot(backend):
+    fig, axes = pl.subplots(2, 1, sharex=True)
+
+    levels = backend.levels
     sample_info = backend.sample_info
+    sample_log_X = backend.sample_log_X
+    weights = backend.weights
 
-    # Remove regularisation from levels if we asked for it.
-    if compression_assert is not None:
-        levels = np.array(levels)
-        levels["log_X"][1:] = \
-            -np.cumsum(compression_assert*np.ones(len(levels) - 1))
+    ax = axes[0]
+    ax.plot(sample_log_X.flatten(), sample_info["log_likelihood"].flatten(),
+            "b.", label="Samples")
+    ax.plot(levels["log_X"][1:], levels["log_likelihood"][1:], "r.",
+            label="Levels")
+    ax.legend(numpoints=1, loc="lower left")
+    ax.set_ylabel("log(L)")
+    ax.set_title("log(Z) = {0}".format(backend.stats["log_Z"]))
 
-    # Remove burn-in.
-    if cut > 0:
-        samples, sample_info = remove_burnin(samples, sample_info, cut)
+    ax = axes[1]
+    ax.plot(sample_log_X, weights, ".b")
+    ax.set_ylabel("posterior weight")
+    ax.set_xlabel("log(X)")
 
-    # Subsample; one (randomly selected) particle for each time.
-    if len(sample_info.shape) > 1:
-        samples, sample_info = subsample_particles(samples, sample_info)
-
-    # Check dimensions.
-    assert len(samples) == len(sample_info), "dimension mismatch"
-
-    # Estimate the X values for the samples by interpolating from the levels.
-    if perturb:
-        resample_count = perturb
-    else:
-        resample_count = 1
-
-    log_z = np.empty(resample_count)
-    h = np.empty(resample_count)
-    n_eff = np.empty(resample_count)
-    log_post = np.empty((resample_count, len(sample_info)))
-    for i in range(resample_count):
-        # If requested, jitter the Xs of the levels.
-        if perturb:
-            levels_2 = np.array(levels)
-            comp = -np.diff(levels_2["log_X"])
-            comp *= np.random.uniform(compression_bias_min, 1.0)
-            comp *= np.exp(compression_scatter*np.random.randn(len(comp)))
-            levels_2["log_X"][1:] = -comp
-            levels_2["log_X"] = np.cumsum(levels_2["log_X"])
-        else:
-            levels_2 = levels
-
-        sample_log_X = interpolate_samples(levels_2, sample_info,
-                                           resample=perturb)
-        log_z[i], h[i], n_eff[i], log_post[i] = compute_stats(
-            levels_2, sample_info, sample_log_X,
-            temperature=temperature,
-        )
-
-    # Re-sample the samples using the posterior weights.
-    log_post = logsumexp(log_post, axis=0) - np.log(resample_count)
-    if resample:
-        new_samples = generate_posterior_samples(
-            samples, log_post, int(resample * np.mean(n_eff))
-        )
-        log_post = np.zeros(len(new_samples))
-    else:
-        new_samples = samples
-
-    # Compute the final stats based on resampling.
-    return dict(
-        log_Z=np.mean(log_z), log_Z_std=np.std(log_z),
-        H=np.mean(h), H_std=np.std(h),
-        N_eff=np.mean(n_eff), N_eff_std=np.std(n_eff),
-        samples=new_samples, sample_log_weights=log_post,
-    )
-
-
-def logsumexp(x, axis=None):
-    mx = np.max(x, axis=axis)
-    return np.log(np.sum(np.exp(x - mx), axis=axis)) + mx
-
-    # fig, axes = pl.subplots(2, 1)
-    # ax = axes[0]
-    # ax.plot(sample_log_X, sample_info["log_likelihood"], 'b.',
-    #         label='Samples')
-    # ax.plot(levels["log_X"][1:], levels["log_likelihood"][1:], 'r.',
-    #         label='Levels')
-    # ax.legend(numpoints=1, loc='lower left')
-    # ax.set_ylabel('log(L)')
-    # ax.set_xlabel('log(X)')
-    # ax.set_title("dfm")
-
-    # ax = axes[1]
-    # ax.plot(sample_log_X, np.exp(log_w), ".b")
-
-    # fig.savefig("levels.png")
-    # pl.close(fig)
+    return fig

@@ -1,12 +1,9 @@
-from matplotlib import rcParams
-rcParams["backend"] = "MacOSX"
-
 import numpy as np
 from scipy.special import erf
+import matplotlib.pyplot as pl
 
 import dnest4
-from dnest4.analysis import subsample_particles
-from dnest4 import deprecated
+from dnest4.backends import CSVBackend
 
 RANGE = 5.0
 true_log_z = np.log(0.5*erf(RANGE/np.sqrt(2))/RANGE)
@@ -33,21 +30,14 @@ num_particles = 10
 num_steps = 2000
 
 model = Model()
-samples = []
-sample_info = []
+sampler = dnest4.DNest4Sampler(
+    model,
+    # backend=CSVBackend("demo")
+)
 
-for i, sample in enumerate(dnest4.sample(model, 100, num_steps=num_steps,
-                                         num_per_step=10000,
-                                         num_particles=num_particles,
-                                         thread_steps=1)):
-    levels = sample["levels"]
-    samples.append(sample["samples"])
-    sample_info.append(sample["sample_info"])
-
+for i, sample in enumerate(sampler.sample(100, num_steps=num_steps,
+                                          num_per_step=10000,
+                                          num_particles=num_particles)):
     if (i + 1) % 20 == 0:
-        s, si = subsample_particles(
-            np.array(samples), np.array(sample_info)
-        )
-        stats = dnest4.postprocess(levels, s, si, resample=10)
-        print(stats)
-        # assert 0
+        sampler.postprocess(plot=True)
+        input()
