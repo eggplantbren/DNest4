@@ -3,17 +3,29 @@
 import numpy as np
 import matplotlib.pyplot as pl
 
+from .backends import CSVBackend
+
+try:
+    basestring
+except NameError:
+    stringtype = str
+else:
+    stringtype = basestring
+
 __all__ = ["postprocess"]
 
 
 def remove_burnin(samples, sample_info, nburn):
     return (
-        samples[int(nburn * len(samples)):, :],
-        sample_info[int(nburn * len(sample_info)):, :],
+        samples[int(nburn * len(samples)):],
+        sample_info[int(nburn * len(sample_info)):],
     )
 
 
 def subsample_particles(samples, sample_info):
+    if len(samples.shape) == 2 and len(sample_info.shape) == 1:
+        return samples, sample_info
+
     if len(sample_info.shape) != 2:
         raise ValueError("invalid dimensions")
 
@@ -69,12 +81,14 @@ def interpolate_samples(levels, sample_info, resample=False):
             # Place the samples uniformly---in X not log(X)---between the
             # level boundaries.
             N = len(inds)
+
             # FIXME: there are two options here and we're using the backwards
             # compatible one but the other might be better. Need to think
             # about it further. It won't matter as the number of samples gets
             # large.
             n = ((np.arange(1, N+1)) / (N+1))[::-1]
             # n = ((np.arange(N) + 0.5) / N)[::-1]
+
             sample_log_X[inds] = np.log(x_min[i] + dx[i] * n)
 
     return sample_log_X
@@ -135,10 +149,21 @@ def generate_posterior_samples(samples, log_weights, N):
     return samples[inds]
 
 
-def postprocess(levels, samples, sample_info,
+def postprocess(backend=None,
                 temperature=1.0, plot=True, cut=0, compression_assert=None,
                 perturb=0, compression_bias_min=1, compression_scatter=0,
                 resample=0):
+    # Deal with filename inputs.
+    if backend is None:
+        backend = "."
+    if isinstance(backend, stringtype):
+        backend = CSVBackend(backend)
+
+    # Unpack the backend's data.
+    levels = backend.levels
+    samples = backend.samples
+    sample_info = backend.sample_info
+
     # Remove regularisation from levels if we asked for it.
     if compression_assert is not None:
         levels = np.array(levels)

@@ -15,8 +15,7 @@ print("ANALYTIC log(Z): {0}".format(true_log_z))
 
 class Model(object):
 
-    def __len__(self):
-        return 1
+    __names__ = ["mean"]
 
     def from_prior(self):
         return np.random.uniform(0.0, RANGE, size=(1,))
@@ -39,7 +38,8 @@ sample_info = []
 
 for i, sample in enumerate(dnest4.sample(model, 100, num_steps=num_steps,
                                          num_per_step=10000,
-                                         num_particles=num_particles)):
+                                         num_particles=num_particles,
+                                         thread_steps=1)):
     levels = sample["levels"]
     samples.append(sample["samples"])
     sample_info.append(sample["sample_info"])
@@ -48,16 +48,6 @@ for i, sample in enumerate(dnest4.sample(model, 100, num_steps=num_steps,
         s, si = subsample_particles(
             np.array(samples), np.array(sample_info)
         )
-        stats = dnest4.postprocess(levels, s, si,
-                                   # perturb=4,
-                                   # compression_scatter=0.01,
-                                   resample=1)
-        print(stats["log_Z"], true_log_z)
-        # print(stats)
-
-        deprecated.postprocess(loaded=[
-            np.array([row.tolist() for row in levels], dtype=float),
-            np.array([row.tolist() for row in si], dtype=float),
-            s,
-        ], plot=False)
+        stats = dnest4.postprocess(levels, s, si, resample=10)
+        print(stats)
         # assert 0
