@@ -16,10 +16,19 @@ class PyModel {
 public:
     PyModel ()
         :py_self_(NULL)
+        ,npy_coords_(NULL)
         ,exception_(0)
         ,size_(0)
         ,coords_(0)
     {};
+
+    //
+    // FIXME: there's a small chance that there's a memory leak here but I
+    //        can't quite work it out --- DECREF-ing here segfaults.
+    //
+    // ~PyModel () {
+    //     if (npy_coords_ != NULL) Py_DECREF(npy_coords_);
+    // }
 
     void from_prior (DNest4::RNG& rng) {
         // Call the Python method and get the Python return value.
