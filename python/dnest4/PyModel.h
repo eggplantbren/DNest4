@@ -19,14 +19,6 @@ public:
         ,coords_(0)
     {};
 
-    //
-    // FIXME: there's a small chance that there's a memory leak here but I
-    //        can't quite work it out --- DECREF-ing here segfaults.
-    //
-    // ~PyModel () {
-    //     if (npy_coords_ != NULL) Py_DECREF(npy_coords_);
-    // }
-
     void from_prior (DNest4::RNG& rng) {
         // Call the Python method and get the Python return value.
         PyObject* result = PyObject_CallMethod(py_self_, "from_prior", "");
