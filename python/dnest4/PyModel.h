@@ -56,17 +56,8 @@ public:
     };
 
     double perturb (DNest4::RNG& rng) {
-        npy_intp shape[] = {size_};
-        PyObject* c = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
-        if (c == NULL) {
-            Py_XDECREF(c);
-            set_exception(1);
-            return 0.0;
-        }
-
         // Call the Python method and get the Python return value.
         PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", npy_coords_);
-        Py_DECREF(c);
         if (result == NULL || PyErr_Occurred() != NULL) {
             Py_XDECREF(result);
             set_exception(2);
@@ -87,17 +78,8 @@ public:
     double log_likelihood () {
         if (size_ == 0) return 0.0;
 
-        npy_intp shape[] = {size_};
-        PyObject* c = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
-        if (c == NULL) {
-            Py_XDECREF(c);
-            set_exception(10);
-            return -INFINITY;
-        }
-
         // Call the Python method and get the Python return value.
-        PyObject* result = PyObject_CallMethod(py_self_, "log_likelihood", "O", c);
-        Py_DECREF(c);
+        PyObject* result = PyObject_CallMethod(py_self_, "log_likelihood", "O", npy_coords_);
         double log_like = PyFloat_AsDouble(result);
         if (result == NULL || PyErr_Occurred() != NULL) {
             Py_XDECREF(result);
