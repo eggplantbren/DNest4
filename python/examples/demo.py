@@ -1,9 +1,13 @@
-import numpy as np
-from scipy.special import erf
-import matplotlib.pyplot as pl
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Demonstration of DNest4 on a model where we know the evidence integral.
+
+"""
 
 import dnest4
-from dnest4.backends import CSVBackend
+import numpy as np
+from scipy.special import erf
 
 RANGE = 5.0
 true_log_z = np.log(0.5*erf(RANGE/np.sqrt(2))/RANGE)
@@ -28,14 +32,7 @@ num_particles = 10
 num_steps = 2000
 
 model = Model()
-sampler = dnest4.DNest4Sampler(
-    model,
-    # backend=CSVBackend("demo")
-)
+sampler = dnest4.DNest4Sampler(model)
 
-for i, sample in enumerate(sampler.sample(100, num_steps=num_steps,
-                                          num_per_step=10000,
-                                          num_particles=num_particles)):
-    if (i + 1) % 20 == 0:
-        sampler.postprocess(plot=True)
-        input()
+for i, sample in enumerate(sampler.sample(100, num_per_step=5000)):
+    print(i)

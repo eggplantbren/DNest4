@@ -35,8 +35,8 @@ cdef extern from "DNest4.h" namespace "DNest4":
                 const Options options, unsigned save_to_disk)
 
         # Setup, running, etc.
-        void initialise(unsigned int first_seed)
-        void run()
+        void initialise(unsigned int first_seed) except +
+        void run() except +
         void increase_max_num_saves(unsigned int increment)
 
         # Interface.
