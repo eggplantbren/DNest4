@@ -26,9 +26,7 @@ public:
         PyObject* result = PyObject_CallMethod(py_self_, "from_prior", "");
         if (result == NULL) {
             Py_XDECREF(result);
-            exception_ = -1;
-            std::cerr << "DNest4 error: Python exception while calling 'from_prior'\n";
-            PyErr_Print();
+            set_exception(-1);
             return;
         }
 
@@ -37,9 +35,7 @@ public:
         if (result == NULL || (int)PyArray_NDIM(rarray) != 1) {
             Py_DECREF(result);
             Py_XDECREF(rarray);
-            exception_ = -2;
-            std::cerr << "DNest4 error: 'from_prior' return value is invalid\n";
-            PyErr_Print();
+            set_exception(-2);
             return;
         }
 
@@ -52,6 +48,11 @@ public:
         // Clean up.
         Py_DECREF(result);
         Py_DECREF(rarray);
+
+        // Save this as a numpy array too.
+        npy_intp shape[] = {size_};
+        npy_coords_ = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
+        if (npy_coords_ == NULL) set_exception(-3);
     };
 
     double perturb (DNest4::RNG& rng) {
@@ -59,22 +60,24 @@ public:
         PyObject* c = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
         if (c == NULL) {
             Py_XDECREF(c);
-            exception_ = 1;
-            std::cerr << "DNest4 error: failed to build coords vector\n";
-            PyErr_Print();
-            return -INFINITY;
+            set_exception(1);
+            return 0.0;
         }
 
         // Call the Python method and get the Python return value.
-        PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", c);
+        PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", npy_coords_);
         Py_DECREF(c);
-        double log_H = PyFloat_AsDouble(result);
         if (result == NULL || PyErr_Occurred() != NULL) {
             Py_XDECREF(result);
-            exception_ = 2;
-            std::cerr << "DNest4 error: Python exception while calling 'perturb'\n";
-            PyErr_Print();
-            return -INFINITY;
+            set_exception(2);
+            return 0.0;
+        }
+
+        double log_H = PyFloat_AsDouble(result);
+        Py_DECREF(result);
+        if (PyErr_Occurred() != NULL) {
+            set_exception(3);
+            return 0.0;
         }
 
         return log_H;
@@ -88,9 +91,7 @@ public:
         PyObject* c = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
         if (c == NULL) {
             Py_XDECREF(c);
-            exception_ = 1;
-            std::cerr << "DNest4 error: failed to build coords vector\n";
-            PyErr_Print();
+            set_exception(10);
             return -INFINITY;
         }
 
@@ -100,9 +101,7 @@ public:
         double log_like = PyFloat_AsDouble(result);
         if (result == NULL || PyErr_Occurred() != NULL) {
             Py_XDECREF(result);
-            exception_ = 2;
-            std::cerr << "DNest4 error: Python exception while calling 'log_likelihood'\n";
-            PyErr_Print();
+            set_exception(11);
             return -INFINITY;
         }
 
@@ -123,19 +122,27 @@ public:
     };
 
     // Return string with column information
-    std::string description() const {
-        return "PyModel";
-    };
+    std::string description() const { return "PyModel"; };
 
+    // Getters, etc.
     void set_py_self (PyObject* py_self) { py_self_ = py_self; };
     PyObject* get_py_self () const { return py_self_; };
 
-    void set_exception (int exception) { exception_ = exception; };
+    // Dealing with exceptions.
     int get_exception () const { return exception_; };
+    void set_exception (int exception) {
+        if (exception_ == 0 && PyErr_Occurred() != NULL) {
+            std::cerr << "The following Python exception occurred:\n";
+            PyErr_Print();
+        }
+        exception_ = exception;
+        throw exception_;
+    };
 
 private:
 
     PyObject* py_self_;
+    PyObject* npy_coords_;
     int exception_, size_;
     vector<double> coords_;
 };
