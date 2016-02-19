@@ -58,7 +58,8 @@ if __name__ == "__main__":
             include_dirs=include_dirs,
             extra_compile_args=["-std=c++11",
                                 "-Wno-unused-function",
-                                "-Wno-uninitialized"],
+                                "-Wno-uninitialized",
+                                "-DNO_THREADS"],
             extra_link_args=["-std=c++11"],
         )
         extensions = cythonize([ext])

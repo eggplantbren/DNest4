@@ -12,8 +12,6 @@ print("ANALYTIC log(Z): {0}".format(true_log_z))
 
 class Model(object):
 
-    __names__ = ["mean"]
-
     def from_prior(self):
         return np.random.uniform(0.0, RANGE, size=(1,))
 
