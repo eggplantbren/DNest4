@@ -2,21 +2,18 @@
 #define DNest4_PyModel
 
 #include <cmath>
-#include <vector>
 #include <ostream>
+#include <valarray>
 
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
 #include "DNest4.h"
 
-using std::vector;
-
 class PyModel {
 public:
     PyModel ()
         :py_self_(NULL)
-        ,npy_coords_(NULL)
         ,exception_(0)
         ,size_(0)
         ,coords_(0)
@@ -57,17 +54,15 @@ public:
         // Clean up.
         Py_DECREF(result);
         Py_DECREF(rarray);
-
-        // Save this as a numpy array too.
-        npy_intp shape[] = {size_};
-        npy_coords_ = PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
-        if (npy_coords_ == NULL) set_exception(-3);
     };
 
     double perturb (DNest4::RNG& rng) {
+        PyObject* c = get_npy_coords();
+
         // Call the Python method and get the Python return value.
-        PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", npy_coords_);
+        PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", c);
         if (result == NULL || PyErr_Occurred() != NULL) {
+            Py_DECREF(c);
             Py_XDECREF(result);
             set_exception(2);
             return 0.0;
@@ -76,9 +71,14 @@ public:
         double log_H = PyFloat_AsDouble(result);
         Py_DECREF(result);
         if (PyErr_Occurred() != NULL) {
+            Py_DECREF(c);
             set_exception(3);
             return 0.0;
         }
+
+        double* data = (double*)PyArray_DATA(c);
+        for (int i = 0; i < size_; ++i) coords_[i] = data[i];
+        Py_DECREF(c);
 
         return log_H;
     };
@@ -87,12 +87,22 @@ public:
     double log_likelihood () {
         if (size_ == 0) return 0.0;
 
+        PyObject* c = get_npy_coords();
+
         // Call the Python method and get the Python return value.
-        PyObject* result = PyObject_CallMethod(py_self_, "log_likelihood", "O", npy_coords_);
-        double log_like = PyFloat_AsDouble(result);
-        if (result == NULL || PyErr_Occurred() != NULL) {
+        PyObject* result = PyObject_CallMethod(py_self_, "log_likelihood", "O", c);
+        Py_DECREF(c);
+        if (result == NULL) {
             Py_XDECREF(result);
             set_exception(11);
+            return -INFINITY;
+        }
+
+        // Parse as double.
+        double log_like = PyFloat_AsDouble(result);
+        if (PyErr_Occurred() != NULL) {
+            Py_DECREF(result);
+            set_exception(12);
             return -INFINITY;
         }
 
@@ -101,7 +111,11 @@ public:
 
     PyObject* get_npy_coords () {
         npy_intp shape[] = {size_};
-        return PyArray_SimpleNewFromData(1, shape, NPY_DOUBLE, &(coords_[0]));
+        PyObject* c = PyArray_SimpleNew(1, shape, NPY_DOUBLE);
+        if (c == NULL) set_exception(-100);
+        double* data = (double*)PyArray_DATA(c);
+        for (int i = 0; i < size_; ++i) data[i] = coords_[i];
+        return c;
     };
 
     // Print to stream
@@ -133,9 +147,8 @@ public:
 private:
 
     PyObject* py_self_;
-    PyObject* npy_coords_;
     int exception_, size_;
-    vector<double> coords_;
+    std::valarray<double> coords_;
 };
 
 #endif
