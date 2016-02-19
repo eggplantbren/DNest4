@@ -84,7 +84,7 @@ def sample(
     # sampler args
     unsigned int num_particles=1,
     unsigned int new_level_interval=10000,
-    # unsigned int thread_steps=1,
+    unsigned int thread_steps=1,
 
     double lam=5.0,
     double beta=100.0,
@@ -115,6 +115,10 @@ def sample(
         The number of moves to run before creating a new level.
         (default: ``10000``)
 
+    :param thread_steps: (optional)
+        Pretty much irrelevant for the Python API. Kept for compatibility.
+        (default: ``1``)
+
     :param lam: (optional)
         Backtracking scale length. (default: ``5.0``)
 
@@ -139,14 +143,14 @@ def sample(
 
     # Set up the options.
     if (num_per_step <= 0 or num_particles <= 0 or new_level_interval <= 0
-            or max_num_levels <= 0):
+            or max_num_levels <= 0 or thread_steps <= 0):
         raise ValueError("'num_per_step', 'num_particles', "
                          "'new_level_interval', and "
                          "'max_num_levels' must all be positive")
     if lam <= 0.0 or beta < 0.0:
         raise ValueError("'lam' and 'beta' must be non-negative")
     cdef Options options = Options(
-        num_particles, new_level_interval, num_per_step, 1,
+        num_particles, new_level_interval, num_per_step, thread_steps,
         max_num_levels, lam, beta, 1
     )
 

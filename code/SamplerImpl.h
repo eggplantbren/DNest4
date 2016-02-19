@@ -66,6 +66,7 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
+#ifndef NO_THREADS
 	// Set up threads and barrier
 	// Delete if necessary (shouldn't be needed!)
 	if(barrier != nullptr)
@@ -101,6 +102,9 @@ void Sampler<ModelType>::run()
 		delete t;
 		t = nullptr;
 	}
+#else
+	for(size_t i=0; i<threads.size(); ++i) run_thread(i);
+#endif
 }
 
 template<class ModelType>
@@ -247,8 +251,10 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 				copies_of_levels[i] = levels;
 		}
 
+#ifndef NO_THREADS
 		// Wait for all threads to get here before proceeding
 		barrier->wait();
+#endif
 
 		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
@@ -258,7 +264,9 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 				count_saves != 0 && (count_saves%options.max_num_saves == 0))
 			return;
 
+#ifndef NO_THREADS
 		barrier->wait();
+#endif
 
 		// Thread zero takes full responsibility for some tasks
 		if(thread == 0)
