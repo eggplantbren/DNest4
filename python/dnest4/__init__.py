@@ -8,7 +8,8 @@ except NameError:
     __DNEST4_SETUP__ = False
 
 if not __DNEST4_SETUP__:
-    __all__ = ["DNest4Sampler", "postprocess"]
+    __all__ = ["DNest4Sampler", "postprocess", "analysis"]
 
+    from . import analysis
     from .sampler import DNest4Sampler
-    from .analysis import postprocess
+    from .deprecated import postprocess
