@@ -9,28 +9,36 @@ import dnest4
 import numpy as np
 from scipy.special import erf
 
-RANGE = 5.0
-true_log_z = np.log(0.5*erf(RANGE/np.sqrt(2))/RANGE)
-print("ANALYTIC log(Z): {0}".format(true_log_z))
-
 
 class Model(object):
 
+    def __init__(self, ndim=5, rng=5.0):
+        self.ndim = ndim
+        self.rng = rng
+
+    def analytic_log_Z(self):
+        return (
+            self.ndim * np.log(erf(self.rng/np.sqrt(2))) -
+            self.ndim * np.log(2*self.rng)
+        )
+
     def from_prior(self):
-        return np.random.uniform(-RANGE, RANGE, size=(1,))
+        return np.random.uniform(-self.rng, self.rng, size=(self.ndim,))
 
     def perturb(self, coords):
-        coords[0] += np.random.randn() * 10**np.random.uniform(-5.0, -0.1)
-        coords[0] = (coords[0] + RANGE) % (2*RANGE) - RANGE
+        i = np.random.randint(self.ndim)
+        coords[i] += np.random.randn() * 10**np.random.uniform(-5.0, -0.1)
+        coords[i] = (coords[i] + self.rng) % (2*self.rng) - self.rng
         return 0.0
 
     def log_likelihood(self, coords, const=-0.5*np.log(2*np.pi)):
-        return -0.5*coords[0]**2 + const
+        return -0.5*np.sum(coords**2) + self.ndim * const
 
 
 model = Model()
 sampler = dnest4.DNest4Sampler(model,
-                               backend=dnest4.backends.CSVBackend(".", sep=" "))
+                               backend=dnest4.backends.CSVBackend(".",
+                                                                  sep=" "))
 gen = sampler.sample(100, num_steps=200, new_level_interval=10000,
                      num_per_step=100000, thread_steps=200,
                      num_particles=1, lam=5, beta=100, seed=1234)
@@ -39,4 +47,4 @@ for i, sample in enumerate(gen):
     if (i + 1) % 10 == 0:
         stats = sampler.postprocess()
         print("Sample {0}: log(Z) = {1} [exact log(Z) = {2}]"
-              .format(i + 1, stats["log_Z"], true_log_z))
+              .format(i + 1, stats["log_Z"], model.analytic_log_Z()))
