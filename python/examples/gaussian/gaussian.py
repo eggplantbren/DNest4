@@ -39,9 +39,9 @@ model = Model()
 sampler = dnest4.DNest4Sampler(model,
                                backend=dnest4.backends.CSVBackend(".",
                                                                   sep=" "))
-gen = sampler.sample(100, num_steps=200, new_level_interval=10000,
-                     num_per_step=100000, thread_steps=200,
-                     num_particles=1, lam=5, beta=100, seed=1234)
+gen = sampler.sample(20, num_steps=1000, new_level_interval=10000,
+                     num_per_step=10000, thread_steps=100,
+                     num_particles=5, lam=5, beta=100, seed=1234)
 
 for i, sample in enumerate(gen):
     if (i + 1) % 10 == 0:
