@@ -105,6 +105,11 @@ void Sampler<ModelType>::run()
 #else
 	for(size_t i=0; i<threads.size(); ++i) run_thread(i);
 #endif
+
+	// Save the sampler state to a file.
+	std::fstream fout("sampler_state.txt", std::ios::out);
+	print(fout);
+	fout.close();
 }
 
 template<class ModelType>
@@ -503,6 +508,56 @@ void Sampler<ModelType>::kill_lagging_particles()
 	}
 	else
 		std::cerr<<"# Warning: all particles lagging! Very rare!"<<std::endl;
+}
+
+template<class ModelType>
+void Sampler<ModelType>::print(std::ostream& out) const
+{
+	out<<save_to_disk<<' ';
+	out<<num_threads<<' ';
+	out<<compression<<' ';
+
+	out<<options<<' ';
+
+	for(const auto& p: particles)
+		p.print(out);
+
+	for(const auto& l: log_likelihoods)
+		l.print(out);
+
+	for(const auto& l: level_assignments)
+		out<<l<<' ';
+
+	for(const auto& l: levels)
+		l.print(out);
+
+	out<<count_saves<<' ';
+	out<<count_mcmc_steps<<' ';
+}
+
+template<class ModelType>
+void Sampler<ModelType>::read(std::istream& in)
+{
+	in>>save_to_disk;
+	in>>num_threads;
+	in>>compression;
+
+	in>>options;
+
+	for(auto& p: particles)
+		p.read(in);
+
+	for(auto& l: log_likelihoods)
+		l.read(in);
+
+	for(auto l: level_assignments)
+		in>>l;
+
+	for(auto& l: levels)
+		l.read(in);
+
+	in>>count_saves;
+	in>>count_mcmc_steps;
 }
 
 } // namespace DNest4

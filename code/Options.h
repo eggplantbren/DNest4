@@ -2,6 +2,8 @@
 #define DNest4_Options
 
 #include <string>
+#include <ostream>
+#include <istream>
 
 namespace DNest4
 {
@@ -44,9 +46,16 @@ class Options
 
 		Options(const char* filename);
 		void load(const char* filename);
+
+		void print(std::ostream& out) const;
+		void read(std::istream& in);
 };
 
 } // namespace DNest4
+
+// Operator << which just calls print
+std::ostream& operator << (std::ostream& out, const DNest4::Options& o);
+std::istream& operator >> (std::istream& in, DNest4::Options& o);
 
 #endif
 

@@ -1,6 +1,8 @@
 #ifndef DNest4_LikelihoodType
 #define DNest4_LikelihoodType
 
+#include <ostream>
+#include <istream>
 #include "RNG.h"
 
 namespace DNest4
@@ -33,6 +35,10 @@ class LikelihoodType
 
 		// Less-than operator
 		bool operator < (const LikelihoodType& other) const;
+
+		// Print to stream and read from stream
+		void print(std::ostream& out) const;
+		void read(std::istream& in);
 }; // class LikelihoodType
 
 } // namespace DNest4
