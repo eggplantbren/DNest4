@@ -69,7 +69,6 @@ void Options::load(const char* filename)
 			beta >= 0.);
 }
 
-
 void Options::print(std::ostream& out) const
 {
 	out<<num_particles<<' ';
@@ -86,6 +85,22 @@ void Options::print(std::ostream& out) const
 	out<<levels_file<<' ';
 }
 
+void Options::read(std::istream& in)
+{
+	in>>num_particles;
+	in>>new_level_interval;
+	in>>save_interval;
+	in>>thread_steps;
+	in>>max_num_levels;
+	in>>lambda;
+	in>>beta;
+	in>>max_num_saves;
+
+	in>>sample_file;
+	in>>sample_info_file;
+	in>>levels_file;
+}
+
 } // namespace DNest4
 
 // Operator << which just calls print
@@ -94,5 +109,11 @@ ostream& operator << (ostream& out, const DNest4::Options& o)
 {
 	o.print(out);
 	return out;
+}
+
+istream& operator >> (istream& in, DNest4::Options& o)
+{
+	o.read(in);
+	return in;
 }
 
