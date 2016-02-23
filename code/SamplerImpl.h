@@ -105,6 +105,11 @@ void Sampler<ModelType>::run()
 #else
 	for(size_t i=0; i<threads.size(); ++i) run_thread(i);
 #endif
+
+	// Save the sampler state to a file.
+	std::fstream fout("sampler_state.txt", std::ios::out);
+	print(fout);
+	fout.close();
 }
 
 template<class ModelType>
