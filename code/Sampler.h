@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <thread>
+#include <ostream>
 #include "LikelihoodType.h"
 #include "Options.h"
 #include "Level.h"
@@ -116,9 +117,15 @@ class Sampler
 		ModelType* particle (unsigned int i) { return &(particles[i]); };
 
 		const std::vector<Level>& get_levels () const { return levels; };
+
+		void print(std::ostream& out) const;
 };
 
 } // namespace DNest4
+
+template<class ModelType>
+std::ostream& operator << (std::ostream& out,
+								const DNest4::Sampler<ModelType>& s);
 
 #include "SamplerImpl.h"
 #endif

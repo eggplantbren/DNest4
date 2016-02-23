@@ -505,5 +505,30 @@ void Sampler<ModelType>::kill_lagging_particles()
 		std::cerr<<"# Warning: all particles lagging! Very rare!"<<std::endl;
 }
 
+template<class ModelType>
+void Sampler<ModelType>::print(std::ostream& out) const
+{
+	out<<save_to_disk<<' ';
+	out<<num_threads<<' ';
+	out<<compression<<' ';
+
+	out<<options<<' ';
+
+	for(const auto& p: particles)
+		p.print(out);
+
+	for(const auto& l: log_likelihoods)
+		l.print(out);
+
+	for(auto l: level_assignments)
+		out<<l<<' ';
+
+	for(const auto& l: levels)
+		l.print(out);
+
+	out<<count_saves<<' ';
+	out<<count_mcmc_steps<<' ';
+}
+
 } // namespace DNest4
 
