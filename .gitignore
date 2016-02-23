@@ -13,4 +13,7 @@ manual.pdf
 logfile
 movie.avi
 *.pdf
-
+*.aux
+*.log
+sampler_state.txt
+*.so
