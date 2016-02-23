@@ -3,6 +3,8 @@
 
 #include "LikelihoodType.h"
 #include <vector>
+#include <ostream>
+#include <istream>
 
 namespace DNest4
 {
@@ -55,6 +57,10 @@ class Level
 		void increment_exceeds(int diff) { exceeds += diff; }
 		void increment_accepts(int diff) { accepts += diff; }
 		void increment_tries(int diff) { tries += diff; }
+
+		// Print and read
+		void print(std::ostream& out) const;
+		void read(std::istream& in);
 
 		// Operations on sets of levels
 		static void recalculate_log_X(std::vector<Level>& levels,
