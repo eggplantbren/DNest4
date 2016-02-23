@@ -4,6 +4,7 @@
 #include <vector>
 #include <thread>
 #include <ostream>
+#include <istream>
 #include "LikelihoodType.h"
 #include "Options.h"
 #include "Level.h"
@@ -119,6 +120,7 @@ class Sampler
 		const std::vector<Level>& get_levels () const { return levels; };
 
 		void print(std::ostream& out) const;
+		void read(std::istream& in);
 };
 
 } // namespace DNest4

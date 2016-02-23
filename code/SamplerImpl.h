@@ -520,7 +520,7 @@ void Sampler<ModelType>::print(std::ostream& out) const
 	for(const auto& l: log_likelihoods)
 		l.print(out);
 
-	for(auto l: level_assignments)
+	for(const auto& l: level_assignments)
 		out<<l<<' ';
 
 	for(const auto& l: levels)
@@ -528,6 +528,31 @@ void Sampler<ModelType>::print(std::ostream& out) const
 
 	out<<count_saves<<' ';
 	out<<count_mcmc_steps<<' ';
+}
+
+template<class ModelType>
+void Sampler<ModelType>::read(std::istream& in)
+{
+	in>>save_to_disk;
+	in>>num_threads;
+	in>>compression;
+
+	in>>options;
+
+	for(auto& p: particles)
+		p.read(in);
+
+	for(auto& l: log_likelihoods)
+		l.read(in);
+
+	for(auto l: level_assignments)
+		in>>l;
+
+	for(auto& l: levels)
+		l.read(in);
+
+	in>>count_saves;
+	in>>count_mcmc_steps;
 }
 
 } // namespace DNest4
