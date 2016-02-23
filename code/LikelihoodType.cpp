@@ -38,5 +38,16 @@ bool LikelihoodType::operator < (const LikelihoodType& other) const
 	return false;
 }
 
+void LikelihoodType::print(std::ostream& out) const
+{
+	out<<value<<' '<<tiebreaker<<' ';
+}
+
+void LikelihoodType::read(std::istream& in)
+{
+	in>>value;
+	in>>tiebreaker;
+}
+
 } // namespace DNest4
 
