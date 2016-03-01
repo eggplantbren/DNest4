@@ -19,19 +19,30 @@ class RJObject:
         """
         self.N_max = N_max
         self.dims = dims
-        self.components = rng.rand(self.N_max, dims)
+        self.N = 0
+        self.components = np.empty(self.N_max, dims)
         self.conditional_prior = conditional_prior
 
     def from_prior(self):
         """
         Generate hyperparameters and components from the prior
         """
-        self.components = rng.rand(self.N_max, dims)
+        self.components = rng.rand(self.N_max, self.dims)
         self.conditional_prior.from_prior()
+        self.components[0:self.N, :] = rng.rand(self.N, self.dims)
 
     def perturb(self):
         """
         Metropolis-Hastings proposal
+        """
+
+        # Choose a proposal type
+        choice = rng.rand_int(5)
+
+
+    def perturb_N(self):
+        """
+        Propose a new value for N using birth-death
         """
         pass
 
