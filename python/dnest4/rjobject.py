@@ -1,7 +1,58 @@
 import numpy as np
 import numpy.random as rng
 
-__all__ = "RJObject"
+__all__ = ["RJObject", "ConditionalPrior"]
+
+class ConditionalPrior:
+    """
+    An object of this class describes p(theta | alpha) and
+    the current value of alpha. This is a 'ClassicMassInf' example
+    you can adapt to your own purposes.
+    """
+    def __init__(self):
+        # Known hyperparameters
+        self.x_min, self.x_max = -10.0, 10.0
+
+        # Unknown hyperparameter
+        self.mu = 0.0
+
+    def from_prior(self):
+        # Log-uniform prior for mu
+        self.mu = np.exp(np.log(1E-3) + np.log(1E6)*rng.rand())
+
+    def to_uniform(self, components):
+        """
+        Transform components to U(0, 1)
+        """
+        # Uniform prior for positions
+        components[:,0] = (components[:,0] - self.x_min)\
+                                /(self.x_max - self.x_min)
+
+        # Exponential prior for amplitudes (given mu)
+        components[:,1] = 1. - np.exp(-components[:,1]/self.mu)
+
+    def from_uniform(self, components):
+        """
+        Transform components from U(0, 1)
+        """
+        # Uniform prior for positions
+        components[:,0] = self.x_min + (self.x_max - self.x_min)*components[:,0]
+
+        # Exponential prior for amplitudes (given mu)
+        components[:,1] = -self.mu*np.log(1.0 - components[:,1])
+
+    def log_pdf(self, components):
+        """
+        Evaluate the density p(x|alpha)
+        """
+        # Check hard boundaries
+        if np.any(np.logical_or(components[:,0] < self.x_min,\
+                                components[:,0] > self.x_max)):
+            return -np.Inf
+        if np.any(components[:,1] < 0.0):
+            return -np.Inf
+        # Exponential density
+        return -np.log(self.mu) - np.sum(components[:,1])/self.mu
 
 
 class RJObject:
