@@ -71,16 +71,17 @@ class RJObject:
         self.N_max = N_max
         self.dims = dims
         self.N = 0
-        self.components = np.empty(self.N_max, dims)
+        self.components = np.empty((self.N_max, dims))
         self.conditional_prior = conditional_prior
 
     def from_prior(self):
         """
         Generate hyperparameters and components from the prior
         """
-        self.components = rng.rand(self.N_max, self.dims)
+        self.N = rng.randint(self.N_max + 1)
         self.conditional_prior.from_prior()
         self.components[0:self.N, :] = rng.rand(self.N, self.dims)
+        self.conditional_prior.from_uniform(self.components[0:self.N, :])
 
     def perturb(self):
         """
@@ -96,4 +97,24 @@ class RJObject:
         Propose a new value for N using birth-death
         """
         pass
+
+
+if __name__ == "__main__":
+    """
+    Generate an RJObject from the prior five times.
+    """
+    import matplotlib.pyplot as plt
+    rng.seed(1)
+
+    rjobject = RJObject(10, 2, ConditionalPrior())
+
+    for i in range(0, 5):
+        rjobject.from_prior()
+
+        if rjobject.N >= 1:
+            plt.hist(rjobject.components[0:rjobject.N,0], 100,
+                        weights=rjobject.components[0:rjobject.N,1])
+            plt.xlim([rjobject.conditional_prior.x_min,\
+                            rjobject.conditional_prior.x_max])
+            plt.show()
 
