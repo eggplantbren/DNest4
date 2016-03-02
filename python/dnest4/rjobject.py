@@ -101,15 +101,17 @@ class RJObject:
 
 if __name__ == "__main__":
     """
-    Generate an RJObject from the prior five times.
+    Do some tests.
     """
     import matplotlib.pyplot as plt
     rng.seed(1)
 
+    # Generate an RJObject from the prior five times.
     rjobject = RJObject(10, 2, ConditionalPrior())
 
     for i in range(0, 5):
         rjobject.from_prior()
+        print(rjobject.N)
 
         if rjobject.N >= 1:
             plt.hist(rjobject.components[0:rjobject.N,0], 100,
@@ -118,3 +120,12 @@ if __name__ == "__main__":
                             rjobject.conditional_prior.x_max])
             plt.show()
 
+    # Now check that the conditional prior to_uniform and from_uniform
+    # are truly inverses of each other
+    x = rng.rand(100, 100)
+    y = x.copy()
+    rjobject.conditional_prior.from_uniform(y)
+    rjobject.conditional_prior.to_uniform(y)
+    print("to_uniform and from_uniform are inverses: ")
+    print(np.allclose(x, y))
+    
