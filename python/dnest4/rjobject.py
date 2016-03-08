@@ -46,13 +46,16 @@ class ConditionalPrior:
         Evaluate the density p(x|alpha)
         """
         # Check hard boundaries
-        if np.any(np.logical_or(components[:,0] < self.x_min,\
-                                components[:,0] > self.x_max)):
+        if np.any((components[:,0] < self.x_min) |\
+                                (components[:,0] > self.x_max)):
             return -np.Inf
         if np.any(components[:,1] < 0.0):
             return -np.Inf
-        # Exponential density
-        return -np.log(self.mu) - np.sum(components[:,1])/self.mu
+
+        # Uniform density for position,
+        # exponential density for amplitude
+        return -np.log(self.x_max - self.x_min)\
+               -np.log(self.mu) - np.sum(components[:,1])/self.mu
 
 
 class RJObject:
@@ -62,16 +65,16 @@ class RJObject:
     prior distribution.
     """
 
-    def __init__(self, N_max, dims, conditional_prior):
+    def __init__(self, N_max, ndim, conditional_prior):
         """
         N_max (default=10): The maximum number of components allowed
-        dims = dimensionality of the parameter space of a component
+        ndim = dimensionality of the parameter space of a component
         conditional_prior = ConditionalPrior object
         """
         self.N_max = N_max
-        self.dims = dims
+        self.ndim = ndim
         self.N = 0
-        self.components = np.empty((self.N_max, dims))
+        self.components = np.empty((self.N_max, ndim))
         self.conditional_prior = conditional_prior
 
     def from_prior(self):
@@ -80,7 +83,7 @@ class RJObject:
         """
         self.N = rng.randint(self.N_max + 1)
         self.conditional_prior.from_prior()
-        self.components[0:self.N, :] = rng.rand(self.N, self.dims)
+        self.components[0:self.N, :] = rng.rand(self.N, self.ndim)
         self.conditional_prior.from_uniform(self.components[0:self.N, :])
 
     def perturb(self):
@@ -111,7 +114,7 @@ if __name__ == "__main__":
 
     for i in range(0, 5):
         rjobject.from_prior()
-        print(rjobject.N)
+        print("N =", rjobject.N)
 
         if rjobject.N >= 1:
             plt.hist(rjobject.components[0:rjobject.N,0], 100,
@@ -120,12 +123,12 @@ if __name__ == "__main__":
                             rjobject.conditional_prior.x_max])
             plt.show()
 
-    # Now check that the conditional prior to_uniform and from_uniform
+    # Now check that the conditional_prior.to_uniform and from_uniform
     # are truly inverses of each other
     x = rng.rand(100, 100)
     y = x.copy()
     rjobject.conditional_prior.from_uniform(y)
     rjobject.conditional_prior.to_uniform(y)
-    print("to_uniform and from_uniform are inverses: ")
-    print(np.allclose(x, y))
-    
+    print("to_uniform and from_uniform are inverses:", np.allclose(x, y))
+
+
