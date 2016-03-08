@@ -7,7 +7,7 @@ class ConditionalPrior:
     """
     An object of this class describes p(theta | alpha) and
     the current value of alpha. This is a 'ClassicMassInf' example
-    you can adapt to your own purposes.
+    you can adapt for your own purposes.
     """
     def __init__(self):
         # Known hyperparameters
@@ -84,30 +84,42 @@ class RJObject:
         self.N = rng.randint(self.N_max + 1)
         self.conditional_prior.from_prior()
         self.components[0:self.N, :] = rng.rand(self.N, self.ndim)
-        self.conditional_prior.from_uniform(self.components[0:self.N, :])
+        self.conditional_prior.from_uniform(self.components)
 
     def perturb(self):
         """
         Metropolis-Hastings proposal
         """
-
         # Choose a proposal type
         choice = rng.rand_int(5)
-
 
     def perturb_N(self):
         """
         Propose a new value for N using birth-death
         """
-        pass
+        new_N = self.N + int(10.0**(2.0*rng.rand()))*(2*rng.randint(2) - 1)
+        new_N = np.mod(new_N, self.N_max+1)
+        difference = new_N - self.N
 
+        if difference > 0:      # Birth
+            self.components[self.N:new_N, :] = rng.rand(difference, self.ndim)
+            self.conditional_prior.\
+                    from_uniform(self.components[self.N:new_N, :])
+        elif difference < 0:    # Death
+            survivors = rng.choice(np.arange(0, self.N), size=new_N,\
+                                        replace=False)
+            self.components = self.components[survivors, :]
+        else:
+            print("This shouldn't happen.")
+
+        self.N = new_N
 
 if __name__ == "__main__":
     """
     Do some tests.
     """
     import matplotlib.pyplot as plt
-    rng.seed(1)
+    #rng.seed(1)
 
     # Generate an RJObject from the prior five times.
     rjobject = RJObject(10, 2, ConditionalPrior())
@@ -116,12 +128,12 @@ if __name__ == "__main__":
         rjobject.from_prior()
         print("N =", rjobject.N)
 
-        if rjobject.N >= 1:
-            plt.hist(rjobject.components[0:rjobject.N,0], 100,
-                        weights=rjobject.components[0:rjobject.N,1])
-            plt.xlim([rjobject.conditional_prior.x_min,\
-                            rjobject.conditional_prior.x_max])
-            plt.show()
+#        if rjobject.N >= 1:
+#            plt.hist(rjobject.components[0:rjobject.N,0], 100,
+#                        weights=rjobject.components[0:rjobject.N,1])
+#            plt.xlim([rjobject.conditional_prior.x_min,\
+#                            rjobject.conditional_prior.x_max])
+#            plt.show()
 
     # Now check that the conditional_prior.to_uniform and from_uniform
     # are truly inverses of each other
@@ -131,4 +143,5 @@ if __name__ == "__main__":
     rjobject.conditional_prior.to_uniform(y)
     print("to_uniform and from_uniform are inverses:", np.allclose(x, y))
 
+    rjobject.perturb_N()
 
