@@ -18,6 +18,8 @@ double logsumexp(double* logv, int n);
 double logsumexp(const std::vector<double>& logv);
 double logsumexp(double a, double b);
 double logdiffexp(double a, double b);
+double normal_cdf(double x);
+double normal_inverse_cdf(double x);
 
 // Argsort from
 // http://stackoverflow.com/questions/1577475/c-sorting-and-keeping-track-of-indexes

@@ -57,5 +57,22 @@ void Level::renormalise_visits(vector<Level>& levels,
 	}
 }
 
+void Level::print(ostream& out) const
+{
+	log_likelihood.print(out);
+	out<<log_X<<' ';
+	out<<visits<<' '<<exceeds<<' '<<accepts<<' '<<tries<<' ';
+}
+
+void Level::read(istream& in)
+{
+	log_likelihood.read(in);
+	in>>log_X;
+	in>>visits;
+	in>>exceeds;
+	in>>accepts;
+	in>>tries;
+}
+
 } // namespace DNest4
 

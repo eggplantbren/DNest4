@@ -1,0 +1,7 @@
+build
+dist
+*.egg-info
+*.pyc
+*.txt
+__pycache__
+dnest4/*.cpp

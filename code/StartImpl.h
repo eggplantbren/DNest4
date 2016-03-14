@@ -29,7 +29,9 @@ Sampler<ModelType> setup(const CommandLineOptions& options)
 
 	// Create sampler
 	Sampler<ModelType> sampler(options.get_num_threads(),
-								options.get_compression_double(), sampler_options);
+								options.get_compression_double(),
+								sampler_options,
+								true);
 
 	// Seed RNGs
 	sampler.initialise(options.get_seed_uint());
@@ -41,6 +43,13 @@ template<class ModelType>
 void start(int argc, char** argv)
 {
 	CommandLineOptions options(argc, argv);
+	Sampler<ModelType> sampler = setup<ModelType>(options);
+	sampler.run();
+}
+
+template<class ModelType>
+void start(const CommandLineOptions& options)
+{
 	Sampler<ModelType> sampler = setup<ModelType>(options);
 	sampler.run();
 }

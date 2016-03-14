@@ -11,8 +11,9 @@ namespace DNest4
 
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
-							const Options& options)
-:threads(num_threads, nullptr)
+							const Options& options, bool save_to_disk)
+:save_to_disk(save_to_disk)
+,threads(num_threads, nullptr)
 ,barrier(nullptr)
 ,num_threads(num_threads)
 ,compression(compression)
@@ -59,11 +60,13 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 																rng.rand());
 	}
 	std::cout<<"done."<<std::endl;
+	initialise_output_files();
 }
 
 template<class ModelType>
 void Sampler<ModelType>::run()
 {
+#ifndef NO_THREADS
 	// Set up threads and barrier
 	// Delete if necessary (shouldn't be needed!)
 	if(barrier != nullptr)
@@ -86,12 +89,27 @@ void Sampler<ModelType>::run()
 		// Allocate and create the thread
 		threads[i] = new std::thread(func);
 	}
+
 	// Join and de-allocate all threads and barrier
 	for(auto& t: threads)
 		t->join();
+
+	// Delete dynamically allocated stuff and point to nullptr
 	delete barrier;
+	barrier = nullptr;
 	for(auto& t: threads)
+	{
 		delete t;
+		t = nullptr;
+	}
+#else
+	for(size_t i=0; i<threads.size(); ++i) run_thread(i);
+#endif
+
+	// Save the sampler state to a file.
+	std::fstream fout("sampler_state.txt", std::ios::out);
+	print(fout);
+	fout.close();
 }
 
 template<class ModelType>
@@ -226,10 +244,6 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 template<class ModelType>
 void Sampler<ModelType>::run_thread(unsigned int thread)
 {
-	// Thread zero takes full responsibility for some tasks
-	if(thread == 0)
-		initialise_output_files();
-
 	// Alternate between MCMC and bookkeeping
 	while(true)
 	{
@@ -242,17 +256,22 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 				copies_of_levels[i] = levels;
 		}
 
+#ifndef NO_THREADS
 		// Wait for all threads to get here before proceeding
 		barrier->wait();
+#endif
 
 		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
 
 		// Check for termination
-		if(options.max_num_samples != 0 && count_saves == options.max_num_samples)
+		if(options.max_num_saves != 0 &&
+				count_saves != 0 && (count_saves%options.max_num_saves == 0))
 			return;
 
+#ifndef NO_THREADS
 		barrier->wait();
+#endif
 
 		// Thread zero takes full responsibility for some tasks
 		if(thread == 0)
@@ -278,14 +297,23 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 			}
 
 			// Combine into a single vector
-			for(const auto& a: above)
+			for(auto& a: above)
+			{
 				for(const auto& element: a)
 					all_above.push_back(element);
+				a.clear();
+			}
 
 			// Do the bookkeeping
 			do_bookkeeping();
 		}
 	}
+}
+
+template<class ModelType>
+void Sampler<ModelType>::increase_max_num_saves(unsigned int increment)
+{
+	options.max_num_saves += increment;
 }
 
 template<class ModelType>
@@ -357,6 +385,9 @@ double Sampler<ModelType>::log_push(unsigned int which_level) const
 template<class ModelType>
 void Sampler<ModelType>::initialise_output_files() const
 {
+	if(!save_to_disk)
+		return;
+
 	std::fstream fout;
 
 	// Output headers
@@ -375,6 +406,9 @@ void Sampler<ModelType>::initialise_output_files() const
 template<class ModelType>
 void Sampler<ModelType>::save_levels() const
 {
+	if(!save_to_disk)
+		return;
+
 	// Output file
 	std::fstream fout;
 	fout.open("levels.txt", std::ios::out);
@@ -396,7 +430,12 @@ void Sampler<ModelType>::save_levels() const
 template<class ModelType>
 void Sampler<ModelType>::save_particle()
 {
-	std::cout<<"# Saving particle to disk. N = "<<(count_saves+1)<<".";
+	++count_saves;
+
+	if(!save_to_disk)
+		return;
+
+	std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
 	std::cout<<std::endl;
 
 	// Output file
@@ -414,8 +453,6 @@ void Sampler<ModelType>::save_particle()
 	fout<<log_likelihoods[which].get_tiebreaker()<<' ';
 	fout<<which<<std::endl;
 	fout.close();
-
-	++count_saves;
 }
 
 template<class ModelType>
@@ -454,7 +491,7 @@ void Sampler<ModelType>::kill_lagging_particles()
 				int i_copy;
 				do
 				{
-					i_copy = rngs[0].rand_int(num_threads);
+					i_copy = rngs[0].rand_int(num_threads*options.num_particles);
 				}while(!good[i_copy] ||
 			rngs[0].rand() >= exp(log_push(level_assignments[i]) - max_log_push));
 
@@ -471,6 +508,56 @@ void Sampler<ModelType>::kill_lagging_particles()
 	}
 	else
 		std::cerr<<"# Warning: all particles lagging! Very rare!"<<std::endl;
+}
+
+template<class ModelType>
+void Sampler<ModelType>::print(std::ostream& out) const
+{
+	out<<save_to_disk<<' ';
+	out<<num_threads<<' ';
+	out<<compression<<' ';
+
+	out<<options<<' ';
+
+	for(const auto& p: particles)
+		p.print(out);
+
+	for(const auto& l: log_likelihoods)
+		l.print(out);
+
+	for(const auto& l: level_assignments)
+		out<<l<<' ';
+
+	for(const auto& l: levels)
+		l.print(out);
+
+	out<<count_saves<<' ';
+	out<<count_mcmc_steps<<' ';
+}
+
+template<class ModelType>
+void Sampler<ModelType>::read(std::istream& in)
+{
+	in>>save_to_disk;
+	in>>num_threads;
+	in>>compression;
+
+	in>>options;
+
+	for(auto& p: particles)
+		p.read(in);
+
+	for(auto& l: log_likelihoods)
+		l.read(in);
+
+	for(auto l: level_assignments)
+		in>>l;
+
+	for(auto& l: levels)
+		l.read(in);
+
+	in>>count_saves;
+	in>>count_mcmc_steps;
 }
 
 } // namespace DNest4

@@ -1,7 +1,7 @@
 #ifndef DNest4_StraightLine
 #define DNest4_StraightLine
 
-#include "RNG.h"
+#include "DNest4/code/DNest4.h"
 #include <valarray>
 #include <ostream>
 

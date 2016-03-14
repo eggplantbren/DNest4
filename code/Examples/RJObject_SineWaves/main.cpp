@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Data.h"
-#include "Start.h"
+#include "DNest4/code/DNest4.h"
 #include "MyModel.h"
 
 using namespace std;

@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <thread>
+#include <ostream>
+#include <istream>
 #include "LikelihoodType.h"
 #include "Options.h"
 #include "Level.h"
@@ -16,6 +18,10 @@ template<class ModelType>
 class Sampler
 {
 	private:
+		// Whether to save anything to disk or not
+		// Use 'true' for standard mode
+		bool save_to_disk;
+
 		// Threads and barrier
 		std::vector<std::thread*> threads;
 		Barrier* barrier;
@@ -78,18 +84,50 @@ class Sampler
 		void save_particle();
 
 	public:
+		Sampler () {};
+
 		// Constructor: Pass in Options object
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options);
+
+		// Constructor: Pass in Options object and save_to_disk
+		Sampler(unsigned int num_threads,
+						double compression, const Options& options,
+						bool save_to_disk);
 
 		// Set rng seeds, then draw all particles from the prior
 		void initialise(unsigned int first_seed);
 
 		// Launch everything
 		void run();
+
+		// Increase max_num_saves (allows continuation)
+		void increase_max_num_saves(unsigned int increment);
+
+		// GETTERS!!!
+		const std::vector<ModelType>& get_particles() const
+		{ return particles; }
+
+		const std::vector<LikelihoodType>& get_log_likelihoods() const
+		{ return log_likelihoods; }
+
+		const std::vector<unsigned int> get_level_assignments() const
+		{ return level_assignments; }
+
+		int size () const { return particles.size(); };
+		ModelType* particle (unsigned int i) { return &(particles[i]); };
+
+		const std::vector<Level>& get_levels () const { return levels; };
+
+		void print(std::ostream& out) const;
+		void read(std::istream& in);
 };
 
 } // namespace DNest4
+
+template<class ModelType>
+std::ostream& operator << (std::ostream& out,
+								const DNest4::Sampler<ModelType>& s);
 
 #include "SamplerImpl.h"
 #endif
