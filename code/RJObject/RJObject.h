@@ -14,12 +14,7 @@ namespace DNest4
 
 /*
 * A class that implements basic birth-death Metropolis-Hastings
-* proposals using an exponential prior on the masses and a
-* uniform prior on the positions. This is designed for 1, 2,
-* or 3-dimensional objects. This class stores masses for
-* each of the components it has, but it does not store
-* any other properties. If your components have more properties
-* you may derive from this class or store them externally.
+* proposals for use in DNest4.
 */
 
 template<class ConditionalPrior>

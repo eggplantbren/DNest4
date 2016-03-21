@@ -3,7 +3,7 @@ export CXX
 CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
 
 default:
-	$(CXX) -I. $(CXXFLAGS) -c *.cpp RJObject/*.cpp RJObject/ConditionalPriors/*.cpp
+	$(CXX) -I. $(CXXFLAGS) -c *.cpp RJObject/ConditionalPriors/*.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 	make nolib -C Examples/SpikeSlab
