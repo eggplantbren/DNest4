@@ -500,7 +500,7 @@ void Sampler<ModelType>::kill_lagging_particles()
 				level_assignments[i] = level_assignments[i_copy];
 				++deletions;
 
-				std::cout<<"# Replacing languishing particle.";
+				std::cout<<"# Replacing lagging particle.";
 				std::cout<<" This has happened "<<deletions;
 				std::cout<<" times."<<std::endl;
 			}
