@@ -493,7 +493,7 @@ void Sampler<ModelType>::kill_lagging_particles()
 				{
 					i_copy = rngs[0].rand_int(num_threads*options.num_particles);
 				}while(!good[i_copy] ||
-			rngs[0].rand() >= exp(log_push(level_assignments[i]) - max_log_push));
+			        rngs[0].rand() >= exp(log_push(level_assignments[i_copy]) - max_log_push));
 
 				particles[i] = particles[i_copy];
 				log_likelihoods[i] = log_likelihoods[i_copy];
