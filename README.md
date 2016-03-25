@@ -22,7 +22,8 @@ Improvements over DNest3:
 =========================
 
 *	There are far fewer dependencies --- all you need is a C++ compiler that
-	supports the C++11 standard, along with Python, NumPy, and Matplotlib
+	supports the C++11 standard, along with Python, NumPy, Matplotlib, and
+    pandas
 	for the post-processing scripts. Because of this, it should be much easier
 	to compile (at least on a Unix-like operating system such as Ubuntu or
 	Mac OS X).
