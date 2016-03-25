@@ -9,18 +9,18 @@ class Uniform:
         self.a, self.b = a, b
 
     def from_prior(self):
-        s = r"{x} = {a} + ({b} - ({a}))*rng.rand();\n"
+        s = "{x} = {a} + ({b} - ({a}))*rng.rand();\n"
         return self.insert_parameters(s)
 
     def perturb(self):
-        s  = r"{x} += ({b} - ({a}))*rng.randh();\n"
-        s += r"wrap({x}, {a}, {b});\n"
+        s  = "{x} += ({b} - ({a}))*rng.randh();\n"
+        s += "wrap({x}, {a}, {b});\n"
         return self.insert_parameters(s)
 
     def log_density(self):
-        s  = r"if({x} < ({a}) || {x} > ({b}))\n"
-        s += r"    logp = -numeric_limits<double>::max();\n"
-        s += r"logp += -log({b} - ({a}));\n"
+        s  = "if({x} < ({a}) || {x} > ({b}))\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "logp += -log({b} - ({a}));\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -36,18 +36,18 @@ class Normal:
         self.mu, self.sigma = mu, sigma
 
     def from_prior(self):
-        s = r"{x} = {mu} + {sigma}*rng.randn();\n"
+        s = "{x} = {mu} + {sigma}*rng.randn();\n"
         return self.insert_parameters(s)
 
     def perturb(self):
-        s  = r"log_H -= -0.5*pow(({x}) - ({mu}))/({sigma}), 2);\n"
-        s += r"{x} += ({sigma})*rng.randh();\n"
-        s += r"log_H += -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
+        s  = "log_H -= -0.5*pow(({x}) - ({mu}))/({sigma}), 2);\n"
+        s += "{x} += ({sigma})*rng.randh();\n"
+        s += "log_H += -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
 
     def log_density(self):
-        s  = r"logp += -log(2*M_PI) - log({sigma}) "
-        s += r"- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
+        s  = "logp += -log(2*M_PI) - log({sigma}) "
+        s += "- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -72,8 +72,7 @@ class Node:
         self.name = name
         self.prior = prior
         self.node_type = node_type
-        if index is not None:
-            self.name += "[" + str(index) + "]"
+        self.index = index
 
     def from_prior(self):
         return self.prior.from_prior().replace("{x}", self.name)
@@ -85,7 +84,10 @@ class Node:
         return self.prior.log_density().replace("{x}", self.name)
 
     def __str__(self):
-        return self.name
+        if index is None:
+            return self.name
+        else:
+            return self.name + "[" + str(index) + "]"
 
 
 class Model:
@@ -123,20 +125,20 @@ class Model:
                 num_coords += 1
 
         # Choose which one to perturb
-        s =  r"double log_H = 0.0;\n"
-        s += r"int which = rng.rand_int({n});\n".replace("{n}", str(num_coords))
+        s =  "double log_H = 0.0;\n"
+        s += "int which = rng.rand_int({n});\n".replace("{n}", str(num_coords))
 
         #
         k = 0
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == NodeType.coordinate:
-                s += r"if(which == {k})\n{".replace("{k}", str(k))
+                s += "if(which == {k})\n{".replace("{k}", str(k))
                 s += node.perturb()
-                s += r"}"
+                s += "}"
                 k += 1
 
-        s += r"return log_H;\n"
+        s += "return log_H;\n"
         return s
 
     def log_likelihood(self):
@@ -150,6 +152,43 @@ class Model:
                 s += node.log_density()
         return s
 
+    def generate_h(self):
+        """
+        Load MyModel.h.template
+        and fill in the required declarations.
+        """
+        # Prepare the declarations for MyModel.h
+        declarations = ""
+
+        # Declare non-vectors, accumulate names of vectors
+        vectors = set()
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.index is None:
+                declarations += "        "
+                declarations += "double {x};\n".replace("{x}", node.name)
+            else:
+                vectors.add(node.name)
+
+        # Declare vectors
+        declarations += "\n"
+        for vec in vectors:
+            declarations += "        "
+            declarations += "std::vector<double> {x};".replace("{x}", vec)
+            declarations += "\n"
+
+        # Open the template .h file
+        f = open("MyModel.h.template")
+        s = f.read()
+        s = s.replace("        {DECLARATIONS}", declarations)
+        f.close()
+
+        # Write the new .h file
+        f = open("MyModel.h", "w")
+        f.write(s)
+        f.close()
+
+        return s
 
 if __name__ == "__main__":
     # Create a model
@@ -166,13 +205,7 @@ if __name__ == "__main__":
         model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
                                             node_type=NodeType.data, index=i))
 
-    # Print out from_prior code
-#    print(model.from_prior())
 
-    # Print out perturb code
-    print(model.perturb())
-
-    # Print out log_likelihood code
-#    print(model.log_likelihood())
+    model.generate_h()
 
 
