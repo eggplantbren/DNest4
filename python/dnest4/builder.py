@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from enum import Enum
 
 class Uniform:
@@ -89,7 +90,7 @@ class Node:
 
 class Model:
     def __init__(self):
-        self.nodes = {}
+        self.nodes = OrderedDict()
 
     def add_node(self, node):
         self.nodes[node.name] = node
@@ -102,6 +103,11 @@ class Model:
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == NodeType.coordinate:
+                s += node.from_prior()
+
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.derived:
                 s += node.from_prior()
         return s
 
