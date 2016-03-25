@@ -73,6 +73,8 @@ class Node:
         self.prior = prior
         self.node_type = node_type
         self.index = index
+        if index is not None:
+            self.name += "[" + str(index) + "]"
 
     def from_prior(self):
         return self.prior.from_prior().replace("{x}", self.name)
@@ -84,11 +86,7 @@ class Node:
         return self.prior.log_density().replace("{x}", self.name)
 
     def __str__(self):
-        if index is None:
-            return self.name
-        else:
-            return self.name + "[" + str(index) + "]"
-
+        return self.name
 
 class Model:
     def __init__(self):
@@ -128,7 +126,7 @@ class Model:
         s =  "double log_H = 0.0;\n"
         s += "int which = rng.rand_int({n});\n".replace("{n}", str(num_coords))
 
-        #
+        # The if-statements
         k = 0
         for name in self.nodes:
             node = self.nodes[name]
@@ -152,6 +150,18 @@ class Model:
                 s += node.log_density()
         return s
 
+    def get_vector_names(self, node_type):
+        """
+        Return a set of names of vectors of a certain NodeType.
+        """
+        vecs = set()
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == node_type and\
+               node.index is not None:
+                vecs.add(name.split("[")[0])
+        return vecs
+
     def generate_h(self):
         """
         Load MyModel.h.template
@@ -160,22 +170,20 @@ class Model:
         # Prepare the declarations for MyModel.h
         declarations = ""
 
-        # Declare non-vectors, accumulate names of vectors
-        vectors = set()
+        # Declare scalar parameters
         for name in self.nodes:
             node = self.nodes[name]
             if node.index is None:
                 declarations += "        "
                 declarations += "double {x};\n".replace("{x}", node.name)
-            else:
-                vectors.add(node.name)
-
-        # Declare vectors
         declarations += "\n"
-        for vec in vectors:
+
+        # Declare vector parameters
+        vecs = self.get_vector_names(NodeType.coordinate)
+        for vec in vecs:
             declarations += "        "
-            declarations += "std::vector<double> {x};".replace("{x}", vec)
-            declarations += "\n"
+            declarations += "std::vector<double> {x};\n".replace("{x}",\
+                             vec)
 
         # Open the template .h file
         f = open("MyModel.h.template")
@@ -199,12 +207,14 @@ if __name__ == "__main__":
     model.add_node(Node("b", Uniform(-10.0, 10.0)))
     model.add_node(Node("sigma", Uniform(0.0, 10.0)))
 
+    for i in range(0, 3):
+        model.add_node(Node("u", Uniform(0.0, 1.0), index=i))
+
     # Add five data values
     for i in range(0, 5):
         model.add_node(Node("x", None, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
                                             node_type=NodeType.data, index=i))
-
 
     model.generate_h()
 
