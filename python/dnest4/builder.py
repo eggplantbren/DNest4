@@ -68,7 +68,8 @@ class Node:
     """
     A single parameter or data value.
     """
-    def __init__(self, name, prior, node_type=NodeType.coordinate, index=None):
+    def __init__(self, name, prior=None, index=None,\
+                    node_type=NodeType.coordinate):
         self.name = name
         self.prior = prior
         self.node_type = node_type
@@ -131,9 +132,9 @@ class Model:
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == NodeType.coordinate:
-                s += "if(which == {k})\n{".replace("{k}", str(k))
-                s += node.perturb()
-                s += "}"
+                s += "if(which == {k})\n{\n".replace("{k}", str(k))
+                s += "\n".join(["    " + x for x in node.perturb().splitlines()])
+                s += "\n}\n"
                 k += 1
 
         s += "return log_H;\n"
@@ -188,7 +189,7 @@ class Model:
 
         declarations += "\n"
 
-        # Declare scalar prior info/data
+        # Declare scalar knowns
         for name in self.nodes:
             node = self.nodes[name]
             if node.index is None and (node.node_type == NodeType.data or\
@@ -197,6 +198,15 @@ class Model:
                 declarations += "double {x};\n".replace("{x}", node.name)
         declarations += "\n"
 
+        # Declare vector knowns
+        vecs = self.get_vector_names(NodeType.data)
+        vecs = vecs.union(self.get_vector_names(NodeType.prior_info))
+        for vec in vecs:
+            declarations += "        static const "
+            declarations += "std::vector<double> {x};\n".replace("{x}",\
+                             vec)
+
+        declarations += "\n"
 
         # Open the template .h file
         f = open("MyModel.h.template")
@@ -211,6 +221,40 @@ class Model:
 
         return s
 
+
+    def generate_cpp(self):
+        """
+        Load MyModel.cpp.template
+        and fill in the required stuff.
+        """
+        # Prepare the from_prior code
+        from_prior = self.from_prior()
+        from_prior = ["    " + x for x in from_prior.splitlines()]
+        from_prior = "\n".join(from_prior)
+
+        # Prepare the perturb code
+        perturb = self.perturb()
+        perturb = ["    " + x for x in perturb.splitlines()]
+        perturb = "\n".join(perturb)
+
+        # Open the template .h file
+        f = open("MyModel.cpp.template")
+        s = f.read()
+
+        # Do the replacements
+        s = s.replace("{FROM_PRIOR}", from_prior)
+        s = s.replace("{PERTURB}", perturb)
+        f.close()
+
+        # Write the new .h file
+        f = open("MyModel.cpp", "w")
+        f.write(s)
+        f.close()
+
+        return s
+
+
+
 if __name__ == "__main__":
     # Create a model
     model = Model()
@@ -222,11 +266,13 @@ if __name__ == "__main__":
 
     # Add five data values
     for i in range(0, 5):
-        model.add_node(Node("x", None, node_type=NodeType.prior_info, index=i))
+        model.add_node(Node("x", 3.2, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
                                             node_type=NodeType.data, index=i))
 
+    model.add_node(Node("C", 5.4, node_type=NodeType.prior_info))
+
     # Generate the .h file
     model.generate_h()
-
+    model.generate_cpp()
 
