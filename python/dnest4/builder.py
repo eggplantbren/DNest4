@@ -46,7 +46,7 @@ class Normal:
         return self.insert_parameters(s)
 
     def log_density(self):
-        s  = "logp += -log(2*M_PI) - log({sigma}) "
+        s  = "logp += -0.5*log(2*M_PI) - log({sigma}) "
         s += "- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
 
@@ -274,8 +274,9 @@ if __name__ == "__main__":
     # Add five data values
     for i in range(0, 5):
         model.add_node(Node("x", 3.2, node_type=NodeType.prior_info, index=i))
-        model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
-                                            node_type=NodeType.data, index=i))
+        model.add_node(Node("y", Normal("m*x[{i}] + b".format(i=i),\
+                                    model.nodes["sigma"]),\
+                                    node_type=NodeType.data, index=i))
 
     model.add_node(Node("C", 5.4, node_type=NodeType.prior_info))
 
