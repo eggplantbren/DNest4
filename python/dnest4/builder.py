@@ -111,6 +111,34 @@ class Model:
                 s += node.from_prior()
         return s
 
+    def perturb(self):
+        """
+        Generate perturb code for the whole model.
+        """
+        # Count the number of coordinates
+        num_coords = 0
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.coordinate:
+                num_coords += 1
+
+        # Choose which one to perturb
+        s =  r"double log_H = 0.0;\n"
+        s += r"int which = rng.rand_int({n});\n".replace("{n}", str(num_coords))
+
+        #
+        k = 0
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.coordinate:
+                s += r"if(which == {k})\n{".replace("{k}", str(k))
+                s += node.perturb()
+                s += r"}"
+                k += 1
+
+        s += r"return log_H;\n"
+        return s
+
     def log_likelihood(self):
         """
         Generate the log_likelihood code for the whole model.
@@ -136,11 +164,15 @@ if __name__ == "__main__":
     for i in range(0, 5):
         model.add_node(Node("x", None, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
-                                        node_type=NodeType.data, index=i))
+                                            node_type=NodeType.data, index=i))
 
     # Print out from_prior code
-    print(model.from_prior())
+#    print(model.from_prior())
+
+    # Print out perturb code
+    print(model.perturb())
 
     # Print out log_likelihood code
-    print(model.log_likelihood())
+#    print(model.log_likelihood())
+
 
