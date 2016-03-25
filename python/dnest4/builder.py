@@ -170,20 +170,33 @@ class Model:
         # Prepare the declarations for MyModel.h
         declarations = ""
 
-        # Declare scalar parameters
+        # Declare scalar unknowns
         for name in self.nodes:
             node = self.nodes[name]
-            if node.index is None:
+            if node.index is None and (node.node_type == NodeType.coordinate or\
+                                       node.node_type == NodeType.derived):
                 declarations += "        "
                 declarations += "double {x};\n".replace("{x}", node.name)
-        declarations += "\n"
 
-        # Declare vector parameters
+        # Declare vector unknowns
         vecs = self.get_vector_names(NodeType.coordinate)
+        vecs = vecs.union(self.get_vector_names(NodeType.derived))
         for vec in vecs:
             declarations += "        "
             declarations += "std::vector<double> {x};\n".replace("{x}",\
                              vec)
+
+        declarations += "\n"
+
+        # Declare scalar prior info/data
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.index is None and (node.node_type == NodeType.data or\
+                                       node.node_type == NodeType.prior_info):
+                declarations += "        static const "
+                declarations += "double {x};\n".replace("{x}", node.name)
+        declarations += "\n"
+
 
         # Open the template .h file
         f = open("MyModel.h.template")
@@ -207,15 +220,13 @@ if __name__ == "__main__":
     model.add_node(Node("b", Uniform(-10.0, 10.0)))
     model.add_node(Node("sigma", Uniform(0.0, 10.0)))
 
-    for i in range(0, 3):
-        model.add_node(Node("u", Uniform(0.0, 1.0), index=i))
-
     # Add five data values
     for i in range(0, 5):
         model.add_node(Node("x", None, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[i] + b", model.nodes["sigma"]),\
                                             node_type=NodeType.data, index=i))
 
+    # Generate the .h file
     model.generate_h()
 
 
