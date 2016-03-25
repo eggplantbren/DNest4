@@ -144,11 +144,12 @@ class Model:
         """
         Generate the log_likelihood code for the whole model.
         """
-        s = ""
+        s = "double logp = 0.0;\n\n"
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == NodeType.data:
                 s += node.log_density()
+        s += "\nreturn logp;"
         return s
 
     def get_vector_names(self, node_type):
@@ -237,6 +238,11 @@ class Model:
         perturb = ["    " + x for x in perturb.splitlines()]
         perturb = "\n".join(perturb)
 
+        # Prepare the log_likelihood code
+        log_likelihood = self.log_likelihood()
+        log_likelihood = ["    " + x for x in log_likelihood.splitlines()]
+        log_likelihood = "\n".join(log_likelihood)
+
         # Open the template .h file
         f = open("MyModel.cpp.template")
         s = f.read()
@@ -244,6 +250,7 @@ class Model:
         # Do the replacements
         s = s.replace("{FROM_PRIOR}", from_prior)
         s = s.replace("{PERTURB}", perturb)
+        s = s.replace("{LOG_LIKELIHOOD}", log_likelihood)
         f.close()
 
         # Write the new .h file
