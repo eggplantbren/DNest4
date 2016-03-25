@@ -127,7 +127,7 @@ if __name__ == "__main__":
     # Create a model
     model = Model()
 
-    # Add two parameters to it
+    # Add three parameters to it
     model.add_node(Node("m", Uniform(-10.0, 10.0)))
     model.add_node(Node("b", Uniform(-10.0, 10.0)))
     model.add_node(Node("sigma", Uniform(0.0, 10.0)))
