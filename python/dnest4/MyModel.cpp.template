@@ -1,0 +1,37 @@
+#include "MyModel.h"
+#include "DNest4/code/DNest4.h"
+
+using namespace std;
+using namespace DNest4;
+
+MyModel::MyModel()
+{INITIALIZER_LIST}
+{
+{CONSTRUCTOR}
+}
+
+void MyModel::from_prior(RNG& rng)
+{
+{FROM_PRIOR}
+}
+
+double MyModel::perturb(RNG& rng)
+{
+{PERTURB}
+}
+
+double MyModel::log_likelihood() const
+{
+{LOG_LIKELIHOOD}
+}
+
+void MyModel::print(std::ostream& out) const
+{
+{PRINT}
+}
+
+string MyModel::description() const
+{
+{DESCRIPTION}
+}
+

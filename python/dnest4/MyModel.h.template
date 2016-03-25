@@ -1,5 +1,5 @@
-#ifndef DNest4_Template_MyModel
-#define DNest4_Template_MyModel
+#ifndef DNest4_Builder_MyModel
+#define DNest4_Builder_MyModel
 
 #include "DNest4/code/DNest4.h"
 #include <ostream>
