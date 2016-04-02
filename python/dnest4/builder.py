@@ -140,6 +140,31 @@ class Model:
         s += "return log_H;\n"
         return s
 
+    def print_code(self):
+        """
+        Generate print code for the whole model.
+        """
+        s = ""
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.coordinate:
+                s += "out<<" + str(node) + "<<\" \";\n"
+        return s
+
+    def description(self):
+        """
+        Generate description code for the whole model.
+        """
+        s = "string s;\n"
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.coordinate:
+                s += "s += \"" + str(node) + ", \";\n"
+        s = s[0:-5]
+        s += "\";"
+        s += "\nreturn s;"
+        return s
+
     def log_likelihood(self):
         """
         Generate the log_likelihood code for the whole model.
@@ -243,7 +268,17 @@ class Model:
         log_likelihood = ["    " + x for x in log_likelihood.splitlines()]
         log_likelihood = "\n".join(log_likelihood)
 
-        # Open the template .h file
+        # Prepare the print code
+        print_code = self.print_code()
+        print_code = ["    " + x for x in print_code.splitlines()]
+        print_code = "\n".join(print_code)
+
+        # Prepare the description code
+        description = self.description()
+        description = ["    " + x for x in description.splitlines()]
+        description = "\n".join(description)
+
+        # Open the template .cpp file
         f = open("MyModel.cpp.template")
         s = f.read()
 
@@ -251,6 +286,8 @@ class Model:
         s = s.replace("{FROM_PRIOR}", from_prior)
         s = s.replace("{PERTURB}", perturb)
         s = s.replace("{LOG_LIKELIHOOD}", log_likelihood)
+        s = s.replace("{PRINT}", print_code)
+        s = s.replace("{DESCRIPTION}", description)
         f.close()
 
         # Write the new .h file
