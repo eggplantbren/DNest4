@@ -55,6 +55,21 @@ class Normal:
         s = s.replace("{sigma}", str(self.sigma))
         return s
 
+class Derived:
+    """
+    For deterministic nodes --- a delta-function distribution :)
+    """
+    def __init__(self, formula):
+        self.formula = formula
+
+    def from_prior(self):
+        s = "{x} = {formula};\n"
+        s = s.replace("{formula}", self.formula)
+        return s
+
+    def perturb(self):
+        return self.from_prior()
+
 class NodeType(Enum):
     """
     To distinguish between different kinds of Nodes
@@ -136,6 +151,12 @@ class Model:
                 s += "\n".join(["    " + x for x in node.perturb().splitlines()])
                 s += "\n}\n"
                 k += 1
+
+        # Recompute derived nodes
+        for name in self.nodes:
+            node = self.nodes[name]
+            if node.node_type == NodeType.derived:
+                s += node.from_prior()
 
         s += "return log_H;\n"
         return s
@@ -298,7 +319,6 @@ class Model:
         return s
 
 
-
 if __name__ == "__main__":
     # Create a model
     model = Model()
@@ -308,14 +328,16 @@ if __name__ == "__main__":
     model.add_node(Node("b", Uniform(-10.0, 10.0)))
     model.add_node(Node("sigma", Uniform(0.0, 10.0)))
 
+    # A derived parameter
+    model.add_node(Node("variance", Derived("pow(sigma, 2)"),\
+                                    node_type=NodeType.derived))
+
     # Add five data values
     for i in range(0, 5):
         model.add_node(Node("x", 3.2, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[{i}] + b".format(i=i),\
                                     model.nodes["sigma"]),\
                                     node_type=NodeType.data, index=i))
-
-    model.add_node(Node("C", 5.4, node_type=NodeType.prior_info))
 
     # Generate the .h file
     model.generate_h()
