@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 def logsumexp(values):
@@ -15,12 +16,16 @@ def logdiffexp(x1, x2):
 	result = np.log(np.exp(xx1) - np.exp(xx2)) + biggest
 	return result
 
+def my_loadtxt(filename):
+    return pd.read_csv(filename, header=None, sep=' ', comment="#")\
+                                                 .dropna(axis=1).values
+
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None):
 	if len(loaded) == 0:
-		levels_orig = np.atleast_2d(np.loadtxt("levels.txt"))
-		sample_info = np.atleast_2d(np.loadtxt("sample_info.txt"))
-		sample = np.atleast_2d(np.loadtxt("sample.txt"))
+		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
+		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
+		sample = np.atleast_2d(my_loadtxt("sample.txt"))
 		if(sample.shape[0] == 1):
 			sample = sample.T
 	else:
@@ -224,7 +229,7 @@ def diffusion_plot():
 	Plot a nice per-particle diffusion plot.
 	"""
 
-	sample_info = np.atleast_2d(np.loadtxt('sample_info.txt'))
+	sample_info = np.atleast_2d(my_loadtxt('sample_info.txt'))
 	ID = sample_info[:,3].astype('int')
 	j = sample_info[:,0].astype('int')
 
@@ -242,7 +247,7 @@ def levels_plot():
 	"""
 	Plot the differences between the logl values of the levels.
 	"""
-	levels = np.loadtxt('levels.txt')
+	levels = my_loadtxt('levels.txt')
 
 	plt.plot(np.log10(np.diff(levels[:,1])))
 	plt.ylim([-1, 4])
