@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from enum import Enum
+import numpy as np
 
 class Uniform:
     """
@@ -269,7 +270,7 @@ class Model:
         return s
 
 
-    def generate_cpp(self):
+    def generate_cpp(self, data):
         """
         Load MyModel.cpp.template
         and fill in the required stuff.
@@ -299,6 +300,28 @@ class Model:
         description = ["    " + x for x in description.splitlines()]
         description = "\n".join(description)
 
+        # Prepare the data
+        the_data = ""
+        for d in data:
+            the_data += "const "
+            if type(data[d]) == np.ndarray:
+                if data[d].dtype == np.dtype('float64'):
+                    the_data += "std::vector<double> MyModel::"
+                elif data[d].dtype == np.dtype('int64'):
+                    the_data += "std::vector<int> MyModel::"
+                else:
+                    print("Unsupported dtype.")
+            if type(data[d]) == float:
+                the_data += "double "
+            if type(data[d]) == int:
+                the_data += "int "
+
+            the_data += str(d) + "{"
+            for value in data[d]:
+                the_data += str(value) + ", "
+            the_data = the_data[0:-2]
+            the_data += "};\n"
+
         # Open the template .cpp file
         f = open("MyModel.cpp.template")
         s = f.read()
@@ -309,6 +332,7 @@ class Model:
         s = s.replace("{LOG_LIKELIHOOD}", log_likelihood)
         s = s.replace("{PRINT}", print_code)
         s = s.replace("{DESCRIPTION}", description)
+        s = s.replace("{STATIC_DECLARATIONS}", the_data)
         f.close()
 
         # Write the new .h file
@@ -339,7 +363,14 @@ if __name__ == "__main__":
                                     model.nodes["sigma"]),\
                                     node_type=NodeType.data, index=i))
 
+    # The data and prior information in a dictionary
+    data = {}
+    data["x"] = np.array([1.0,   2.0,  3.0,  4.0,  5.0])
+    data["y"] = np.array([1.01, 1.99, 3.02, 3.88, 5.01])
+
     # Generate the .h file
     model.generate_h()
-    model.generate_cpp()
+
+    # Generate the .cpp file
+    model.generate_cpp(data)
 
