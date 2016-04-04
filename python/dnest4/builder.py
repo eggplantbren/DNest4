@@ -29,6 +29,35 @@ class Uniform:
         s = s.replace("{b}", str(self.b))
         return s
 
+class LogUniform:
+    """
+    Log-uniform distributions.
+    """
+    def __init__(self, a, b):
+        self.a, self.b = a, b
+
+    def from_prior(self):
+        s = "{x} = exp(log({a}) + log(({b})/({a}))*rng.rand());\n"
+        return self.insert_parameters(s)
+
+    def perturb(self):
+        s  = "{x} = log({x});\n"
+        s += "{x} += log(({b})/({a}))*rng.randh();\n"
+        s += "wrap({x}, log({a}), log({b}));\n"
+        s += "{x} = exp({x});\n"
+        return self.insert_parameters(s)
+
+    def log_density(self):
+        s  = "if({x} < ({a}) || {x} > ({b}))\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "logp += -log({x}) - log(({b})/({a}));\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{a}", str(self.a))
+        s = s.replace("{b}", str(self.b))
+        return s
+
 class Normal:
     """
     Normal distributions.
@@ -41,7 +70,7 @@ class Normal:
         return self.insert_parameters(s)
 
     def perturb(self):
-        s  = "log_H -= -0.5*pow(({x}) - ({mu}))/({sigma}), 2);\n"
+        s  = "log_H -= -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         s += "{x} += ({sigma})*rng.randh();\n"
         s += "log_H += -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
@@ -345,8 +374,8 @@ class Model:
         vecs = vecs.union(self.get_vector_names(NodeType.derived))
         for vec in vecs:
             initialiser_list += vec + "("
-            initialiser_list += str(self.get_vector_size(vec)) + ")\n,"
-        initialiser_list = initialiser_list[0:-2]
+            initialiser_list += str(self.get_vector_size(vec)) + "),"
+        initialiser_list = initialiser_list[0:-1]
 
         # Open the template .cpp file
         f = open("MyModel.cpp.template")
@@ -371,40 +400,27 @@ class Model:
 
 
 if __name__ == "__main__":
-    # Create a model
-    model = Model()
-
-    # Add three parameters to it
-    model.add_node(Node("m", Uniform(-10.0, 10.0)))
-    model.add_node(Node("b", Uniform(-10.0, 10.0)))
-    model.add_node(Node("sigma", Uniform(0.0, 10.0)))
-
-    # A derived parameter
-    model.add_node(Node("variance", Deterministic("pow(sigma, 2)"),\
-                                    node_type=NodeType.derived))
-
-    # A vector of parameters
-    for i in range(0, 3):
-        model.add_node(Node("theta", Uniform(0.0, 1.0), index=i))
-
-    # A vector of parameters
-    for i in range(0, 7):
-        model.add_node(Node("phi", Normal(10.0, 1.0), index=i))
-
-    # Add data and prior information values
-    model.add_node(Node("N", Deterministic("5"),
-                             node_type=NodeType.prior_info, dtype=int))
-    for i in range(0, 5):
-        model.add_node(Node("x", 3.2, node_type=NodeType.prior_info, index=i))
-        model.add_node(Node("y", Normal("m*x[{i}] + b".format(i=i),\
-                                    model.nodes["sigma"]),\
-                                    node_type=NodeType.data, index=i))
-
     # The data and prior information in a dictionary
     data = {}
     data["x"] = np.array([1.0,   2.0,  3.0,  4.0,  5.0])
     data["y"] = np.array([1.01, 1.99, 3.02, 3.88, 5.01])
     data["N"] = 5
+
+    # Create a model
+    model = Model()
+
+    # Three unknown parameters
+    model.add_node(Node("m", Normal(0.0, 1000.0)))
+    model.add_node(Node("b", Normal(0.0, 1000.0)))
+    model.add_node(Node("sigma", LogUniform(1E-3, 1E3)))
+
+    # The data (need nodes for x, y, and N, to match the dictionary)
+    for i in range(0, data["N"]):
+        model.add_node(Node("x", node_type=NodeType.prior_info, index=i))
+        model.add_node(Node("y", Normal("m*x[{i}] + b".format(i=i),\
+                                    model.nodes["sigma"]),\
+                                    node_type=NodeType.data, index=i))
+    model.add_node(Node("N", node_type=NodeType.prior_info))
 
     # Generate the .h file
     model.generate_h()
