@@ -9,7 +9,7 @@ using namespace DNest4;
 MyModel::MyModel()
 {INITIALIZER_LIST}
 {
-{CONSTRUCTOR}
+
 }
 
 void MyModel::from_prior(RNG& rng)

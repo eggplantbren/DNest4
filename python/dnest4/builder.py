@@ -56,7 +56,7 @@ class Normal:
         s = s.replace("{sigma}", str(self.sigma))
         return s
 
-class Derived:
+class Deterministic:
     """
     For deterministic nodes --- a delta-function distribution :)
     """
@@ -85,11 +85,13 @@ class Node:
     A single parameter or data value.
     """
     def __init__(self, name, prior=None, index=None,\
-                    node_type=NodeType.coordinate):
+                    node_type=NodeType.coordinate, dtype=float):
         self.name = name
         self.prior = prior
-        self.node_type = node_type
         self.index = index
+        self.node_type = node_type
+        self.dtype = dtype
+        
         if index is not None:
             self.name += "[" + str(index) + "]"
 
@@ -211,6 +213,13 @@ class Model:
                 vecs.add(name.split("[")[0])
         return vecs
 
+    def get_vector_size(self, vector_name):
+        count = 0
+        for name in self.nodes:
+            if name.split("[")[0] == vector_name:
+                count += 1
+        return count
+
     def generate_h(self):
         """
         Load MyModel.h.template
@@ -243,7 +252,11 @@ class Model:
             if node.index is None and (node.node_type == NodeType.data or\
                                        node.node_type == NodeType.prior_info):
                 declarations += "        static const "
-                declarations += "double {x};\n".replace("{x}", node.name)
+                if node.dtype == float:
+                    declarations += "double "
+                elif node.dtype == int:
+                    declarations += "int "
+                declarations += "{x};\n".replace("{x}", node.name)
         declarations += "\n"
 
         # Declare vector knowns
@@ -312,15 +325,28 @@ class Model:
                 else:
                     print("Unsupported dtype.")
             if type(data[d]) == float:
-                the_data += "double "
+                the_data += "double MyModel::"
             if type(data[d]) == int:
-                the_data += "int "
+                the_data += "int MyModel::"
 
             the_data += str(d) + "{"
-            for value in data[d]:
-                the_data += str(value) + ", "
+            if type(data[d]) == np.ndarray:
+                for value in data[d]:
+                    the_data += str(value) + ", "
+            else:
+                the_data += str(data[d]) + ", "
             the_data = the_data[0:-2]
             the_data += "};\n"
+
+        # Prepare the initialiser list, which just needs
+        # vector unknowns to have the right size.
+        initialiser_list = ":"
+        vecs = self.get_vector_names(NodeType.coordinate)
+        vecs = vecs.union(self.get_vector_names(NodeType.derived))
+        for vec in vecs:
+            initialiser_list += vec + "("
+            initialiser_list += str(self.get_vector_size(vec)) + ")\n,"
+        initialiser_list = initialiser_list[0:-2]
 
         # Open the template .cpp file
         f = open("MyModel.cpp.template")
@@ -333,6 +359,7 @@ class Model:
         s = s.replace("{PRINT}", print_code)
         s = s.replace("{DESCRIPTION}", description)
         s = s.replace("{STATIC_DECLARATIONS}", the_data)
+        s = s.replace("{INITIALIZER_LIST}", initialiser_list)
         f.close()
 
         # Write the new .h file
@@ -353,10 +380,20 @@ if __name__ == "__main__":
     model.add_node(Node("sigma", Uniform(0.0, 10.0)))
 
     # A derived parameter
-    model.add_node(Node("variance", Derived("pow(sigma, 2)"),\
+    model.add_node(Node("variance", Deterministic("pow(sigma, 2)"),\
                                     node_type=NodeType.derived))
 
-    # Add five data values
+    # A vector of parameters
+    for i in range(0, 3):
+        model.add_node(Node("theta", Uniform(0.0, 1.0), index=i))
+
+    # A vector of parameters
+    for i in range(0, 7):
+        model.add_node(Node("phi", Normal(10.0, 1.0), index=i))
+
+    # Add data and prior information values
+    model.add_node(Node("N", Deterministic("5"),
+                             node_type=NodeType.prior_info, dtype=int))
     for i in range(0, 5):
         model.add_node(Node("x", 3.2, node_type=NodeType.prior_info, index=i))
         model.add_node(Node("y", Normal("m*x[{i}] + b".format(i=i),\
@@ -367,6 +404,7 @@ if __name__ == "__main__":
     data = {}
     data["x"] = np.array([1.0,   2.0,  3.0,  4.0,  5.0])
     data["y"] = np.array([1.01, 1.99, 3.02, 3.88, 5.01])
+    data["N"] = 5
 
     # Generate the .h file
     model.generate_h()
