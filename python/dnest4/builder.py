@@ -290,6 +290,9 @@ class Model:
                 declarations += "double"
             declarations += " {x};\n".format(x=scalar)
 
+        declarations += \
+                "\n        // Unknown parameters and derived quantities\n"
+
         # Vector unknowns
         vecs = self.get_vector_names(NodeType.coordinate)
         vecs = vecs.union(self.get_vector_names(NodeType.derived))
@@ -300,10 +303,6 @@ class Model:
             else:
                 declarations += "<double>"
             declarations += " {x};\n".format(x=vec)
-
-
-        declarations += \
-                "\n        // Unknown parameters and derived quantities\n"
 
         # Scalar unknowns
         scalars = self.get_scalar_names(NodeType.coordinate)
