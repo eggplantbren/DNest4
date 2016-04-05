@@ -313,8 +313,6 @@ class Model:
                 declarations += "double"
             declarations += " {x};\n".format(x=scalar)
 
-
-
          # Open the template .h file
         f = open("MyModel.h.template")
         s = f.read()
@@ -391,8 +389,8 @@ class Model:
         vecs = vecs.union(self.get_vector_names(NodeType.derived))
         for vec in vecs:
             initialiser_list += vec + "("
-            initialiser_list += str(self.get_vector_size(vec)) + "),"
-        initialiser_list = initialiser_list[0:-1]
+            initialiser_list += str(self.get_vector_size(vec)) + "), "
+        initialiser_list = initialiser_list[0:-2]
 
         # Open the template .cpp file
         f = open("MyModel.cpp.template")

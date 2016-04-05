@@ -4,9 +4,9 @@
 using namespace std;
 using namespace DNest4;
 
-const std::vector<double> MyModel::y{1.01, 1.99, 3.02, 3.88, 5.01};
-const std::vector<double> MyModel::x{1.0, 2.0, 3.0, 4.0, 5.0};
+const std::vector<double> MyModel::y{1.0, 2.0, 3.0, 3.99, 5.01};
 const int MyModel::N{5};
+const std::vector<double> MyModel::x{1.0, 2.0, 3.0, 4.0, 5.0};
 
 
 MyModel::MyModel()
