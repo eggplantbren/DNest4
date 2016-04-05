@@ -1,4 +1,4 @@
-from builder import *
+from dnest4.builder import *
 import numpy as np
 
 # The data, as a dictionary
