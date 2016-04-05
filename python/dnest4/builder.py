@@ -2,8 +2,8 @@ from collections import OrderedDict
 from enum import Enum
 import numpy as np
 
-__all__ = ["Uniform", "LogUniform", "Normal", "Deterministic", "NodeType",\
-           "Node", "Model"]
+__all__ = ["Uniform", "LogUniform", "Normal", "Cauchy",
+           "Deterministic", "NodeType", "Node", "Model"]
 
 class Uniform:
     """
@@ -69,7 +69,7 @@ class Normal:
         self.mu, self.sigma = mu, sigma
 
     def from_prior(self):
-        s = "{x} = {mu} + {sigma}*rng.randn();\n"
+        s = "{x} = {mu} + ({sigma})*rng.randn();\n"
         return self.insert_parameters(s)
 
     def perturb(self):
@@ -87,6 +87,37 @@ class Normal:
         s = s.replace("{mu}", str(self.mu))
         s = s.replace("{sigma}", str(self.sigma))
         return s
+
+
+class Cauchy:
+    """
+    Cauchy distributions.
+    """
+    def __init__(self, mu, sigma):
+        self.mu, self.sigma = mu, sigma
+
+    def from_prior(self):
+        s = "{x} = {mu} + ({sigma})*tan(M_PI*(rng.rand() - 0.5));\n"
+        return self.insert_parameters(s)
+
+    def perturb(self):
+        s  = "{x} = 0.5 + atan(({x} - ({mu}))/({sigma}))/M_PI;\n"
+        s += "{x} += rng.randh();\n"
+        s += "wrap({x}, 0.0, 1.0);\n"
+        s += "{x} = {mu} + ({sigma})*tan(M_PI*({x} - 0.5));\n"
+        return self.insert_parameters(s)
+
+    def log_density(self):
+        s  = "logp += -log(M_PI) - log({sigma}) "
+        s += "- log(1.0 + pow(({x} - ({mu}))/({sigma}), 2));\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{mu}", str(self.mu))
+        s = s.replace("{sigma}", str(self.sigma))
+        return s
+
+
 
 class Deterministic:
     """
