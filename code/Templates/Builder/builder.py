@@ -238,7 +238,7 @@ class Model:
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == node_type and\
-               node.index != 0:
+               node.index is not None:
                 vecs.add(name.split("[")[0])
         return vecs
 
@@ -264,12 +264,10 @@ class Model:
         Load MyModel.h.template
         and fill in the required declarations.
         """
-        # Names of knowns
+        # Vector knowns
         vecs = self.get_vector_names(NodeType.data)
         vecs = vecs.union(self.get_vector_names(NodeType.prior_info))
-
-        # Prepare the declarations for MyModel.h
-        declarations = ""
+        declarations = "        // Data and prior information\n"
         for vec in vecs:
             declarations += "        static const std::vector"
             if self.nodes[vec + "[0]"].dtype == int:
@@ -278,12 +276,20 @@ class Model:
                 declarations += "<double>"
             declarations += " {x};\n".format(x=vec)
 
-        # Names of unknowns
+        # Scalar knowns
+        scalars = self.get_scalar_names(NodeType.data)
+        scalars = scalars.union(self.get_scalar_names(NodeType.prior_info))
+        for scalar in scalars:
+            declarations += "        static const "
+            if self.nodes[scalar].dtype == int:
+                declarations += "int"
+            else:
+                declarations += "double"
+            declarations += " {x};\n".format(x=scalar)
+
+        # Vector unknowns
         vecs = self.get_vector_names(NodeType.coordinate)
         vecs = vecs.union(self.get_vector_names(NodeType.derived))
-
-        # Prepare the declarations for MyModel.h
-        declarations += "\n"
         for vec in vecs:
             declarations += "        std::vector"
             if self.nodes[vec + "[0]"].dtype == int:
@@ -291,6 +297,23 @@ class Model:
             else:
                 declarations += "<double>"
             declarations += " {x};\n".format(x=vec)
+
+
+        declarations += \
+                "\n        // Unknown parameters and derived quantities\n"
+
+        # Scalar unknowns
+        scalars = self.get_scalar_names(NodeType.coordinate)
+        scalars = scalars.union(self.get_scalar_names(NodeType.derived))
+        for scalar in scalars:
+            declarations += "        "
+            if self.nodes[scalar].dtype == int:
+                declarations += "int"
+            else:
+                declarations += "double"
+            declarations += " {x};\n".format(x=scalar)
+
+
 
          # Open the template .h file
         f = open("MyModel.h.template")

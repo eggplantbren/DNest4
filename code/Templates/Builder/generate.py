@@ -19,8 +19,5 @@ model.add_node(Node(float, "m", Normal(0.0, 1000.0), NodeType.coordinate))
 model.add_node(Node(float, "b", Normal(0.0, 1000.0), NodeType.coordinate))
 model.add_node(Node(float, "sigma", LogUniform(1E-3, 1E3), NodeType.coordinate))
 
-
-for n in model.nodes:
-    print(n)
 model.generate_h()
 
