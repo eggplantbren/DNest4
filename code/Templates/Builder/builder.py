@@ -113,10 +113,10 @@ class Node:
     """
     A single parameter or data value.
     """
-    def __init__(self, dtype, name, prior, node_type, index=0):
+    def __init__(self, dtype, name, prior, node_type, index=None):
         self.dtype = dtype
         self.name  = name
-        if index > 0:
+        if index is not None:
             self.name += "[" + str(index) + "]"
         self.index = index
         self.prior = prior
