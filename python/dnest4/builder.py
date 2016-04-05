@@ -258,7 +258,7 @@ class Model:
     def get_vector_size(self, vector_name):
         count = 0
         for name in self.nodes:
-            if name == vector_name:
+            if name.split("[")[0] == vector_name:
                 count += 1
         return count
 
