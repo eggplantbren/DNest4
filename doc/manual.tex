@@ -40,25 +40,29 @@ available from the following URL:\\
 \end{center}
 
 If you find \dnest~useful in a research project,
-please feel free to cite the paper.
+please cite the paper.
 Throughout this manual I will assume that you have read the paper and have a
 reasonable understanding of how the algorithm works, as well as some
 understanding of general Nested Sampling concepts.\\
 
 \section{Installation}
-Please note that I have only ever compiled \dnest~on GNU/Linux,
+I have only ever compiled \dnest~on GNU/Linux,
 using the GNU C++ compiler ({\tt g++}). However, I expect it to be
 straightforward to compile it on any other Unix-like operating system such as Mac
-OS X or FreeBSD. It should be possible, albeit probably more tricky,
+OS X or FreeBSD.\\
+
+It should be possible, but probably more tricky,
 to compile \dnest~in Microsoft Windows. If you want to try,
 the MinGW compiler is
 probably your best bet. I'd be interested to hear from anyone who
-has tried this. I would also be interested to hear if anyone has
+has tried this, and any problems that arose.
+I would also be interested to hear if anyone has
 compiled \dnest~with a different compiler, such as the Intel C++
 compiler.\\
 
 \subsection{Dependencies}
-One of the issues with DNest3 which inspired a new version was that many users
+One of the issues with DNest3 (an older implementation) which inspired a rewrite
+was that many users
 found it annoying to compile on different operating systems because of the
 dependencies. For that reason, \dnest~now has much less dependencies.
 The C++ part of the code is written in pure C++11 and does not require any
@@ -66,37 +70,42 @@ additional libraries --- you just have to have a modern C++ compiler that
 supports the C++11 standard.
 
 The Python postprocessing scripts use the Python packages
-{\tt numpy} and {\tt matplotlib}. They work with both Python 2 or 3.
-If you want to be able to use these from any directory, add DNest4's code
-directory to your PYTHON\_PATH.
+{\tt NumPy}, {\tt matplotlib}, {\tt Pandas}, and {\tt Cython}.
+They should work with both Python 2 or 3.
 
 \subsection{Compiling}
 Go into the {\tt code} directory and run {\tt make}. Everything should compile.
 To
 verify that the compilation was successful,
-go into the code/Examples/SpikeSlab directory
+go into the {\tt code/Examples/SpikeSlab} directory
 and see if an executable file called {\tt main} has been created. If you
 execute this file, you should see a lot of output about ``levels'' and
 ``particles'' (see Figure~\ref{fig:output} for example output).
 You will need to manually terminate this process by using
 Control+C, or whatever works in your operating system. If you saw this output,
-\dnest~was compiled successfully.\\
+the C++ parts of \dnest~were compiled successfully.\\
 
-\section{Running DNest}
+Next, you'll need to install the {\tt dnest4} Python package so you can use
+the postprocessing scripts, and other features. Go into the
+{\tt python} directory and run {\tt python setup.py install} or similar.
+
+\section{Running DNest4}
 As part of the compilation process, several examples will have been compiled.
 There is one executable file for each example: \dnest~does not have a global
 executable. The
 following discussion will involve running the ``SpikeSlab'' example, which is
 the example used in the paper.\\
 
-To run the SpikeSlab example, go into the code/Examples/Spikeslab
+To run the SpikeSlab example, go into the {\tt code/Examples/Spikeslab}
 directory and execute {\tt main}. You should see some output that looks like
 that shown in Figure~\ref{fig:output}.
-Note that you must terminate the process manually by pressing Ctrl+C
+You must terminate the process manually by pressing Ctrl+C
 or in another way. If you do not terminate the process yourself, it will run
-forever. There is no definite rule for how long you should run \dnest.
-It depends on the difficulty of your problem, the number of posterior samples you
-want, and the accuracy you want for the marginal likelihood.\\
+forever. There is no definite rule for how long you should run \dnest. Like
+many MCMC methods, it depends on how hard your problem is, the number of
+posterior samples you
+want, and the accuracy you want for the marginal likelihood or other
+quantities you care about.\\
 
 \begin{figure}[h!]
 \begin{framed}
@@ -125,7 +134,7 @@ detailed information is saved to the three output files
 
 The executable {\tt main} is responsible for the exploration part of the
 DNS algorithm (i.e. running the MCMC chain, building
-levels, and then exploring all the levels). It creates three output text files,
+levels, and then exploring all the levels). It creates three text output files,
 {\tt sample.txt}, {\tt sample\_info.txt}, and {\tt levels.txt}.\\
 
 The first output
@@ -134,7 +143,7 @@ represents the {\it mixture of constrained priors} (the target distribution
 used in DNS), {\bf not} the
 posterior distribution. Each line of {\tt sample.txt} represents a point in
 parameter space. In the SpikeSlab example, there are 20 parameters, so there
-will be 20 columns in {\tt sample.txt}.
+are 20 columns in {\tt sample.txt}.
 Each time a point is saved to {\tt sample.txt}, \dnest~prints
 the message ``Saving a particle to disk. N = ...''.\\
 
@@ -154,9 +163,12 @@ is responsible for evolving one or more walkers.\\
 The third output file, {\tt levels.txt}, contains information about the levels
 that were built during the run. The first column has estimates of the $\log(X)$
 values of the levels, i.e. how compressed they are relative to the prior, in
-units of nats. The second column contains the log likelihoods of the levels.
+units of nats. For example, if a level has $\log(X) = -1.02$, its likelihood
+value encloses $\exp(-1.02) \approx 36.1\%$ of the prior mass.\\
+
+The second column contains the log likelihoods of the levels.
 The first level, with a $\log(X)$ value of 0 and a log likelihood of
-$-10^{300}$ (basically ``minus infinity''), is simply the prior. The third
+$-10^{308}$ (basically ``minus infinity''), is simply the prior. The third
 column has the ``tiebreaker'' values for the levels, which again are not
 particularly useful unless your problem has likelihood plateaus. The fourth
 and fifth columns are the number of accepted proposals and the total number
