@@ -2,7 +2,8 @@ from collections import OrderedDict
 from enum import Enum
 import numpy as np
 
-__all__ = ["Uniform", "LogUniform", "Normal", "Cauchy",
+__all__ = ["Uniform", "LogUniform", "Normal", "Cauchy", "Poisson",\
+           "Exponential",\
            "Deterministic", "NodeType", "Node", "Model"]
 
 class Uniform:
@@ -145,7 +146,21 @@ class Exponential:
         s = s.replace("{mu}", str(self.mu))
         return s
 
+class Poisson:
+    """
+    Poisson distributions.
+    SO FAR ONLY THE log_density HAS BEEN IMPLEMENTED.
+    """
+    def __init__(self, mu):
+        self.mu = mu
 
+    def log_density(self):
+        s  = "logp += {x}*log({mu}) - ({mu}) "
+        s += "- lgamma({x} + 1);\n"
+
+    def insert_parameters(self, s):
+        s = s.replace("{mu}", str(self.mu))
+        return s
 
 class Deterministic:
     """
