@@ -159,7 +159,7 @@ class Poisson:
         s += "    logp = -numeric_limits<double>::max();\n"
         s += "else\n"
         s += "    logp += {x}*log({mu}) - ({mu}) - lgamma({x} + 1);\n"
-        return s
+        return self.insert_parameters(s)
 
     def insert_parameters(self, s):
         s = s.replace("{mu}", str(self.mu))
@@ -185,9 +185,12 @@ class Binomial:
         s  = "if({x} < 0 || {x} > ({N}))\n"
         s += "    logp = -numeric_limits<double>::max();\n"
         s += "else\n"
-        s += "    lgamma({N} + 1) - lgamma({x} + 1) - lgamma({N} - ({x}) + 1)"
+        s += "{\n"
+        s += "    logp += lgamma({N} + 1) - lgamma({x} + 1) - lgamma({N} - ({x}) + 1)"
         s += "- lgamma({x} + 1);\n"
-        return s
+        s += "    logp += {x}*log({theta}) + ({N} - {x})*log(1.0 - ({theta}));\n"
+        s += "}\n"
+        return self.insert_parameters(s)
 
     def insert_parameters(self, s):
         s = s.replace("{N}", str(self.N))
