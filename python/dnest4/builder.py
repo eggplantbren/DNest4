@@ -172,7 +172,7 @@ class Binomial:
     So far only the log_prob has been implemented.
     """
     def __init__(self, N, theta):
-        self.N
+        self.N = N
         self.theta = theta
 
     def from_prior(self):
