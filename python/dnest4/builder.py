@@ -117,6 +117,34 @@ class Cauchy:
         s = s.replace("{sigma}", str(self.sigma))
         return s
 
+class Exponential:
+    """
+    Exponential distributions.
+    """
+    def __init__(self, mu):
+        self.mu = mu
+
+    def from_prior(self):
+        s = "{x} = -({mu})*log(1.0 - rng.rand());\n"
+        return self.insert_parameters(s)
+
+    def perturb(self):
+        s  = "{x} = 1.0 - exp(-{x}/({mu}));\n"
+        s += "{x} += rng.randh();\n"
+        s += "wrap({x}, 0.0, 1.0);\n"
+        s += "{x} = -({mu})*log(1.0 - {x}));\n"
+        return self.insert_parameters(s)
+
+    def log_density(self):
+        s  = "if({x} < 0.0)\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "logp += -log({mu}) - {x}/({mu});\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{mu}", str(self.mu))
+        return s
+
 
 
 class Deterministic:
