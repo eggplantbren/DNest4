@@ -22,7 +22,7 @@ class Uniform:
         s += "wrap({x}, {a}, {b});\n"
         return self.insert_parameters(s)
 
-    def log_density(self):
+    def log_prob(self):
         s  = "if({x} < ({a}) || {x} > ({b}))\n"
         s += "    logp = -numeric_limits<double>::max();\n"
         s += "logp += -log({b} - ({a}));\n"
@@ -51,7 +51,7 @@ class LogUniform:
         s += "{x} = exp({x});\n"
         return self.insert_parameters(s)
 
-    def log_density(self):
+    def log_prob(self):
         s  = "if({x} < ({a}) || {x} > ({b}))\n"
         s += "    logp = -numeric_limits<double>::max();\n"
         s += "logp += -log({x}) - log(({b})/({a}));\n"
@@ -79,7 +79,7 @@ class Normal:
         s += "log_H += -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
 
-    def log_density(self):
+    def log_prob(self):
         s  = "logp += -0.5*log(2*M_PI) - log({sigma}) "
         s += "- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
         return self.insert_parameters(s)
@@ -108,7 +108,7 @@ class Cauchy:
         s += "{x} = {mu} + ({sigma})*tan(M_PI*({x} - 0.5));\n"
         return self.insert_parameters(s)
 
-    def log_density(self):
+    def log_prob(self):
         s  = "logp += -log(M_PI) - log({sigma}) "
         s += "- log(1.0 + pow(({x} - ({mu}))/({sigma}), 2));\n"
         return self.insert_parameters(s)
@@ -136,7 +136,7 @@ class Exponential:
         s += "{x} = -({mu})*log(1.0 - {x}));\n"
         return self.insert_parameters(s)
 
-    def log_density(self):
+    def log_prob(self):
         s  = "if({x} < 0.0)\n"
         s += "    logp = -numeric_limits<double>::max();\n"
         s += "logp += -log({mu}) - {x}/({mu});\n"
@@ -149,12 +149,12 @@ class Exponential:
 class Poisson:
     """
     Poisson distributions.
-    SO FAR ONLY THE log_density HAS BEEN IMPLEMENTED.
+    SO FAR ONLY THE log_prob HAS BEEN IMPLEMENTED.
     """
     def __init__(self, mu):
         self.mu = mu
 
-    def log_density(self):
+    def log_prob(self):
         s  = "logp += {x}*log({mu}) - ({mu}) "
         s += "- lgamma({x} + 1);\n"
 
@@ -207,8 +207,8 @@ class Node:
     def perturb(self):
         return self.prior.perturb().replace("{x}", self.name)
 
-    def log_density(self):
-        return self.prior.log_density().replace("{x}", self.name)
+    def log_prob(self):
+        return self.prior.log_prob().replace("{x}", self.name)
 
     def __str__(self):
         return self.name
@@ -303,7 +303,7 @@ class Model:
         for name in self.nodes:
             node = self.nodes[name]
             if node.node_type == NodeType.data:
-                s += node.log_density()
+                s += node.log_prob()
         s += "\nreturn logp;"
         return s
 
