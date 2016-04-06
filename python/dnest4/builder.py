@@ -3,7 +3,7 @@ from enum import Enum
 import numpy as np
 
 __all__ = ["Uniform", "LogUniform", "Normal", "Cauchy", "Poisson",\
-           "Exponential",\
+           "Exponential", "Binomial",\
            "Deterministic", "NodeType", "Node", "Model"]
 
 class Uniform:
@@ -155,11 +155,43 @@ class Poisson:
         self.mu = mu
 
     def log_prob(self):
-        s  = "logp += {x}*log({mu}) - ({mu}) "
-        s += "- lgamma({x} + 1);\n"
+        s  = "if({x} < 0)\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "else\n"
+        s += "    logp += {x}*log({mu}) - ({mu}) - lgamma({x} + 1);\n"
+        return s
 
     def insert_parameters(self, s):
         s = s.replace("{mu}", str(self.mu))
+        return s
+
+
+class Binomial:
+    """
+    Binomial distributions.
+    So far only the log_prob has been implemented.
+    """
+    def __init__(self, N, theta):
+        self.N
+        self.theta = theta
+
+    def from_prior(self):
+        pass
+
+    def perturb(self):
+        pass
+
+    def log_prob(self):
+        s  = "if({x} < 0 || {x} > ({N}))\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "else\n"
+        s += "    lgamma({N} + 1) - lgamma({x} + 1) - lgamma({N} - ({x}) + 1)"
+        s += "- lgamma({x} + 1);\n"
+        return s
+
+    def insert_parameters(self, s):
+        s = s.replace("{N}", str(self.N))
+        s = s.replace("{theta}", str(self.theta))
         return s
 
 class Deterministic:
