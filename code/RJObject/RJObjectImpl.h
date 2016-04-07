@@ -1,7 +1,9 @@
 template<class ConditionalPrior>
 RJObject<ConditionalPrior>::RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const ConditionalPrior& conditional_prior)
-:num_dimensions(num_dimensions)
+				const ConditionalPrior& conditional_prior,
+                PriorType prior_type)
+:prior_type(prior_type)
+,num_dimensions(num_dimensions)
 ,max_num_components(max_num_components)
 ,fixed(fixed)
 ,conditional_prior(conditional_prior)
@@ -20,9 +22,22 @@ void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 	conditional_prior.from_prior(rng);
 
 	int num = max_num_components;
+
 	// Generate from {0, 1, 2, ..., max_num_components}
 	if(!fixed)
-		num = rng.rand_int(max_num_components + 1);
+    {
+        if(prior_type == PriorType::uniform)
+        {
+		    num = rng.rand_int(max_num_components + 1);
+        }
+        else if(prior_type == PriorType::log_uniform)
+        {
+            do
+            {
+                num = rng.rand_int(max_num_components + 1);
+            }while(rng.rand() >= 1.0/(num + 1));
+        }
+    }
 
 	// Resize the vectors of component properties
 	components.resize(0);
@@ -129,6 +144,10 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng, double scale
 	}
 	int new_num_components = DNest4::mod(num_components + difference, max_num_components + 1);
 	difference = new_num_components - num_components;
+
+    // Add to logH for non-uniform prior on N
+    if(prior_type == PriorType::log_uniform)
+        logH += log(num_components + 1) - log(new_num_components + 1);
 
 	// Now do the required changes
 	if(difference > 0)

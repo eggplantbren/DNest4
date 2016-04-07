@@ -12,6 +12,12 @@
 namespace DNest4
 {
 
+// One of these determines the prior for N
+enum class PriorType
+{
+    uniform, log_uniform
+};
+
 /*
 * A class that implements basic birth-death Metropolis-Hastings
 * proposals for use in DNest4.
@@ -21,6 +27,9 @@ template<class ConditionalPrior>
 class RJObject
 {
 	protected:
+        // Which prior we're using for N
+        PriorType prior_type;
+
 		// How many parameters for each component
 		int num_dimensions;
 
@@ -64,7 +73,8 @@ class RJObject
 		* max_num_components
 		*/
 		RJObject(int num_dimensions, int max_num_components, bool fixed,
-				const ConditionalPrior& conditional_prior);
+				    const ConditionalPrior& conditional_prior,
+                    PriorType prior_type=PriorType::uniform);
 
 		// Generate everything from the prior
 		void from_prior(RNG& rng);
