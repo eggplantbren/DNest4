@@ -329,7 +329,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		std::sort(all_above.begin(), all_above.end());
 		int index = static_cast<int>((1. - 1./compression)*all_above.size());
 		std::cout<<"# Creating level "<<levels.size()<<" with log likelihood = ";
-		std::cout<<std::setprecision(10);
+		std::cout<<std::setprecision(12);
 		std::cout<<all_above[index].get_value()<<"."<<std::endl;
 
 		levels.push_back(Level(all_above[index]));
@@ -414,6 +414,9 @@ void Sampler<ModelType>::save_levels() const
 	fout.open("levels.txt", std::ios::out);
 	fout<<"# log_X, log_likelihood, tiebreaker, accepts, tries, exceeds, visits";
 	fout<<std::endl;
+    fout<<std::setprecision(12);
+
+
 	for(const Level& level: levels)
 	{
 		fout<<level.get_log_X()<<' ';
@@ -448,6 +451,8 @@ void Sampler<ModelType>::save_particle()
 	fout.close();
 
 	fout.open("sample_info.txt", std::ios::out|std::ios::app);
+	fout<<std::setprecision(12);
+
 	fout<<level_assignments[which]<<' ';
 	fout<<log_likelihoods[which].get_value()<<' ';
 	fout<<log_likelihoods[which].get_tiebreaker()<<' ';
