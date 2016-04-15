@@ -147,7 +147,7 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 			update_level_assignment(thread, which);
 			update_particle(thread, which);
 		}
-		if(_levels.size() != options.max_num_levels &&
+		if(!enough_levels(_levels) &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
 			above[thread].push_back(log_likelihoods[which]);
 	}
@@ -324,13 +324,38 @@ void Sampler<ModelType>::increase_max_num_saves(unsigned int increment)
 }
 
 template<class ModelType>
+bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
+{
+    if(options.max_num_levels == 0)
+    {
+        // Auto-detect if there have been enough levels created
+        if(l.size() < 30)
+            return false;
+
+        // Check level spacing (in terms of log likelihood)
+        // over last 1/3 of the levels
+        size_t start = static_cast<size_t>(0.66667*l.size());
+        for(size_t i=start; i<(l.size()-1); ++i)
+        {
+            if(l[i+1].get_log_likelihood().get_value()
+                        - l[i].get_log_likelihood().get_value() >= 0.8)
+                return false;
+        }
+        return true;
+    }
+
+    // Just compare with the value from OPTIONS
+    return (l.size() >= options.max_num_levels);   
+}
+
+template<class ModelType>
 void Sampler<ModelType>::do_bookkeeping()
 {
 	bool created_level = false;
 
 	// Create a new level?
-	if(levels.size() != options.max_num_levels
-		&& all_above.size() >= options.new_level_interval)
+	if(!enough_levels(levels) &&
+        (all_above.size() >= options.new_level_interval))
 	{
 		// Create the level
 		std::sort(all_above.begin(), all_above.end());
@@ -345,11 +370,12 @@ void Sampler<ModelType>::do_bookkeeping()
 			a.clear();
 
 		// If last level
-		if(levels.size() == options.max_num_levels)
+		if(enough_levels(levels))
 		{
 			Level::renormalise_visits(levels,
 				static_cast<int>(0.1*options.new_level_interval));
 			all_above.clear();
+            options.max_num_levels = levels.size();
 		}
 		else
 		{
@@ -382,8 +408,8 @@ double Sampler<ModelType>::log_push(unsigned int which_level) const
 {
 	// Reference to this thread's copy of levels
 	assert(which_level < levels.size());
-	if(levels.size() == options.max_num_levels)
-		return 0.;
+	if(enough_levels(levels))
+		return 0.0;
 
 	int i = which_level - (static_cast<int>(levels.size()) - 1);
 	return static_cast<double>(i)/options.lambda;

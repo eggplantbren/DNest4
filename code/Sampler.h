@@ -78,6 +78,9 @@ class Sampler
 		// Weighting function
 		double log_push(unsigned int which_level) const;
 
+        // Are there enough levels?
+        bool enough_levels(const std::vector<Level>& l) const;
+
 		// Functions to do with the output files
 		void initialise_output_files() const;
 		void save_levels() const;
