@@ -329,21 +329,19 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
     if(options.max_num_levels == 0)
     {
         // Auto-detect if there have been enough levels created
-        if(l.size() < 10)
+        if(l.size() < 30)
             return false;
 
-        // Average level spacing (in terms of log likelihood)
+        // Check level spacing (in terms of log likelihood)
         // over last 1/3 of the levels
         size_t start = static_cast<size_t>(0.66667*l.size());
-        double tot = 0.0;
-        size_t count = 0;
         for(size_t i=start; i<(l.size()-1); ++i)
         {
-            tot += l[i+1].get_log_likelihood().get_value()
-                        - l[i].get_log_likelihood().get_value();
-            ++count;
+            if(l[i+1].get_log_likelihood().get_value()
+                        - l[i].get_log_likelihood().get_value() >= 0.8)
+                return false;
         }
-        return (tot/count < 0.7);
+        return true;
     }
 
     // Just compare with the value from OPTIONS
