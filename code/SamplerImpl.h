@@ -328,10 +328,25 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
 {
     if(options.max_num_levels == 0)
     {
-        // Auto-detect number of levels
+        // Auto-detect if there have been enough levels created
+        if(l.size() < 10)
+            return false;
+
+        // Average level spacing (in terms of log likelihood)
+        // over last 1/3 of the levels
+        size_t start = static_cast<size_t>(0.66667*l.size());
+        double tot = 0.0;
+        size_t count = 0;
+        for(size_t i=start; i<(l.size()-1); ++i)
+        {
+            tot += l[i+1].get_log_likelihood().get_value()
+                        - l[i].get_log_likelihood().get_value();
+            ++count;
+        }
+        return (tot/count < 0.7);
     }
 
-    // Fixed number of levels from file
+    // Just compare with the value from OPTIONS
     return (l.size() >= options.max_num_levels);   
 }
 
