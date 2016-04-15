@@ -31,6 +31,13 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 {
 	assert(num_threads >= 1);
 	assert(compression > 1.);
+
+    if(options.max_num_levels == 0 && std::abs(compression - exp(1.0)) > 1E-6)
+    {
+        std::cerr<<"# ERROR: Cannot use -c with max_num_levels=0 (AUTO).";
+        std::cerr<<std::endl;
+        exit(0);
+    }
 }
 
 template<class ModelType>
