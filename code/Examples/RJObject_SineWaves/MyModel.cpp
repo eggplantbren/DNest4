@@ -16,7 +16,6 @@ MyModel::MyModel()
 void MyModel::from_prior(RNG& rng)
 {
 	objects.from_prior(rng);
-	objects.consolidate_diff();
 	sigma = exp(log(1E-3) + log(1E6)*rng.rand());
 	calculate_mu();
 }
@@ -27,15 +26,15 @@ void MyModel::calculate_mu()
 	const vector<double>& t = Data::get_instance().get_t();
 
 	// Update or from scratch?
-	bool update = false;//(objects.get_added().size() < objects.get_components().size());
+	bool update = (objects.get_removed().size() == 0);
 
 	// Get the components
 	const vector< vector<double> >& components = (update)?(objects.get_added()):
-				(objects.get_components());
+				                                          (objects.get_components());
 
 	// Zero the signal
 	if(!update)
-		mu.assign(mu.size(), 0.);
+		mu.assign(mu.size(), 0.0);
 
 	double T, A, phi;
 	for(size_t j=0; j<components.size(); j++)
@@ -55,7 +54,6 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.75)
 	{
 		logH += objects.perturb(rng);
-		objects.consolidate_diff();
 		calculate_mu();
 	}
 	else
