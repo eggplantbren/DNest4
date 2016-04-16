@@ -380,6 +380,7 @@ void Sampler<ModelType>::do_bookkeeping()
 				static_cast<int>(0.1*options.new_level_interval));
 			all_above.clear();
             options.max_num_levels = levels.size();
+            std::cout<<"# Done creating levels."<<std::endl;
 		}
 		else
 		{
