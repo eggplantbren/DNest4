@@ -1,7 +1,7 @@
 #ifndef DNest4_Cauchy
 #define DNest4_Cauchy
 
-#include "Distribution.h"
+#include "ContinuousDistribution.h"
 #include "../RNG.h"
 #include <limits>
 
