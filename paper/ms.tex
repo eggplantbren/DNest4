@@ -3,6 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{natbib}
+\usepackage{enumerate}
 \usepackage{dsfont}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -170,7 +171,7 @@ These are naive diffuse priors and we do not claim any special status for them.
 
 Running \pkg{DNest4} on this problem requires a class, which we call
 {\tt StraightLine}, which has the following member functions:
-\begin{itemize}
+\begin{enumerate}[(i)]
 \item \code{void from\_prior(DNest4::RNG\& rng)}, which generates parameter
         values from the prior;
 \item \code{double perturb(DNest4::RNG\& rng)}, which proposes a
@@ -182,7 +183,7 @@ Running \pkg{DNest4} on this problem requires a class, which we call
         interest to the given output stream; and
 \item \code{std::string description() const}, which returns a \proglang{C++}
         string naming the parameters printed by \code{print(std::ostream\&) const}.
-\end{itemize}
+\end{enumerate}
 
 %%\subsection{generate}
 
@@ -331,7 +332,7 @@ of possible parameter values {\it and} data sets.
 \end{figure}
 
 The main challenges associated with ABC are:
-\begin{enumerate}
+\begin{enumerate}[(a)]
 \item The choice of summary statistics
 \item The choice of distance function
 \item How to choose the value of $\epsilon$, or how to change it as a run
