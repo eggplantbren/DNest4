@@ -184,17 +184,62 @@ each from their own prior distribution. For convenience, the \code{RNG} object
 has \code{rand()} and \code{randn()} member functions to generate from
 a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
 
+After generating the parameters from the prior, another member function
+\code{calculate\_mu()} is called, which computes the model prediction
+$mx_i + b$ for each data point.
 
-The \code{perturb} member function is:
+The \code{perturb} member function for the straight line model is:
+\begin{CodeChunk}
+\begin{CodeInput}
+double StraightLine::perturb(DNest4::RNG& rng)
+{
+	double log_H = 0.0;
 
+	// Proposals explore the prior
+	// For normal priors I usually use the hastings factor to do it
+	int which = rng.rand_int(3);
+	if(which == 0)
+	{
+		log_H -= -0.5*pow(m/1E3, 2);
+		m += 1E3*rng.randh();
+		log_H += -0.5*pow(m/1E3, 2);
+	}
+	else if(which == 1)
+	{
+		log_H -= -0.5*pow(b/1E3, 2);
+		b += 1E3*rng.randh();
+		log_H += -0.5*pow(b/1E3, 2);
+	}
+	else
+	{
+		// Usual log-uniform prior trick
+		sigma = log(sigma);
+		sigma += 20.0*rng.randh();
+		DNest4::wrap(sigma, -10.0, 10.0);
+		sigma = exp(sigma);
+	}
+
+	// Calculate mu again if m or b changed
+	if(which == 0 || which == 1)
+		calculate_mu();
+
+	return log_H;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+This first chooses a random integer from $[0, 3)$ using the
+\code{rand\_int(int)} member function of the \code{DNest4::RNG} class.
 
 
 
 When implementing a model class, it is imperative that the
 \code{from\_prior(DNest4::RNG\&)} and \code{perturb(DNest4::RNG\&)}
-member functions be consistent with each other.
-
-
+member functions be consistent with each other. One technique
+for verifying this is to sample the prior for a long time
+(by setting the maximum number of levels to 1) and inspect
+{\tt sample.txt} to ensure that each parameter is exploring
+the correct distribution.
 
 \section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve ``Approximate Bayesian Computation''
