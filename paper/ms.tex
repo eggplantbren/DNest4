@@ -4,6 +4,10 @@
 \usepackage{graphicx}
 \usepackage[left=2cm, right=2cm, bottom=3cm, top=2cm]{geometry}
 
+\newcommand{\params}{\theta}
+\newcommand{\data}{D}
+\newcommand{\dobs}{D_{\rm obs}}
+
 \title{DNest4: An implementation of Diffusive Nested Sampling
 in C++11 and Python}
 \author{Brendon J. Brewer\\
@@ -34,17 +38,131 @@ Dan Foreman-Mackey}
 
 \section{Implementing models}
 
+\subsection{Implementing models via {\tt generate.py}}
+
 \section{Python package}
 
 % Assign to DFM
 
 \section{Examples}
+% Reasonably simple examples
 
 \subsection{}
 
-\subsection{Approximate Bayesian Computation}
+\section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve ``Approximate Bayesian Computation''
 problems elegantly and efficiently.
+
+Approximate Bayesian Computation (ABC), also known as likelihood-free inference,
+is a set of Monte Carlo techniques for approximating a posterior distribution
+without having to evaluate the likelihood function. Instead, the ability to
+generate simulated data sets from the sampling distribution is required.
+Since a sampling distribution must be specified, it is not the assumption of
+a specific likelihood that is avoided (indeed, a sampling distribution and
+a data set imply a particular likelihood function), rather that we cannot
+evaluate it cheaply as a function of $\params$ and $\data$.
+
+All Bayesian updating conditions on the truth of a proposition. We sometimes
+speak and use notation as if we're conditioning on the value of a variable, for
+example by writing the posterior distribution as $p(\params | \data)$. However,
+this is shorthand for $p(\params | \data = \dobs)$. In the prior state of
+knowledge, the proposition $(\data = \dobs)$ could have been either true or
+false, but in the posterior state of knowledge it is definitely true.
+In the case of ``continuous data'' (really a continuous {\it space of
+possibilities for the data before we learned it}) we're conditioning on a
+proposition like $(\data \in [\dobs, \dobs+\epsilon])$ and implicitly
+taking the limit $\epsilon \to 0$.
+
+\begin{table}[ht!]
+\centering
+\small
+\begin{tabular}{lll}
+\hline
+Bayesian computation		&		Statistical mechanics		&		ABC\\
+\hline
+Parameter space	$\Theta$	&		Phase space	$\Omega$ or configuration space $\Gamma$ 			& (Parameter$\times$Data) space $\Theta \times \mathcal{D}$\\		
+Marginal likelihood / evidence	&	Partition function at $T=1$	&\\
+
+
+\end{tabular}
+\caption{\it The relationship between standard Bayesian computation, statistical
+mechanics, and ABC. In each case Monte Carlo methods are used to calculate
+integrals over a space. In standard Bayesian computation, it is the parameter
+space of a model that is usually of interest, whereas in ABC it is the space
+of possible parameter values {\it and} data sets.
+\label{tab:relation}}
+\end{table}
+
+
+\begin{figure}[ht!]
+\centering
+\includegraphics[scale=0.5]{figures/joint.pdf}
+\caption{\it The joint prior for parameters $\params$ and data $\data$.
+\label{fig:joint}}
+\end{figure}
+
+The main challenges associated with ABC are:
+\begin{enumerate}
+\item The choice of summary statistics
+\item The choice of distance function
+\item How to choose the value of $\epsilon$, or how to change it as a run
+progresses
+\item How to achieve good mixing.
+\end{enumerate}
+Challenges 1 and 2 are Bayesian in nature, i.e. they relate to the very
+definition of the posterior distribution and are well defined independent of
+the fact that we are going to use a Monte Carlo method to compute the
+results. On the other hand, challenges 3 and 4 are about the computational implementation.
+
+\section{Parameterising the data space}
+In standard MCMC-based ABC, proposal moves are made by first proposing a
+change to the parameters (from $\params$ to $\params'$), and then generating
+a mock dataset $\data'$ from $p(\data | \params')$. As a Metropolis proposal
+for exploring the product space $\Theta \times \mathcal{D}$ this is a very
+aggressive choice, since the proposed value of the
+dataset $\params'$ is likely to be very different from the previous one.
+One of the most elementary pieces of advice we receive when learning the
+Metropolis algorithm is to be careful about how ambitious our proposal
+distributions are, since tiny and huge proposal moves are both very
+inefficient. The performance of MCMC-based ABC can therefore be improved by
+alternative choices of proposal distribution.
+
+In some cases, we might be able to find efficient proposal distributions for exploring $\Theta \times \mathcal{D}$ by having insight into the particular
+problem we're working on. However, there are also techniques that are
+completely general in that they should work on any ABC-type problem.
+
+Consider the process of generating a mock dataset. Whatever else is involved,
+this process will involve calls to an underlying random number generator.
+Perhaps a function {\tt rand()}, generating variables from a Uniform(0, 1)
+distribution, is called $n$ times in the course of generating a dataset.
+Usually, the simulation process has the property that, if $\theta'$ is
+close to $\theta$, then the same sequence of random numbers returned by
+{\tt rand()} would produce a dataset $\data'$ that is very similar to $\data$.
+This suggests an alternative parameterisation of
+the product space $\Theta\times\mathcal{D}$: instead of using the one that
+naturally describes the data, we can use a coordinate system defined by
+$\theta$ together with $\{u_1, ..., u_n\}$, the $n$ uniform random numbers
+used to construct a mock dataset.
+
+In this alternative coordinate system, a proposed move
+to change $\params$ while keeping
+$\{u_i\}$ fixed results in a proposed new dataset that is similar to the
+previous one, assuming the change to $\params$ is small. The standard procedure
+of generating an entirely new mock dataset each step is now viewed as a
+proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
+re-generated from their iid uniform prior}.
+
+\section*{Acknowledgements}
+It is a pleasure to thank Ewan Cameron (Oxford), Dan
+Foreman-Mackey (Washington), David Hogg (NYU), Daniela Huppenkothen (NYU),
+Scott Sisson (UNSW), and Yanan Fan (NYU) for valuable discussions.
+
+\begin{thebibliography}{99}
+\bibitem[Caticha(2008)]{caticha} Caticha, A.\ 2008.\ Lectures 
+on Probability, Entropy, and Statistical Physics.\ ArXiv e-prints 
+arXiv:0808.0012. 
+
+\end{thebibliography}
 
 
 \begin{thebibliography}{999}
