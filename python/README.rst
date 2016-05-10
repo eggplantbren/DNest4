@@ -17,7 +17,7 @@ building the bindings, you can run:
 
 .. code-block:: bash
 
-    python setup.py install --no-cext
+    python setup.py install --without-cext
 
 and then use it as follows:
 
