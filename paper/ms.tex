@@ -11,18 +11,38 @@
 
 %% almost as usual
 \author{Brendon J. Brewer\\The University of Auckland\And 
-        Dan Foreman-Mackey\\Washington}
-\title{\pkg{DNest4}: An implementation of Diffusive Nested Sampling in
-\proglang{C++11} and \proglang{Python}}
+        Dan Foreman-Mackey\\University of Washington}
+\title{\pkg{DNest4}: Diffusive Nested Sampling in
+\proglang{C++} and \proglang{Python}}
 
 %% for pretty printing and a nice hypersummary also set:
-\Plainauthor{Brendon J. Brewer, Dan Foreman-Mackey} %% comma-separated
+\Plainauthor{Brendon J. Brewer, Daniel Foreman-Mackey} %% comma-separated
 \Plaintitle{DNest4: An implementation of Diffusive Nested Sampling in
 C++11 and Python} %% without formatting
 \Shorttitle{\pkg{DNest4}: Diffusive Nested Sampling} %% a short title (if necessary)
 
 %% an abstract and keywords
-\Abstract{DNest4 is good.}
+\Abstract{In probabilistic (Bayesian) inferences, we typically want to compute
+properties of the posterior distribution, describing knowledge of
+unknown quantities in the context of a particular dataset and the assumed
+prior information. The marginal likelihood (also known as the ``evidence'')
+is a key quantity in Bayesian model averaging. The Diffusive Nested Sampling algorithm, a variant of Nested Sampling, is a powerful tool for generating
+posterior samples and estimating marginal likelihoods. It is effective at
+solving complex problems including many where the posterior distribution is
+multimodal or has strong dependencies between variables. The key requirement
+is that the likelihood function be fast to evaluate.
+\pkg{DNest4} is a multi-threaded implementation of this algorithm in
+modern \proglang{C++} (specifically, \proglang{C++11}),
+along with associated utilities including: i)
+a \pkg{Python} package allowing basic use without \proglang{C++} coding;
+ii) \pkg{RJObject}, a class template for finite mixture models;
+iii) Experimental support for models implemented in \proglang{Julia};
+iv) An experimental tool \proglang{Python} tool to
+generate \pkg{C++} code from a model specification.
+In this paper we demonstrate \pkg{DNest4} usage through examples including
+simple Bayesian data analysis, finite mixture models, and Approximate
+Bayesian Computation (ABC).
+}
 
 \Keywords{bayesian inference, markov chain monte carlo,
 metropolis algorithm, bayesian computation, nested sampling, \proglang{c++11},
