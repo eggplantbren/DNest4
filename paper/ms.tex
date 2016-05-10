@@ -37,7 +37,7 @@ along with associated utilities including: i)
 a \pkg{Python} package allowing basic use without \proglang{C++} coding;
 ii) \pkg{RJObject}, a class template for finite mixture models;
 iii) Experimental support for models implemented in \proglang{Julia};
-iv) An experimental tool \proglang{Python} tool to
+iv) An experimental \proglang{Python} tool to
 generate \pkg{C++} code from a model specification.
 In this paper we demonstrate \pkg{DNest4} usage through examples including
 simple Bayesian data analysis, finite mixture models, and Approximate
@@ -123,7 +123,11 @@ the constrained prior. Hence, the appropriate acceptance probability is
 \frac{q(\params'|\params)}{q(\params | \params')}
 \frac{\pi(\params')}{\pi(\params)}
 \mathds{1}\left(L(\params') > L^*\right)
-\right]
+\right]\\
+&= \min\left[1,
+e^{\ln(H)}
+\mathds{1}\left(L(\params') > L^*\right)
+\right]\label{eqn:log_hastings}
 \end{align}
 where $L^*$ is the threshold value of the likelihood.
 
@@ -131,7 +135,8 @@ The \pkg{DNest4} \code{Sampler} class handles the likelihood check,
 while the \code{perturb(DNest4::RNG\&)} member function handles the
 rest of the terms. The value returned from \code{perturb(DNest4::RNG\&)}
 must be
-$\ln\left[q(\params'|\params)/q(\params'|\params)\times\pi(\params')/\pi(\params)\right]$ for your problem.
+$\ln\left[q(\params'|\params)/q(\params'|\params)\times\pi(\params')/\pi(\params)\right]$
+for your problem.
 
 
 
@@ -150,7 +155,6 @@ The
 The ``classic'' method of implementing models in \pkg{DNest4} is by
 writing a \proglang{C++} class, an object of which represents a
 point in your parameter space.
-
 To demonstrate, consider a simple linear regression situation where the
 sampling distribution is
 \begin{align}
@@ -163,6 +167,22 @@ b &\sim \textnormal{Normal}(0, 1000^2)\\
 \ln\sigma &\sim \textnormal{Uniform}(-10, 10)
 \end{align}
 These are naive diffuse priors and we do not claim any special status for them.
+
+Running \pkg{DNest4} on this problem requires a class, which we call
+{\tt StraightLine}, which has the following member functions:
+\begin{itemize}
+\item \code{void from\_prior(DNest4::RNG\& rng)}, which generates parameter
+        values from the prior;
+\item \code{double perturb(DNest4::RNG\& rng)}, which proposes a
+        change to the parameter values, and returns $\ln(H)$ as defined in
+        Equation~\ref{eqn:log_hastings};
+\item \code{double log\_likelihood() const}, which evaluates the log of
+        the likelihood function;
+\item \code{void print(std::ostream\& out) const}, which prints parameters of
+        interest to the given output stream; and
+\item \code{std::string description() const}, which returns a \proglang{C++}
+        string naming the parameters printed by \code{print(std::ostream\&) const}.
+\end{itemize}
 
 %%\subsection{generate}
 
