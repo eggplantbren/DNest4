@@ -86,13 +86,22 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 
 \section{Bayesian computation and Nested Sampling}
 
-The posterior distribution
+In very compact notation, the posterior
+posterior distribution for parameters $\params$ given data $\data$, within
+context $I$, is
 \begin{align}
-p(\params | \data) &= \frac{p(\params)p(\data | \params)}{p(\data)}\\
-&= \frac{\pi(\params)L(\params)}{Z}
+p(\params | \data, I) &=
+\frac{p(\params | I)p(\data | \params, I)}{p(\data | I)}
 \end{align}
-
-
+or
+\begin{align}
+\textnormal{posterior} &=
+\frac{\textnormal{prior} \times \textnormal{likelihood}}
+     {\textnormal{marginal likelihood}}.
+\end{align}
+When discussing computational matters, the prior is
+often written $\pi(\theta)$, the likelihood $L(\theta)$,
+and the marginal likelihood $Z$.
 
 \subsection{Markov Chain Monte Carlo}
 In the Metropolis algorithm, the acceptance probability $\alpha$
@@ -130,13 +139,15 @@ $\ln\left[q(\params'|\params)/q(\params'|\params)\times\pi(\params')/\pi(\params
 
 
 
-%\section{Basic usage of DNest4}
+\section{Basic usage of DNest4}
+The
 
-%\section{Advanced usage}
+\section{Advanced usage}
 
 %\subsection{Multithreading}
 
-%\section{Implementing models}
+\section{Implementing models}
+
 
 %%\subsection{generate}
 
@@ -152,7 +163,7 @@ prior is:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-void StraightLine::from_prior(RNG& rng)
+void StraightLine::from_prior(DNest4::RNG\& rng)
 {
    // Naive diffuse prior
    m = 1E3*rng.randn();
@@ -166,6 +177,23 @@ void StraightLine::from_prior(RNG& rng)
 }
 \end{CodeInput}
 \end{CodeChunk}
+
+This generates $m$, $b$, and $\sigma$ from their joint prior. In this case,
+the priors are all independent, so this reduces to generating the parameters
+each from their own prior distribution. For convenience, the \code{RNG} object
+has \code{rand()} and \code{randn()} member functions to generate from
+a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
+
+
+The \code{perturb} member function is:
+
+
+
+
+When implementing a model class, it is imperative that the
+\code{from\_prior(DNest4::RNG\&)} and \code{perturb(DNest4::RNG\&)}
+member functions be consistent with each other.
+
 
 
 \section{Approximate Bayesian Computation}
