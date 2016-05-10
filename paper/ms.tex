@@ -86,6 +86,13 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 
 \section{Bayesian computation and Nested Sampling}
 
+The posterior distribution
+\begin{align}
+p(\params | \data) &= \frac{p(\params)p(\data | \params)}{p(\data)}\\
+&= \frac{\pi(\params)L(\params)}{Z}
+\end{align}
+
+
 
 \subsection{Markov Chain Monte Carlo}
 In the Metropolis algorithm, the acceptance probability $\alpha$
@@ -167,7 +174,9 @@ problems elegantly and efficiently.
 
 Approximate Bayesian Computation (ABC), also known as likelihood-free inference,
 is a set of Monte Carlo techniques for approximating a posterior distribution
-without having to evaluate the likelihood function. Instead, the ability to
+without having to evaluate the likelihood function $L(\theta)$.
+
+. Instead, the ability to
 generate simulated data sets from the sampling distribution is required.
 Since a sampling distribution must be specified, it is not the assumption of
 a specific likelihood that is avoided (indeed, a sampling distribution and
