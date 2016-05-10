@@ -1,21 +1,59 @@
-\documentclass[a4paper, 12pt]{article}
+\documentclass[article]{jss}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{dsfont}
 \usepackage{minted}
-\usepackage[left=2cm, right=2cm, bottom=3cm, top=2cm]{geometry}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% almost as usual
+\author{Brendon J. Brewer\\The University of Auckland\And 
+        Dan Foreman-Mackey\\Washington}
+\title{\pkg{DNest4}: An implementation of Diffusive Nested Sampling in
+C++11 and Python}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Brendon J. Brewer, Dan Foreman-Mackey} %% comma-separated
+\Plaintitle{A Capitalized Title: Something about a Package foo} %% without formatting
+\Shorttitle{\pkg{foo}: A Capitalized Title} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{DNest4 is good.}
+
+\Keywords{keywords, comma-separated, not capitalized, \proglang{C++11},
+\proglang{Python}}
+\Plainkeywords{keywords, comma-separated, not capitalized, Java} %% without formatting
+%% at least one keyword must be supplied
+
+%% publication information
+%% NOTE: Typically, this can be left commented and will be filled out by the technical editor
+%% \Volume{50}
+%% \Issue{9}
+%% \Month{June}
+%% \Year{2012}
+%% \Submitdate{2012-06-04}
+%% \Acceptdate{2012-06-04}
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Brendon J. Brewer\\
+  Department of Statistics\\
+  The University of Auckland\\
+  Private Bag 92019\\
+  Auckland, 1142\\
+  New Zealand\\
+  E-mail: \email{bj.brewer@auckland.ac.nz}\\
+  URL: \url{https://www.stat.auckland.ac.nz/~brewer/}
+}
 
 \newcommand{\params}{\theta}
 \newcommand{\data}{D}
 \newcommand{\dobs}{D_{\rm obs}}
-
-\title{DNest4: An implementation of Diffusive Nested Sampling
-in C++11 and Python}
-\author{Brendon J. Brewer\\
-Dan Foreman-Mackey}
-\date{}
 
 \begin{document}
 \maketitle
@@ -29,25 +67,25 @@ Dan Foreman-Mackey}
 \section{Bayesian computation, statistical mechanics, and Nested Sampling}
 
 
-\subsection{Diffusive Nested Sampling}
+%\subsection{Diffusive Nested Sampling}
 
 
 
-\section{Basic usage of DNest4}
+%\section{Basic usage of DNest4}
 
-\section{Advanced usage}
+%\section{Advanced usage}
 
-\subsection{Multithreading}
+%\subsection{Multithreading}
 
-\section{Implementing models}
+%\section{Implementing models}
 
-\subsection{Implementing models via {\tt generate.py}}
+%%\subsection{generate}
 
-\section{Python package}
+%\section{Python package}
 
-% Assign to DFM
+%% Assign to DFM
 
-\section{Examples}
+%\section{Examples}
 % Reasonably simple examples
 
 \begin{minted}[mathescape,
@@ -110,9 +148,6 @@ double StraightLine::perturb(RNG& rng)
 }
 \end{minted}
 
-
-
-\subsection{}
 
 \section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve ``Approximate Bayesian Computation''
