@@ -207,9 +207,6 @@ void StraightLine::from_prior(DNest4::RNG& rng)
 
    // Log-uniform prior
    sigma = exp(-10.0 + 20.0*rng.rand());
-
-   // Compute the model line
-   calculate_mu();
 }
 \end{CodeInput}
 \end{CodeChunk}
@@ -254,10 +251,6 @@ double StraightLine::perturb(DNest4::RNG& rng)
 		DNest4::wrap(sigma, -10.0, 10.0);
 		sigma = exp(sigma);
 	}
-
-	// Calculate mu again if m or b changed
-	if(which == 0 || which == 1)
-		calculate_mu();
 
 	return log_H;
 }
@@ -306,14 +299,14 @@ taking the limit $\epsilon \to 0$.
 \begin{table}[ht!]
 \centering
 \small
-\begin{tabular}{lll}
+\begin{tabular}{|l|l|l|}
 \hline
 Bayesian computation		&		Statistical mechanics		&		ABC\\
 \hline
-Parameter space	$\Theta$	&		Phase space	$\Omega$ or configuration space $\Gamma$ 			& (Parameter$\times$Data) space $\Theta \times \mathcal{D}$\\		
-Marginal likelihood / evidence	&	Partition function at $T=1$	&\\
-
-
+Parameter space	$\Theta$	&		Phase space	$\Omega$ 			& Product space $\Theta \times \mathcal{D}$\\
+Posterior $p(\params | D,I)$   &  Canonical distribution $p(\boldsymbol{x}; T)$     & \\ 
+Marginal likelihood $P(D|I)$	&	Partition function $Z(T)$	&   Marginal likelihood $p(D\in | I)$\\
+\hline
 \end{tabular}
 \caption{\it The relationship between standard Bayesian computation, statistical
 mechanics, and ABC. In each case Monte Carlo methods are used to calculate
