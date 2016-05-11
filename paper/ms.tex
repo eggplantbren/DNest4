@@ -395,10 +395,13 @@ double StraightLine::log_likelihood() const
 \end{CodeInput}
 \end{CodeChunk}
 The dataset is assumed to be accessible inside this function. In the
-regression example, this is achieved by having a Data class to represent
-datasets. The dataset using the {\em singleton pattern}.
+regression example, this is achieved by having a
+\code{Data} class to represent
+datasets. Since there will usually only be one dataset,
+the {\em singleton pattern} (a class of which there is one instance
+accessible from anywhere) is recommended.
 
-
+The print and description functions are very simple:
 \begin{CodeChunk}
 \begin{CodeInput}
 void StraightLine::print(std::ostream& out) const
