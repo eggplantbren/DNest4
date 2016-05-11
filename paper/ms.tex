@@ -207,7 +207,7 @@ class StraightLine
 \end{CodeInput}
 \end{CodeChunk}
 
- which has the following member functions:
+The class must also define and implement the following member functions:
 \begin{enumerate}[(i)]
 \item \code{void from\_prior(DNest4::RNG\& rng)}, which generates parameter
         values from the prior;
@@ -220,6 +220,8 @@ class StraightLine
         interest to the given output stream; and
 \item \code{std::string description() const}, which returns a \proglang{C++}
         string naming the parameters printed by \code{print(std::ostream\&) const}.
+        This string is printed (after a comment character \#) at the top of
+        the output file.
 \end{enumerate}
 
 %%\subsection{generate}
