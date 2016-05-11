@@ -102,7 +102,23 @@ or
 \end{align}
 When discussing computational matters, the prior is
 often written $\pi(\theta)$, the likelihood $L(\theta)$,
-and the marginal likelihood $Z$.
+and the marginal likelihood $Z$. A popular alternative name for the marginal
+likelihood, which emphasizes its role in Bayesian model averaging,
+is the ``evidence''.
+
+Nested Sampling \citep[NS;][]{skilling} is a Monte Carlo method whose main
+aim was to calculate $Z$. However, it can also be used to generate samples
+to represent the posterior distribution $\pi(\theta)L(\theta)/Z$, or
+any other distribution proportional to
+$\pi(\theta)\Phi\left[L(\theta)\right]$ where $\Phi$ is any monotonic function.
+This latter property makes NS particularly useful for statistical mechanics
+calculations \citep{2009arXiv0906.3544P, 2015arXiv150303404B}, where the
+``canonical'' family of distributions proportional to
+$\pi(\theta)L(\theta)^\beta$ is of interest (and $L(\theta)$ is identified as
+$\exp(-\textnormal{energy})$). NS is particularly efficient for this, since
+only a single run (which explores regions of higher and higher $L$)
+is required, and different canonical
+distributions can be obtained by re-weighting the output points.
 
 \subsection{Markov Chain Monte Carlo}
 In the Metropolis algorithm, the acceptance probability $\alpha$
@@ -381,6 +397,11 @@ Foreman-Mackey (Washington), David Hogg (NYU), Daniela Huppenkothen (NYU),
 Scott Sisson (UNSW), and Yanan Fan (NYU) for valuable discussions.
 
 \begin{thebibliography}{99}
+\bibitem[Baldock et al.(2015)]{2015arXiv150303404B} Baldock, R.~J.~N., 
+P{\'a}rtay, L.~v.~B., Bart{\'o}k, A.~P., Payne, M.~C., Cs{\'a}nyi, G.\ 
+2015.\ Determining pressure-temperature phase diagrams of materials.\ ArXiv 
+e-prints arXiv: 1503.03404. 
+
 \bibitem[\protect\citeauthoryear{Brewer, P{\'a}rtay,
 \& Cs{\'a}nyi}{2011}]{dnest} Brewer B.~J., P{\'a}rtay L.~B., Cs{\'a}nyi G., 2011,
 Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
@@ -388,6 +409,12 @@ Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
 \bibitem[Caticha(2008)]{caticha} Caticha, A.\ 2008.\ Lectures 
 on Probability, Entropy, and Statistical Physics.\ ArXiv e-prints 
 arXiv:0808.0012.
+
+\bibitem[P{\'a}rtay et al.(2009)]{2009arXiv0906.3544P} P{\'a}rtay, L.~B., 
+Bart{\'o}k, A.~P., Cs{\'a}nyi, G.\ 2009.\ Efficient sampling of atomic 
+configurational spaces.\ ArXiv e-prints arXiv: 0906.3544. 
+
+\bibitem[\protect\citeauthoryear{Skilling}{2006}]{skilling} Skilling, J., 2006, Nested Sampling for General Bayesian Computation, Bayesian Analysis 4, pp. 833-860.
 
 \end{thebibliography}
 
