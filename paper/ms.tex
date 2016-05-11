@@ -185,8 +185,29 @@ b &\sim \textnormal{Normal}(0, 1000^2)\\
 \end{align}
 These are naive diffuse priors and we do not claim any special status for them.
 
-Running \pkg{DNest4} on this problem requires a class, which we call
-{\tt StraightLine}, which has the following member functions:
+To run \pkg{DNest4} on any particular problem, such as this linear regression
+example, the user needs to define a \proglang{C++} class to specify the
+model. Specifically, an object of the class represents a point in the
+model's parameter space. Member functions are defined which generate
+the object's parameters from the prior, make proposal steps, evaluate the
+likelihood, and so on. The sampler calls these member functions while
+executing a run.
+
+For the simple linear regression example, we will call the class
+{\tt StraightLine}. The member variables representing the
+unknown parameters are defined in the header file {\tt StraightLine.h}:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+class StraightLine
+{
+    private:
+        double m, b, sigma;
+};
+\end{CodeInput}
+\end{CodeChunk}
+
+ which has the following member functions:
 \begin{enumerate}[(i)]
 \item \code{void from\_prior(DNest4::RNG\& rng)}, which generates parameter
         values from the prior;
