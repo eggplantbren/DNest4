@@ -163,7 +163,6 @@ p(\theta) &=
 \label{eqn:mixture_of_constrained_priors}
 \end{align}
 
-
 \subsection{Markov Chain Monte Carlo}
 In the Metropolis algorithm, the acceptance probability $\alpha$
 is given by
@@ -206,7 +205,20 @@ for your problem.
 
 
 \section{Basic usage of DNest4}
-The
+\pkg{DNest4} can be obtained from the \pkg{git} repository at
+{\tt https://github.com/eggplantbren/DNest4/} and is licensed under the
+MIT license. To obtain \pkg{DNest4} and compile and install the software,
+the following steps are sufficient:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+git clone https://github.com/eggplantbren/DNest4
+cd DNest4/code
+make
+cd ../python
+python setup.py install
+\end{CodeInput}
+\end{CodeChunk}
 
 \section{Advanced usage}
 
@@ -378,6 +390,10 @@ double StraightLine::log_likelihood() const
 }
 \end{CodeInput}
 \end{CodeChunk}
+The dataset is assumed to be accessible inside this function. In the
+regression example, this is achieved by having a Data class to represent
+datasets. The dataset using the {\em singleton pattern}.
+
 
 \begin{CodeChunk}
 \begin{CodeInput}
