@@ -353,6 +353,47 @@ for verifying this is to sample the prior for a long time
 {\tt sample.txt} to ensure that each parameter is exploring
 the correct distribution.
 
+The log-likelihood code is:
+\begin{CodeChunk}
+\begin{CodeInput}
+double StraightLine::log_likelihood() const
+{
+    // Grab the dataset
+    const std::vector<double>& x = Data::get_instance().get_x();
+    const std::vector<double>& y = Data::get_instance().get_y();
+
+    // Variance
+    double var = sigma*sigma;
+
+    // Conventional gaussian sampling distribution
+    double log_L = 0.0;
+    double mu;
+    for(size_t i=0; i<y.size(); ++i)
+    {
+        mu = m*x[i] + b;
+        log_L += -0.5*log(2*M_PI*var) - 0.5*pow(y[i] - mu, 2)/var;
+    }
+
+    return log_L;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{CodeInput}
+void StraightLine::print(std::ostream& out) const
+{
+    out<<m<<' '<<b<<' '<<sigma;
+}
+
+std::string StraightLine::description() const
+{
+    return std::string("m, b, sigma");
+}
+
+\end{CodeInput}
+\end{CodeChunk}
+
 \section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve ``Approximate Bayesian Computation''
 problems elegantly and efficiently.
