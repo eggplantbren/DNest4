@@ -150,8 +150,9 @@ to explore the following joint distribution:
 p(\theta, j) &= p(j)p(\theta | j)\\
 &= w_j \times
 \frac{\pi(\theta)\mathds{1}\left[L(\theta) > \ell_j\right]}{X(\ell_j)}.
+\label{eqn:target_distribution}
 \end{align}
-where $\{\ell_j\}$ is a sequence of increasing likelihood thresholds
+where the $\{\ell_j\}$ are a sequence of increasing likelihood thresholds
 or {\em levels}, and
 $\ell_0 = 0$, and $\{w_j\}$ is the marginal distribution for $j$.
 The marginal distribution for $\theta$ is then a {\em mixture} of
@@ -176,20 +177,26 @@ where $q(\theta' | \theta)$ is the proposal distribution used to generate
 a new position $\theta'$ from the current position $\theta$. Often,
 $q$ is {\em symmetric} so the $q$ terms cancel in the acceptance probability.
 
-In Nested Sampling, the target distribution is not the posterior but rather
-the constrained prior. Hence, the appropriate acceptance probability is
+In DNS, the target distribution is not the posterior but rather
+the joint distribution in Equation~\ref{eqn:target_distribution}.
+Moves of $\theta$ are done keeping $j$ fixed, so we only need
+to consider the Metropolis acceptance probability for fixed $j$,
+i.e. with respect to a single constrained prior like
+Equation~\ref{eqn:constrained_prior}.
+Hence, the appropriate acceptance probability
+for a proposed move from $\theta$ to $\theta'$ is
 \begin{align}
 \alpha &= \min\left[1,
 \frac{q(\params'|\params)}{q(\params | \params')}
 \frac{\pi(\params')}{\pi(\params)}
-\mathds{1}\left(L(\params') > L^*\right)
+\mathds{1}\left(L(\params') > \ell_j\right)
 \right]\\
 &= \min\left[1,
 e^{\ln(H)}
-\mathds{1}\left(L(\params') > L^*\right)
+\mathds{1}\left(L(\params') > \ell_j\right)
 \right]\label{eqn:log_hastings}
 \end{align}
-where $L^*$ is the threshold value of the likelihood.
+where $\ell_j$ is the likelihood threshold for level $j$.
 
 The \pkg{DNest4} \code{Sampler} class handles the likelihood check,
 while the \code{perturb(DNest4::RNG\&)} member function handles the
