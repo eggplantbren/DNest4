@@ -32,7 +32,7 @@ posterior samples and estimating marginal likelihoods. It is effective at
 solving complex problems including many where the posterior distribution is
 multimodal or has strong dependencies between variables. The key requirement
 is that the likelihood function be fast to evaluate.
-\pkg{DNest4} is an open source,
+\pkg{DNest4} is an open source (MIT licensed),
 multi-threaded implementation of this algorithm in
 modern \proglang{C++} (specifically, \proglang{C++11}),
 along with associated utilities including: i)
@@ -124,7 +124,8 @@ p(\data | M_j) &= \int p(\theta_j | M_j)p(\data | \theta_j, M_j) \, d\theta_j
 is the marginal likelihood of model $j$. This kind of calculation is often
 called ``model selection'' or (more accurately) ``model averaging''.
 
-When discussing computational matters, the prior is
+When discussing computational matters, the prior distribution for parameters
+is
 often written $\pi(\theta)$, the likelihood $L(\theta)$,
 and the marginal likelihood $Z$. A popular alternative name for the marginal
 likelihood, which emphasizes its role in Bayesian model averaging,
@@ -161,6 +162,9 @@ is the amount of prior mass which has likelihood greater than $\ell$.
 In the standard NS framework, the sequence of $\ell$ values is selected
 so that $X(\ell)$ shrinks by a factor $\approx e^{-1/N}$ per iteration, where
 $N$ is the number of particles used.
+
+
+
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist \citep[e.g.][]{multinest}.
@@ -236,6 +240,9 @@ for your problem.
 
 
 \section{Dependencies and installation}
+The following instructions apply to Unix-like operating systems such as
+GNU/Linux, Mac OS X, and FreeBSD.
+
 \pkg{DNest4} can be obtained from the \pkg{git} repository located at
 \begin{center}
 {\tt https://github.com/eggplantbren/DNest4/}\\
@@ -557,9 +564,9 @@ proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
 re-generated from their iid uniform prior}.
 
 \section*{Acknowledgements}
-It is a pleasure to thank Ewan Cameron (Oxford), Dan
-Foreman-Mackey (Washington), David Hogg (NYU), Daniela Huppenkothen (NYU),
-Scott Sisson (UNSW), and Yanan Fan (NYU) for valuable discussions.
+It is a pleasure to thank Anna Pancoast (Harvard),
+Ewan Cameron (Oxford), David Hogg (NYU), and Daniela Huppenkothen (NYU)
+for valuable discussions.
 
 \begin{thebibliography}{99}
 \bibitem[Baldock et al.(2015)]{2015arXiv150303404B} Baldock, R.~J.~N., 
