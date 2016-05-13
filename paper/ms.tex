@@ -87,12 +87,20 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 
 \section{Bayesian computation and Nested Sampling}
 
-In very compact notation, the posterior
+Bayesian inference, where probability theory is used to describe degrees of
+logical implication or subjective certainty, provides a powerful general basis
+for data analysis \citep{ohagan, sivia}. The result of such
+an analysis is typically
+posterior probabilities of various hypotheses, or (more specifically)
+a joint posterior probability distribution for the values of unknown
+parameters.
+
+In a very compact (but standard) notation, the posterior
 posterior distribution for parameters $\params$ given data $\data$, within
-context $I$, is
+context $M$, is
 \begin{align}
-p(\params | \data, I) &=
-\frac{p(\params | I)p(\data | \params, I)}{p(\data | I)}
+p(\params | \data, M) &=
+\frac{p(\params | M)p(\data | \params, M)}{p(\data | M)}
 \end{align}
 or
 \begin{align}
@@ -553,6 +561,13 @@ arXiv:0808.0012.
 
 \bibitem[\protect\citeauthoryear{Feroz, Hobson,
 \& Bridges}{2009}]{multinest} Feroz F., Hobson M.~P., Bridges M., 2009, MNRAS, 398, 1601
+
+\bibitem[\protect\citeauthoryear{O'Hagan and Forster}{2004}]{ohagan}
+O'Hagan, A., Forster,~J., 2004, Bayesian inference. London: Arnold.
+
+\bibitem[\protect\citeauthoryear{Sivia and Skilling}{2006}]{sivia} Sivia, 
+D.~ S., Skilling, J., 2006, Data Analysis: A Bayesian Tutorial, 2nd 
+Edition, Oxford University Press
 
 \bibitem[P{\'a}rtay et al.(2009)]{2009arXiv0906.3544P} P{\'a}rtay, L.~B., 
 Bart{\'o}k, A.~P., Cs{\'a}nyi, G.\ 2009.\ Efficient sampling of atomic 

@@ -20,4 +20,4 @@ sampler_state.txt
 *.so
 code/Templates/Builder/MyModel.h
 code/Templates/Builder/MyModel.cpp
-
+ms.out
