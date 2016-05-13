@@ -1,6 +1,7 @@
 #include "Cauchy.h"
 #include <stdexcept>
 #include <cmath>
+#include "Utils.h"
 
 namespace DNest4
 {
