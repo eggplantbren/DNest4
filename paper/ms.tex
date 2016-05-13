@@ -38,7 +38,7 @@ modern \proglang{C++} (specifically, \proglang{C++11}),
 along with associated utilities including: i)
 a \pkg{Python} package allowing basic use without \proglang{C++} coding;
 ii) \pkg{RJObject}, a class template for finite mixture models;
-iii) Experimental support for models implemented in \proglang{Julia};
+iii) Experimental support for models implemented in \proglang{Julia}; and
 iv) An experimental \proglang{Python} tool to
 generate \pkg{C++} code from a model specification.
 In this paper we demonstrate \pkg{DNest4} usage through examples including
@@ -98,7 +98,7 @@ parameters.
 
 In a very compact (but standard) notation, the posterior
 posterior distribution for parameters $\params$ given data $\data$, within
-context $M$, is
+the context of prior information $M$, is
 \begin{align}
 p(\params | \data, M) &=
 \frac{p(\params | M)p(\data | \params, M)}{p(\data | M)}
@@ -109,6 +109,21 @@ or
 \frac{\textnormal{prior} \times \textnormal{likelihood}}
      {\textnormal{marginal likelihood}}.
 \end{align}
+
+If prior information $I$ (hereby dropped)
+implies a set of possible `models' $\{M_i\}$,
+rather than a single one $M$, the posterior model probabilities are given by
+\begin{align}
+P(M_i | \data) &=
+\frac{P(M_i)p(\data | M_i)}{\sum_j P(M_j)p(\data | M_j)}
+\end{align}
+where
+\begin{align}
+p(\data | M_j) &= \int p(\theta_j | M_j)p(\data | \theta_j, M_j) \, d\theta_j
+\end{align}
+is the marginal likelihood of model $j$. This kind of calculation is often
+called ``model selection'' or (more accurately) ``model averaging''.
+
 When discussing computational matters, the prior is
 often written $\pi(\theta)$, the likelihood $L(\theta)$,
 and the marginal likelihood $Z$. A popular alternative name for the marginal
