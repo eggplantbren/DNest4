@@ -19,4 +19,6 @@ noexamples:
 
 windows:
 	x86_64-w64-mingw32-g++ -DNO_THREADS -I. $(CXXFLAGS) -c Level.cpp Options.cpp Utils.cpp CommandLineOptions.cpp LikelihoodType.cpp RNG.cpp Distributions/*.cpp RJObject/ConditionalPriors/*.cpp
+	x86_64-w64-mingw32-ar rcs libdnest4.lib *.o
+	rm -f *.o
 

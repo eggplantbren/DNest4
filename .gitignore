@@ -21,3 +21,4 @@ sampler_state.txt
 code/Templates/Builder/MyModel.h
 code/Templates/Builder/MyModel.cpp
 ms.out
+libdnest4.lib
