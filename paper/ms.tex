@@ -86,8 +86,7 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{8pt}
 
-\section{Bayesian computation and Nested Sampling}
-
+\section{Introduction}
 Bayesian inference, where probability theory is used to describe degrees of
 logical implication or subjective certainty, provides a powerful general basis
 for data analysis \citep{ohagan, sivia}. The result of such
@@ -163,8 +162,6 @@ In the standard NS framework, the sequence of $\ell$ values is selected
 so that $X(\ell)$ shrinks by a factor $\approx e^{-1/N}$ per iteration, where
 $N$ is the number of particles used.
 
-
-
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist \citep[e.g.][]{multinest, handley}.
@@ -196,9 +193,13 @@ DNS has been applied several times in astrophysics
 \citep[e.g.][]{2014MNRAS.445.3055P, 2015ApJ...810...66H, 2015MNRAS.448.3206B}
 and was recently used in a biological application \citep{salmonella}.
 
+There are several ways of using \pkg{DNest4}. After installing the software
+(Section~\ref{sec:installation}), you can implement a model in \proglang{C++}
+(Section~\ref{sec:models}) and compile it to create an executable file
+to run \pkg{DNest4} on that problem. This method offers the flexibility
 
 
-\subsection{Markov Chain Monte Carlo}
+\section{Markov Chain Monte Carlo}\label{sec:mcmc}
 DNS is build upon the Metropolis-Hastings algorithm.
 In this algorithm, the acceptance probability $\alpha$
 is given by
@@ -258,7 +259,7 @@ H\times
 
 
 
-\section{Dependencies and installation}
+\section{Dependencies and installation}\label{sec:installation}
 
 \subsection{Unix-like operating systems}
 The following instructions apply to Unix-like operating systems such as
@@ -287,11 +288,10 @@ python setup.py install
 
 \subsection{Microsoft Windows}
 
-\section{Advanced usage}
 
 %\subsection{Multithreading}
 
-\section{Implementing models}
+\section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
 writing a \proglang{C++} class, an object of which represents a
 point in your parameter space.
@@ -584,6 +584,10 @@ previous one, assuming the change to $\params$ is small. The standard procedure
 of generating an entirely new mock dataset each step is now viewed as a
 proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
 re-generated from their iid uniform prior}.
+
+\subsection{Python Bindings}
+
+
 
 \section*{Acknowledgements}
 It is a pleasure to thank Anna Pancoast (Harvard),
