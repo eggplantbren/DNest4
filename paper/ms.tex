@@ -194,10 +194,19 @@ DNS has been applied several times in astrophysics
 and was recently used in a biological application \citep{salmonella}.
 
 There are several ways of using \pkg{DNest4}. After installing the software
-(Section~\ref{sec:installation}), you can implement a model in \proglang{C++}
+(Section~\ref{sec:installation}), you can implement a model as
+a \proglang{C++} class
 (Section~\ref{sec:models}) and compile it to create an executable file
-to run \pkg{DNest4} on that problem. This method offers the flexibility
+to run \pkg{DNest4} on that problem. This method offers full control over the
+design of your class, and allows the opportunity (for example) to optimise
+performance by preventing a full re-computation of the log-likelihood when
+only a small subset of the parameters were changed.
 
+Similarly, the \proglang{Python}
+bindings (Section~\ref{sec:python_bindings}) allow you
+to specify a model class in \proglang{Python}, and run \pkg{DNest4} entirely
+in the \proglang{Python} interpreter without having to invoke the \proglang{C++}
+compiler.
 
 \section{Markov Chain Monte Carlo}\label{sec:mcmc}
 DNS is build upon the Metropolis-Hastings algorithm.
@@ -585,7 +594,7 @@ of generating an entirely new mock dataset each step is now viewed as a
 proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
 re-generated from their iid uniform prior}.
 
-\subsection{Python Bindings}
+\subsection{Python Bindings}\label{sec:python_bindings}
 
 
 
