@@ -193,7 +193,8 @@ p(\theta) &=
 \end{align}
 
 \subsection{Markov Chain Monte Carlo}
-In the Metropolis algorithm, the acceptance probability $\alpha$
+DNS is build upon the Metropolis-Hastings algorithm.
+In this algorithm, the acceptance probability $\alpha$
 is given by
 \begin{align}
 \alpha &= \min\left(1,
@@ -218,20 +219,32 @@ for a proposed move from $\theta$ to $\theta'$ is
 \frac{q(\params'|\params)}{q(\params | \params')}
 \frac{\pi(\params')}{\pi(\params)}
 \mathds{1}\left(L(\params') > \ell_j\right)
-\right]\\
-&= \min\left[1,
-e^{\ln(H)}
-\mathds{1}\left(L(\params') > \ell_j\right)
-\right]\label{eqn:log_hastings}
+\right]
+\label{eqn:log_hastings}
 \end{align}
 where $\ell_j$ is the likelihood threshold for level $j$.
 
-The \pkg{DNest4} \code{Sampler} class handles the likelihood check,
-while the \code{perturb(DNest4::RNG\&)} member function handles the
-rest of the terms. The value returned from \code{perturb(DNest4::RNG\&)}
-must be
-$\ln\left[q(\params'|\params)/q(\params'|\params)\times\pi(\params')/\pi(\params)\right]$
-for your problem.
+For convenience later on, we 
+separate the prior and proposal-related terms from
+the likelihood-related term, and write the former as
+\begin{align}
+H = \frac{q(\params'|\params)}{q(\params | \params')}
+\times \frac{\pi(\params')}{\pi(\params)}
+\end{align}
+so the acceptance probability becomes
+\begin{align}
+\alpha &= \min\left[1,
+H\times
+\mathds{1}\left(L(\params') > \ell_j\right)
+\right]
+\end{align}
+
+
+%The \pkg{DNest4} \code{Sampler} class handles the likelihood check,
+%while the \code{perturb(DNest4::RNG\&)} member function handles the
+%rest of the terms. The value returned from \code{perturb(DNest4::RNG\&)}
+%must be
+%for your problem.
 
 
 
@@ -240,6 +253,8 @@ for your problem.
 
 
 \section{Dependencies and installation}
+
+\subsection{Unix-like operating systems}
 The following instructions apply to Unix-like operating systems such as
 GNU/Linux, Mac OS X, and FreeBSD.
 \pkg{DNest4} can be obtained from the \pkg{git} repository located at
@@ -263,6 +278,8 @@ cd ../python
 python setup.py install
 \end{CodeInput}
 \end{CodeChunk}
+
+\subsection{Microsoft Windows}
 
 \section{Advanced usage}
 
