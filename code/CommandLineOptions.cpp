@@ -89,7 +89,7 @@ void CommandLineOptions::print_help() const
 {
 	std::cout<<"DNest4 Command Line Options: "<<std::endl;
 	std::cout<<"-h: display this message"<<std::endl;
-	std::cout<<"-o <filename>: load DNest3 options from the specified file. Default=OPTIONS"<<std::endl;
+	std::cout<<"-o <filename>: load DNest4 options from the specified file. Default=OPTIONS"<<std::endl;
 	std::cout<<"-s <seed>: seed the random number generator with the specified value. If unspecified, the system time is used."<<std::endl;
 	std::cout<<"-d <filename>: Load data from the specified file, if required."<<std::endl;
 	std::cout<<"-c <value>: Specify a compression value (between levels) other than e."<<std::endl;
