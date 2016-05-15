@@ -295,6 +295,11 @@ python setup.py install
 \end{CodeInput}
 \end{CodeChunk}
 
+We recommend you create an environment variable called \code{DNEST4\_PATH}
+and set it to the directory {\em above} the \pkg{DNest4} directory. Then,
+if the examples or templates from the \pkg{DNest4} repository are copied
+to any other location on your system, their Makefiles will continue to work.
+
 \subsection{Microsoft Windows}
 
 
@@ -680,10 +685,20 @@ Load data from the specified file, if required.\\
 
 \code{-c <value>}\\
 Standard DNS creates levels with a volume ratio of approximately
-$e\approx 2.71828$. To use a different value, such as 10, use this option.\\
+$e\approx 2.71828$. To use a different value, such as 10, use this option.
+In our experience, \code{-c 10} tends to work better than the default
+The output units remain in nats.
+This option is incompatible with setting the maximum number of levels to 0
+(automatic) in the OPTIONS file.
+\\
 
 \code{-t <num\_threads>}\\
 Run on the specified number of threads. The default is 1.
+
+\section{Specifying models in Python with dnest4.builder}
+
+
+\section{Specifying models in Julia}
 
 \end{document}
 
