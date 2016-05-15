@@ -82,9 +82,9 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 \begin{document}
 \maketitle
 
-% Need this after the abstract
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{8pt}
+%% Need this after the abstract
+%\setlength{\parindent}{0pt}
+%\setlength{\parskip}{8pt}
 
 \section{Introduction}
 Bayesian inference, where probability theory is used to describe degrees of
@@ -299,6 +299,32 @@ python setup.py install
 
 
 %\subsection{Multithreading}
+
+\section{Running models}
+
+
+\subsection{Options}
+A plain-text file called OPTIONS resides in the directory from which you
+execute a run.
+
+Additional options are available on the command line. These are:\\
+
+\code{-o <filename>}\\
+This option loads the \pkg{DNest4} options from the specified file, allowing
+an alternative to the default OPTIONS.\\
+
+\code{-s <seed>}\\
+This seeds the random number generator with the specified value. If unspecified, the system time is used.\\
+
+\code{-d <filename>}\\
+Load data from the specified file, if required.\\
+
+\code{-c <value>}\\
+Standard DNS creates levels with a volume ratio of approximately
+$e\approx 2.71828$. To use a different value, such as 10, use this option.\\
+
+\code{-t <num\_threads>}\\
+Run on the specified number of threads. The default is 1.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
