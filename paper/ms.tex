@@ -319,28 +319,43 @@ b &\sim \textnormal{Normal}(0, 1000^2)\\
 \end{align}
 These are naive diffuse priors and we do not claim any special status for them.
 This model was implemented in \proglang{C++}
-(see Section~\ref{sec:models} for details) and is included in the
+(see Section~\ref{sec:models} for details).
+The dataset is shown in Figure~\ref{fig:regression_lines}
+and the code is included in the
 code/Examples/StraightLine subdirectory.
 
-
 \begin{figure}[ht!]
-\begin{minipage}{0.5\textwidth}
-\includegraphics[width=8cm]{figures/fig1.pdf}
-\caption{\label{fig:fig1}}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\includegraphics[width=8cm]{figures/fig2.pdf}
-\caption{\label{fig:fig2}}
+\begin{minipage}{7.5cm}
+\centering
+\includegraphics[width=7cm]{figures/fig1.pdf}
+\caption{The level $j$ of the saved particles over time.
+Typically, this will trend upwards until all the levels have
+been created, and then diffuse evenly throughout all the levels.
+\label{fig:fig1}}
+\end{minipage}\hspace{0.5cm}
+\begin{minipage}{7.5cm}
+\centering
+\includegraphics[width=7cm]{figures/fig2.pdf}
+\caption{{\bf Top panel}: The estimated compression factor between subsequent
+levels, expressed as $\ln(X_{i+1}/X_{i})$. {\bf Bottom panel}:
+The Metropolis acceptance fraction as a function of level.
+\label{fig:fig2}}
 \end{minipage}
 \end{figure}
 
 \begin{figure}[ht!]
-\begin{minipage}{0.5\textwidth}
-\includegraphics[width=8cm]{figures/fig3.pdf}
-\caption{\label{fig:fig3}}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\includegraphics[width=8cm]{figures/regression_lines.pdf}
+\begin{minipage}{7.5cm}
+\includegraphics[width=7cm]{figures/fig3.pdf}
+\caption{{\bf Top panel}: The log-likelihood curve, showing the relationship
+between log-likelihood and the enclosed prior mass.
+{\bf Bottom panel}: Posterior weights of the saved particles.
+For a successful run, there should be a clear peak, and saved particles
+to the left of this plot should have insignificant posterior weight compared
+to those in the peak.
+\label{fig:fig3}}
+\end{minipage}\hspace{0.5cm}
+\begin{minipage}{7.5cm}
+\includegraphics[width=7cm]{figures/regression_lines.pdf}
 \caption{Regression lines drawn from the posterior.
 \label{fig:regression_lines}}
 \end{minipage}
