@@ -303,28 +303,19 @@ python setup.py install
 \section{Running models}
 
 
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/regression_lines.pdf}
+\caption{Regression lines drawn from the posterior.
+\label{fig:regression_lines}}
+\end{figure}
+
 \subsection{Options}
 A plain-text file called OPTIONS resides in the directory from which you
 execute a run.
 
-Additional options are available on the command line. These are:\\
-
-\code{-o <filename>}\\
-This option loads the \pkg{DNest4} options from the specified file, allowing
-an alternative to the default OPTIONS.\\
-
-\code{-s <seed>}\\
-This seeds the random number generator with the specified value. If unspecified, the system time is used.\\
-
-\code{-d <filename>}\\
-Load data from the specified file, if required.\\
-
-\code{-c <value>}\\
-Standard DNS creates levels with a volume ratio of approximately
-$e\approx 2.71828$. To use a different value, such as 10, use this option.\\
-
-\code{-t <num\_threads>}\\
-Run on the specified number of threads. The default is 1.
+Additional options are available on the command line. These are
+described in Appendix~\ref{sec:command_line_options}.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
@@ -672,6 +663,27 @@ configurational spaces.\ ArXiv e-prints arXiv: 0906.3544.
 \bibitem[\protect\citeauthoryear{Skilling}{2006}]{skilling} Skilling, J., 2006, Nested Sampling for General Bayesian Computation, Bayesian Analysis 4, pp. 833-860.
 
 \end{thebibliography}
+
+\appendix
+\section{Command Line Options}\label{sec:command_line_options}
+The following command line options are available.\\
+
+\code{-o <filename>}\\
+This option loads the \pkg{DNest4} options from the specified file, allowing
+an alternative to the default OPTIONS.\\
+
+\code{-s <seed>}\\
+This seeds the random number generator with the specified value. If unspecified, the system time is used.\\
+
+\code{-d <filename>}\\
+Load data from the specified file, if required.\\
+
+\code{-c <value>}\\
+Standard DNS creates levels with a volume ratio of approximately
+$e\approx 2.71828$. To use a different value, such as 10, use this option.\\
+
+\code{-t <num\_threads>}\\
+Run on the specified number of threads. The default is 1.
 
 \end{document}
 
