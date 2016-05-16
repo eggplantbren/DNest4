@@ -6,6 +6,8 @@
 \usepackage{enumerate}
 \usepackage{dsfont}
 
+\newcommand{\dnest}{\pkg{DNest4}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -304,7 +306,7 @@ to any other location on your system, their Makefiles will continue to work.
 
 %\subsection{Multithreading}
 
-\section{Running models}
+\section{Running DNest4}
 To demonstrate \pkg{DNest4},
 we will use a simple linear regression example where the
 sampling distribution is
@@ -317,12 +319,69 @@ m &\sim \textnormal{Normal}(0, 1000^2)\\
 b &\sim \textnormal{Normal}(0, 1000^2)\\
 \ln\sigma &\sim \textnormal{Uniform}(-10, 10).
 \end{align}
-These are naive diffuse priors and we do not claim any special status for them.
+These are naive diffuse priors and do not have any special status.
 This model was implemented in \proglang{C++}
 (see Section~\ref{sec:models} for details).
 The dataset is shown in Figure~\ref{fig:regression_lines}
 and the code is included in the
-code/Examples/StraightLine subdirectory.
+{\tt code/Examples/StraightLine} subdirectory. A simplified version of the
+code is explained in Section~\ref{sec:models}.
+
+To execute \pkg{DNest4} on this problem, run the executable {\tt main}
+in the {\tt code/Examples/StraightLine} directory. The output to the screen
+should contain information about levels and ``saving particles to disk''.
+After 5000 particles have been saved to the disk, the run should terminate.
+
+\section{Output files and plots}
+The executable {\tt main} is responsible for the exploration part of the
+DNS algorithm (i.e. running the MCMC chain, building
+levels, and then exploring all the levels). It creates three text output files,
+{\tt sample.txt}, {\tt sample\_info.txt}, and {\tt levels.txt}.
+
+The first output
+file, {\tt sample.txt}, contains a sampling of parameter values that
+represents the {\it mixture of constrained priors} (the target distribution
+used in DNS), {\bf not} the
+posterior distribution. Each line of {\tt sample.txt} represents a point in
+parameter space. In the linear example, there are three parameters
+($m$, $b$, and $\sigma$), so there
+are three columns in {\tt sample.txt}.
+Each time a point is saved to {\tt sample.txt}, \pkg{DNest4} prints
+the message ``Saving a particle to disk. N = ...''.
+
+The second output file, {\tt sample\_info.txt}, should have the same number of
+rows as {\tt sample.txt}, because it contains metadata about the samples in
+{\tt sample.txt}. The first
+column is the index $j$, which tells us which ``level'' the particle was in
+when it was saved. Level 0 represents the prior, and higher levels represent
+more constrained versions of the prior.
+The second column is the log-likelihood value, and the third column is
+the likelihood ``tiebreaker'', which allows Nested Sampling to work when
+there is a region in parameter space with nonzero prior probability where the
+likelihood is constant. The final column tells us which thread the particle
+belonged to: when you use \dnest~in multithreaded mode, each thread
+is responsible for evolving one or more walkers.
+
+The third output file, {\tt levels.txt}, contains information about the levels
+that were built during the run. The first column has estimates of the $\log(X)$
+values of the levels, i.e. how compressed they are relative to the prior, in
+units of nats. For example, if a level has $\log(X) = -1.02$, its likelihood
+value encloses $\exp(-1.02) \approx 36.1\%$ of the prior mass.
+
+The second column contains the log likelihoods of the levels.
+The first level, with a $\log(X)$ value of 0 and a log likelihood of
+$-10^{308}$ (basically ``minus infinity''), is simply the prior. The third
+column has the ``tiebreaker'' values for the levels, which again are not
+particularly useful unless your problem has likelihood plateaus. The fourth
+and fifth columns are the number of accepted proposals and the total number
+of proposals that have occurred within each level, which are useful for
+monitoring the Metropolis acceptance ratio as a function of level.
+The final two columns, called ``exceeds'', and ``visits'', are used to refine
+the estimates of the level compressions (and hence the $\log(X)$ values of
+the levels in column 1), as discussed in Section 3 of the
+paper. The visits column counts the number of times a level (level $j$, say)
+has been visited, but only starts counting after the next level ($j+1$) has been created. The exceeds column counts the number of times a particle that was
+in level $j$ had a likelihood that exceeded that of level $j+1$.
 
 \begin{figure}[ht!]
 \begin{minipage}{7.5cm}
