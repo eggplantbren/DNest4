@@ -9,7 +9,7 @@ using namespace DNest4;
 
 int main(int argc, char** argv)
 {
-	jl_init_with_image(getenv("JULIA_PATH"), "sys.so");
+	jl_init_with_image(getenv("JULIA_LIB_PATH"), "sys.so");
 	jl_eval_string("include(\"julia_model.jl\")");
 
 	Sampler<MyModel> sampler = setup<MyModel>(argc, argv);
