@@ -2,11 +2,11 @@
 # called DNEST4_PATH for this to work.
 
 CC = g++
-CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
+CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -DNDEBUG
 LIBS = -ldnest4 -lpthread -ljulia
 
 default:
-	$(CC) -I$(DNEST4_PATH) $(CXXFLAGS) -c *.cpp
-	$(CC) -L$(JULIA_PATH) -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
+	$(CC) -I$(DNEST4_PATH) -I$(JULIA_INCLUDE_PATH) $(CXXFLAGS) -c *.cpp
+	$(CC) -L$(JULIA_LIB_PATH) -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
 	rm *.o
 
