@@ -721,7 +721,7 @@ Load data from the specified file, if required.\\
 Standard DNS creates levels with a volume ratio of approximately
 $e\approx 2.71828$. To use a different value, such as 10, use this option.
 In our experience, \code{-c 10} tends to work better than the default
-value on problems with a large information.
+value on problems with a large information $\mathcal{H}$.
 The output units remain in nats.
 This option is incompatible with setting the maximum number of levels to 0
 (automatic) in the OPTIONS file.
@@ -734,6 +734,32 @@ Run on the specified number of threads. The default is 1.
 
 
 \section{Specifying models in Julia}
+Experimental support for model specification in the
+\proglang{Julia} language is provided, with an example given in the
+code/Templates/JuliaModel directory.
+Set an enviroment variable {\tt JULIA\_PATH} to the directory on your
+system that contains the libraries {\tt libjulia.so} and
+{\tt sys.so}. Set another environment variable {\tt JULIA\_INCLUDE\_PATH}
+to the directory where the \proglang{Julia} header files are located
+(do not include the final {\tt julia} directory in this path).
+
+The log likelihood is specified in {\tt julia\_model.jl}, as a function
+called {\tt log\_likelihood} that takes a {\tt Vector::Float64} as an argument
+and returns a {\tt Float64}. You should assume that the priors for the
+parameters are independent Uniform(0, 1) distributions (sensible default
+proposals are used). To use a different prior, transform the parameters inside
+your {\tt log\_likelihood} function before using them.
+You may add other functions to {\tt julia\_model.jl}, for example to load
+a dataset to refer to in your {\tt log\_likelihood}. The example in
+the repository is the ``SpikeSlab'' likelihood from \citet{dnest}.
+
+You can compile the model by invoking {\tt make}
+from the {\tt JuliaModel} directory.
+Only a single thread is supported when running \proglang{Julia}
+models.
+
+
+
 
 \end{document}
 
