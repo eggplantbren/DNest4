@@ -332,7 +332,7 @@ in the {\tt code/Examples/StraightLine} directory. The output to the screen
 should contain information about levels and ``saving particles to disk''.
 After 5000 particles have been saved to the disk, the run should terminate.
 
-\section{Output files and plots}
+\section{Output files}
 The executable {\tt main} is responsible for the exploration part of the
 DNS algorithm (i.e. running the MCMC chain, building
 levels, and then exploring all the levels). It creates three text output files,
@@ -382,6 +382,44 @@ the levels in column 1), as discussed in Section 3 of the
 paper. The visits column counts the number of times a level (level $j$, say)
 has been visited, but only starts counting after the next level ($j+1$) has been created. The exceeds column counts the number of times a particle that was
 in level $j$ had a likelihood that exceeded that of level $j+1$.
+
+\section{Output files}
+The output files themselves aren't particularly useful. The goal of running
+NS is usually to obtain posterior samples (which, again, {\tt sample.txt}
+{\em does not provide}) and the marginal likelihood $Z$. Additional
+post-processing is required. This can be achieved by running the following
+\proglang{Python} function\footnote{Alternatively, the file
+{\tt showresults.py} in the example directory runs this function, and then
+calls the code in {\tt display.py} to create a further plot shown in
+Figure~\ref{fig:regression_lines}.}:
+\begin{CodeChunk}
+\begin{CodeInput}
+import dnest4.classic
+dnest4.classic.postprocess()
+\end{CodeInput}
+\end{CodeChunk}
+This produces the three diagnostic plots in Figures~\ref{fig:fig1},
+\ref{fig:fig2}, and~\ref{fig:fig3}, along with the following output:
+\begin{CodeChunk}
+\begin{CodeOutput}
+log(Z) = -175.528264138 +- 0.0
+Information = 15.1944947225 +- 0.0 nats.
+Effective sample size = 745.819862383
+\end{CodeOutput}
+\end{CodeChunk}
+These are the natural log of the marginal likelihood, the
+information
+\begin{align}
+\mathcal{H} &= \int p(\theta|D, I)
+\ln\left[\frac{p(\theta | D, I)}{p(\theta | I)}\right] \, d\theta
+\end{align}
+and the number of saved particles with significant posterior weight.
+The {\tt postprocess} function also saves a file,
+{\tt posterior\_sample.txt}, containing posterior samples (one per row).
+
+The zero-sized error bars on $\ln(Z)$ and $\mathcal{H}$ should be ignored.
+These are only relevant if advanced options (not covered in this paper)
+are passed to {\tt postprocess}.
 
 \begin{figure}[ht!]
 \begin{minipage}{7.5cm}
