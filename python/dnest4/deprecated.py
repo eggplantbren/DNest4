@@ -24,6 +24,47 @@ def my_loadtxt(filename, single_precision=False):
     return pd.read_csv(filename, header=None, sep=' ', comment="#")\
                                                  .dropna(axis=1).values
 
+def loadtxt_rows(filename, rows):
+    """
+    Load only certain rows
+    """
+    # Open the file
+    f = open(filename, "r")
+
+    # Storage
+    result = []
+
+    # Row number
+    i = 0
+
+    # Number of columns
+    ncol = None
+
+    while(True):
+        # Read the line and split by whitespace
+        line = f.readline()
+        cells = line.split()
+
+        print(cells)
+
+        # Quit when you see a different number of columns
+        if ncol is not None and len(cells) != ncol:
+            break
+
+        # Non-comment lines
+        if cells[0] != "#":
+            # If it's the first one, get the number of columns
+            if ncol is None:
+                ncol = len(cells)
+
+            # Otherwise, include in results
+            if i in rows:
+                result.append([float(cell) for cell in cells])
+            i += 1
+
+    return np.array(result)
+
+
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
 	if len(loaded) == 0:
