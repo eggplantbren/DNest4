@@ -24,7 +24,7 @@ def my_loadtxt(filename, single_precision=False):
     return pd.read_csv(filename, header=None, sep=' ', comment="#")\
                                                  .dropna(axis=1).values
 
-def loadtxt_rows(filename, rows):
+def loadtxt_rows(filename, rows, single_precision=False):
     """
     Load only certain rows
     """
@@ -32,8 +32,7 @@ def loadtxt_rows(filename, rows):
     f = open(filename, "r")
 
     # Storage
-    row_ids = []
-    values = []
+    results = {}
 
     # Row number
     i = 0
@@ -58,11 +57,15 @@ def loadtxt_rows(filename, rows):
 
             # Otherwise, include in results
             if i in rows:
-                values.append([float(cell) for cell in cells])
-                row_ids.append(i)
+                if single_precision:
+                    results[i] = np.array([float(cell) for cell in cells],\
+                                                              dtype="float32")
+                else:
+                    results[i] = np.array([float(cell) for cell in cells])
             i += 1
 
-    return {"row_ids": row_ids, "values": np.array(values)}
+    results["ncol"] = ncol
+    return results
 
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
@@ -70,24 +73,14 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
-		sample = np.atleast_2d(my_loadtxt("sample.txt", single_precision))
-		if(sample.shape[0] == 1):
-			sample = sample.T
 	else:
-		levels_orig, sample_info, sample = loaded[0], loaded[1], loaded[2]
+		levels_orig, sample_info = loaded[0], loaded[1]
 
 	# Remove regularisation from levels_orig if we asked for it
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample = sample[int(cut*sample.shape[0]):, :]
 	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
-
-	if sample.shape[0] != sample_info.shape[0]:
-		print('# Size mismatch. Truncating...')
-		lowest = np.min([sample.shape[0], sample_info.shape[0]])
-		sample = sample[0:lowest, :]
-		sample_info = sample_info[0:lowest, :]
 
 	if plot:
 		if numResampleLogX > 1:
@@ -124,7 +117,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
-	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample.shape[0])] # logl, tiebreaker, id
+	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample_info.shape[0])] # logl, tiebreaker, id
 	logx_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logp_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logP_samples = np.zeros((sample_info.shape[0], numResampleLogX))
@@ -134,7 +127,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 	# Find sandwiching level for each sample
 	sandwich = sample_info[:,0].copy().astype('int')
-	for i in range(0, sample.shape[0]):
+	for i in range(0, sample_info.shape[0]):
 		while sandwich[i] < levels_orig.shape[0]-1 and logl_samples[i] > logl_levels[sandwich[i] + 1]:
 			sandwich[i] += 1
 
@@ -247,18 +240,24 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
-	posterior_sample = np.zeros((N, sample.shape[1]))
 	w = P_samples
 	w = w/np.max(w)
-	if save:
-		np.savetxt('weights.txt', w) # Save weights
+	rows = np.empty(N, dtype="int64")
 	for i in range(0, N):
 		while True:
-			which = np.random.randint(sample.shape[0])
+			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		posterior_sample[i,:] = sample[which,:]
+		rows[i] = which
+
+	sample = loadtxt_rows("sample.txt", set(rows), single_precision=True)
+	posterior_sample = np.empty((N, sample["ncol"]), dtype="float32")
+	for i in range(0, N):
+		posterior_sample[i, :] = sample[rows[i]]
+
+
 	if save:
+		np.savetxt('weights.txt', w)
 		np.savetxt("posterior_sample.txt", posterior_sample)
 
 	if plot:
