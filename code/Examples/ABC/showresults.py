@@ -2,7 +2,7 @@
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
-from dnest4 import logsumexp, logdiffexp
+from dnest4.classic import logsumexp, logdiffexp
 
 def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None):
