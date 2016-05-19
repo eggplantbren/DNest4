@@ -32,7 +32,8 @@ def loadtxt_rows(filename, rows):
     f = open(filename, "r")
 
     # Storage
-    result = []
+    row_ids = []
+    values = []
 
     # Row number
     i = 0
@@ -44,8 +45,6 @@ def loadtxt_rows(filename, rows):
         # Read the line and split by whitespace
         line = f.readline()
         cells = line.split()
-
-        print(cells)
 
         # Quit when you see a different number of columns
         if ncol is not None and len(cells) != ncol:
@@ -59,10 +58,11 @@ def loadtxt_rows(filename, rows):
 
             # Otherwise, include in results
             if i in rows:
-                result.append([float(cell) for cell in cells])
+                values.append([float(cell) for cell in cells])
+                row_ids.append(i)
             i += 1
 
-    return np.array(result)
+    return {"row_ids": row_ids, "values": np.array(values)}
 
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
