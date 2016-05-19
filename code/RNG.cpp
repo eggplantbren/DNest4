@@ -1,4 +1,5 @@
 #include "RNG.h"
+#include "Utils.h"
 #include <cmath>
 
 namespace DNest4
@@ -28,7 +29,7 @@ double RNG::randn()
 
 double RNG::randh()
 {
-	return pow(10., 1.5 - 6.*this->rand())*this->randn();
+	return pow(10., 1.5 - std::abs(tan(M_PI*(this->rand() - 0.5))))*this->randn();
 }
 
 int RNG::rand_int(int N)
