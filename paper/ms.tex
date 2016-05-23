@@ -489,6 +489,9 @@ regression example:
 \end{CodeInput}
 \end{CodeChunk}
 
+Additional options are available on the command line. These are
+described in Appendix~\ref{sec:command_line_options}.
+
 \subsection{Number of particles}
 The first option is the number of particles, here set to five.
 If you use more particles, the same amount of CPU time will be spent evolving more particles,
@@ -525,8 +528,19 @@ see Appendix~\ref{sec:command_line_options}). It should be set to a moderate
 value, but should also be a small fraction of the new level interval and the
 save interval. 100 is a suggested default value.
 
-Additional options are available on the command line. These are
-described in Appendix~\ref{sec:command_line_options}.
+\subsection{Maximum number of levels}
+As the name suggests, this tells \pkg{DNest4} how many levels to create, and
+therefore controlls the factor by which the parameter space is ultimately
+compressed. An appropriate value for this quantity depends on the specific
+model and dataset at hand.
+
+Figure~\ref{fig:fig3} is the most useful plot for setting the correct
+maximum number of levels. A clear peak should be visible in the posterior
+weights plot in the lower panel.
+
+
+Alternatively, \pkg{DNest4} can try to determine the maximum number of levels
+automatically, if you set the maximum number of levels to 0.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
