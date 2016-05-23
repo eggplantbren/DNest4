@@ -431,6 +431,10 @@ The zero-sized error bars on $\ln(Z)$ and $\mathcal{H}$ should be ignored.
 These are only relevant if advanced options (not covered in this paper)
 are passed to {\tt postprocess}.
 
+The {\tt postprocess} function can be called while \pkg{DNest4} is running.
+This is helpful for monitoring the progress of a run, by inspecting the
+output plots.
+
 \begin{figure}[ht!]
 \begin{minipage}{7.5cm}
 \centering
@@ -526,21 +530,37 @@ The ``thread steps'' parameter controls how frequently separate threads pool
 their information about the levels (when running in multi-threaded mode,
 see Appendix~\ref{sec:command_line_options}). It should be set to a moderate
 value, but should also be a small fraction of the new level interval and the
-save interval. 100 is a suggested default value.
+save interval. 100 is a suggested default value that should work without
+problems in the vast majority of cases.
 
 \subsection{Maximum number of levels}
 As the name suggests, this tells \pkg{DNest4} how many levels to create, and
-therefore controlls the factor by which the parameter space is ultimately
+therefore controls the factor by which the parameter space is ultimately
 compressed. An appropriate value for this quantity depends on the specific
-model and dataset at hand.
+model and dataset at hand --- typically, a larger numbers of parameters
+and larger (more informative) datasets will lead to a larger value of
+$\mathcal{H}$, and therefore need more levels.
 
-Figure~\ref{fig:fig3} is the most useful plot for setting the correct
+In the initial phase of DNS when levels are being created, the particles
+move to the left in Figure~\ref{fig:fig3}, increasing likelihood $L$ and
+decreasing prior mass $X$. The posterior distribution is concentrated
+where the rate of increase of $\ln(L)$ and the rate of decrease of
+$\ln(X)$ are approximately equal.
+Figure~\ref{fig:fig3} is the most useful diagnostic
+plot for setting the correct
 maximum number of levels. A clear peak should be visible in the posterior
-weights plot in the lower panel.
+weights plot in the lower panel, such that moving further to the left would not
+add any more particles with comparable weight to those in the peak.
 
+As described by \citet{skilling}, there is no guarantee in principle that
+another peak might have appeared had a run continued for longer. These
+{\em phase changes} are more common in statistical mechanics problems than
+in data analysis problems, but can appear in the latter
+\citep[e.g.][]{rjobject, 2015MNRAS.448.3206B}.
 
 Alternatively, \pkg{DNest4} can try to determine the maximum number of levels
-automatically, if you set the maximum number of levels to 0.
+automatically, if you set the maximum number of levels to 0. This works well
+on problems where the MCMC exploration is efficient.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
@@ -843,6 +863,8 @@ e-prints arXiv: 1503.03404.
 \bibitem[\protect\citeauthoryear{Brewer, P{\'a}rtay,
 \& Cs{\'a}nyi}{2011}]{dnest} Brewer B.~J., P{\'a}rtay L.~B., Cs{\'a}nyi G., 2011,
 Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
+
+\bibitem[Brewer(2014)]{rjobject} Brewer, B.~J.\ 2014.\ Inference for Trans-dimensional Bayesian Models with Diffusive Nested Sampling.\ ArXiv e-prints arXiv:1411.3921.
 
 \bibitem[Brewer and Donovan(2015)]{2015MNRAS.448.3206B} Brewer, B.~J., Donovan, C.~P.\ 2015.\ Fast Bayesian inference for exoplanet discovery in radial velocity data.\ Monthly Notices of the Royal Astronomical Society 448, 3206-3214. 
 
