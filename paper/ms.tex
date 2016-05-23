@@ -480,10 +480,10 @@ regression example:
 10000   # new level interval
 10000   # save interval
 100     # threadSteps - pooling interval
-0       # maximum number of levels (0 = auto)
+0       # maximum number of levels (0 ==> automatic)
 10      # Backtracking scale length (lambda in the paper)
-100     # Strength of effect to force histogram to equal push. Beta in the paper
-5000    # Maximum number of saves (0 = infinite)
+100     # Equal weight enforcement. Beta in the paper
+5000    # Maximum number of saves (0 ==> run forever)
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -492,24 +492,26 @@ If you use more particles, the same amount of CPU time will be spent evolving mo
 so each one will not be evolved as far. On most problems, five is a sensible
 default value. On complex problems where the likelihood function has
 a challenging structure, more particles are useful, but it is usually better
-%to run in multi-threaded mode (see Appendix~\ref{sec:command_line_options}).
+to run in multi-threaded mode (see Appendix~\ref{sec:command_line_options}).
 
 The new level interval controls how quickly \dnest~creates new levels. In this
-example, this is set to 10,000, so a new level will be created once \dnest~has
-seen 10,000 likelihood values above the current top level. This is not affected by
-the number of threads. It is difficult to give a sensible default for this
-quantity because it depends on the complexity of the problem and how good
-the Metropolis proposals are. However, 10,000
-will work for many problems (I rarely use anything less than 10,000 or greater
-than 300,000). Higher values are slower, but more fail-safe.
+example, this is set to 10,000, so a new level will be created once 10,000
+MCMC steps have resulted in
+10,000 likelihood values above the current top level.
+It is difficult to give a sensible default for this
+quantity because it depends on the complexity of the problem (basically,
+how good the Metropolis proposals are at exploring the target distribution).
+However, 10,000 will work for many problems, so we suggest it as a sensible
+default. Higher values are slower, but more fail-safe.
 
 The save interval controls how often \dnest~writes a model to the output
-files: this is what is usually called ``thinning''. Saving more frequently
-(i.e. a smaller save interval) is usually better, although it depends on your
-problem. If your models have a lot of parameters {\tt sample.txt} can get
-very big and take forever to process using {\tt showresults.py}. A default
-suggestion that is usually okay is to make the save interval the same as the
-new level interval.
+files; what is usually called ``thinning''. Saving more frequently
+(i.e. a smaller save interval) is usually better. However, this can result
+in
+big output files if your model prints a lot of parameters to {\tt sample.txt}.
+causing the postprocessing to take a long time and/or a lot of RAM.
+A default suggestion, used in the example, is to set the save interval to the
+same value as the new level interval.
 
 The option ``threadSteps'' controls how frequently the separate threads pool
 their information about the levels. I usually use 100 or 200. If
