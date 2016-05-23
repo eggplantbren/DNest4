@@ -307,9 +307,8 @@ to any other location on your system, their Makefiles will continue to work.
 
 \subsection{Microsoft Windows}
 
-%\subsection{Multithreading}
 
-\section{Running DNest4}
+\section{Running DNest4}\label{sec:running}
 To demonstrate \pkg{DNest4},
 we will use a simple linear regression example where the
 sampling distribution is
@@ -389,7 +388,7 @@ paper. The visits column counts the number of times a level (level $j$, say)
 has been visited, but only starts counting after the next level ($j+1$) has been created. The exceeds column counts the number of times a particle that was
 in level $j$ had a likelihood that exceeded that of level $j+1$.
 
-%\section{Postprocessing}
+\section{Postprocessing}\label{sec:postprocessing}
 The output files themselves are typically not immediately useful.
 The goal of running
 NS is usually to obtain posterior samples and the marginal likelihood $Z$,
@@ -469,7 +468,7 @@ to those in the peak.
 \end{minipage}
 \end{figure}
 
-%\subsection{Options}
+\subsection{Options}\label{sec:options}
 A plain-text file called {\tt OPTIONS} resides in the directory from which you
 execute a run. This file contains numerical parameters controlling the
 DNS algorithm. Here are the contents of {\tt OPTIONS} for the linear
@@ -490,6 +489,7 @@ regression example:
 \end{CodeInput}
 \end{CodeChunk}
 
+\subsection{Number of particles}
 The first option is the number of particles, here set to five.
 If you use more particles, the same amount of CPU time will be spent evolving more particles,
 so each one will not be evolved as far. On most problems, five is a sensible
@@ -497,6 +497,7 @@ default value. On complex problems where the likelihood function has
 a challenging structure, more particles are useful, but it is usually better
 to run in multi-threaded mode (see Appendix~\ref{sec:command_line_options}).
 
+\subsection{New level interval}
 The new level interval controls how quickly \dnest~creates new levels. In this
 example, this is set to 10,000, so a new level will be created once 10,000
 MCMC steps have resulted in
@@ -507,6 +508,7 @@ how good the Metropolis proposals are at exploring the target distribution).
 However, 10,000 will work for many problems, so we suggest it as a sensible
 default. Higher values are slower, but more fail-safe.
 
+\subsection{Save interval}
 The save interval controls how often \dnest~writes a model to the output
 files; what is usually called ``thinning''. Saving more frequently
 (i.e. a smaller save interval) is usually better. However, this can result
@@ -516,6 +518,7 @@ causing the postprocessing to take a long time and/or a lot of RAM.
 A default suggestion, used in the example, is to set the save interval to the
 same value as the new level interval.
 
+\subsection{Thread steps}
 The ``thread steps'' parameter controls how frequently separate threads pool
 their information about the levels (when running in multi-threaded mode,
 see Appendix~\ref{sec:command_line_options}). It should be set to a moderate
