@@ -1,4 +1,4 @@
-PYTHON = python
+PYTHON = /home/$(USER)/local/anaconda3/bin/python
 
 default:
 	$(PYTHON) joint.py
