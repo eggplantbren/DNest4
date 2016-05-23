@@ -420,9 +420,12 @@ These are the natural log of the marginal likelihood, the
 information
 \begin{align}
 \mathcal{H} &= \int p(\theta|D, I)
-\ln\left[\frac{p(\theta | D, I)}{p(\theta | I)}\right] \, d\theta
+\ln\left[\frac{p(\theta | D, I)}{p(\theta | I)}\right] \, d\theta,
 \end{align}
-and the number of saved particles with significant posterior weight.
+which quantifies the degree to which $D$ restricted the
+range of possible $\theta$ values,
+and the effective sample size,
+or number of saved particles with significant posterior weight.
 The {\tt postprocess} function also saves a file,
 {\tt posterior\_sample.txt}, containing posterior samples (one per row).
 The zero-sized error bars on $\ln(Z)$ and $\mathcal{H}$ should be ignored.
@@ -513,12 +516,11 @@ causing the postprocessing to take a long time and/or a lot of RAM.
 A default suggestion, used in the example, is to set the save interval to the
 same value as the new level interval.
 
-The option ``threadSteps'' controls how frequently the separate threads pool
-their information about the levels. I usually use 100 or 200. If
-(threadSteps) $\times$ (number of threads) is not much smaller than
-saveInterval or newLevelInterval, the latter won't be what you expect, because
-\dnest~only creates levels or saves particles when the threads are pooling
-information.
+The ``thread steps'' parameter controls how frequently separate threads pool
+their information about the levels (when running in multi-threaded mode,
+see Appendix~\ref{sec:command_line_options}). It should be set to a moderate
+value, but should also be a small fraction of the new level interval and the
+save interval. 100 is a suggested default value.
 
 Additional options are available on the command line. These are
 described in Appendix~\ref{sec:command_line_options}.
