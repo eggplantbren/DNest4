@@ -334,8 +334,9 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
             return false;
 
         // Check level spacing (in terms of log likelihood)
-        // over last 20 levels
-        constexpr int num_levels_to_check = 20;
+        // over last n levels, where n=
+        // geometric mean of {20, l.size()}
+        int num_levels_to_check = static_cast<int>(sqrt(20)*sqrt(0.25*l.size()));
 
         int k = levels.size() - 1;
         for(int i=0; i<num_levels_to_check; ++i)
