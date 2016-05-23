@@ -167,7 +167,6 @@ $N$ is the number of particles used.
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist \citep[e.g.][]{multinest, 2015MNRAS.453.4384H}.
-
 Diffusive Nested Sampling \citep[DNS][]{dnest} is an alternative to NS for
 problems where MCMC is the only viable sampling method. DNS is based on the
 Metropolis algorithm. DNS evolves a point in the parameter space, along with
@@ -190,7 +189,11 @@ p(\theta) &=
 \frac{w_j\mathds{1}\left[L(\theta) > \ell_j\right]}{X(\ell_j)}.
 \label{eqn:mixture_of_constrained_priors}
 \end{align}
-
+The mixture of constrained priors tends to be easier to sample than the
+posterior, as the prior is always a mixture component, allowing the
+MCMC chain to mix between different modes in some circumstances. The marginal
+likelihood estimate can also be more accurate than standard MCMC-based NS
+\citep{dnest}, as less information is discarded.
 DNS has been applied several times in astrophysics
 \citep[e.g.][]{2014MNRAS.445.3055P, 2015ApJ...810...66H, 2015MNRAS.448.3206B}
 and was recently used in a biological application \citep{salmonella}.
@@ -204,7 +207,7 @@ design of your class, and allows the opportunity (for example) to optimise
 performance by preventing a full re-computation of the log-likelihood when
 only a small subset of the parameters were changed.
 
-Similarly, the \proglang{Python}
+Alternatively, the \proglang{Python}
 bindings (Section~\ref{sec:python_bindings}) allow you
 to specify a model class in \proglang{Python}, and run \pkg{DNest4} entirely
 in the \proglang{Python} interpreter without having to invoke the \proglang{C++}
