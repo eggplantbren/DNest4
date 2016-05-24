@@ -595,7 +595,7 @@ cases. In simple problems where MCMC exploration is easy, lower values
 from 1 to 5 work sufficiently well.
 
 \subsection{Equal weight enforcement}
-This value is the parameter $\beta$ described in \citet{dnest4}, and compensates
+This value is the parameter $\beta$ described in \citet{dnest}, and compensates
 for imprecision in the spacing of the levels, so that the desired mixture
 weights $w_j \propto 1$ are achieved during the second stage of the DNS
 algorithm. The value 100 is recommended.
@@ -730,8 +730,45 @@ double StraightLine::perturb(DNest4::RNG& rng)
 
 This first chooses a random integer from $[0, 3)$ using the
 \code{rand\_int(int)} member function of the \code{DNest4::RNG} class.
-This determines which of the three parameters is modified.
+This determines which of the three parameters
+$(m, b, \sigma)$ is modified.
 
+\subsection{Proposals for single parameters}
+The proposal for $m$ involves adding a perturbation to the current value
+using the line \code{m += 1E3*rng.randh();}.
+
+A challenge using MCMC for standard Nested Sampling is that the target
+distribution is not static --- it gets compressed over time. Similarly, in
+the first stage of DNS the target distribution gets compressed (as levels are
+added), and in the second stage the target distribution is a mixture of
+distributions that have been compressed to varying degrees.
+
+Rather than trying to adapt proposal distributions as a function of level,
+it is much simpler to just use heavy-tailed proposals which have some
+probability of making a jump of appropriate size. This may seem slightly
+wasteful of CPU time, but it saves a lot of human time.
+In simple experiments, we have found that heavy-tailed proposals are
+about as efficient as slice sampling \citep{slice}, but much easier to
+implement. The following procedure generates
+$x$ from a heavy-tailed distribution:
+
+\begin{enumerate}
+\item Generate $c \sim$ Cauchy$(0, 1)$
+\item Generate $n \sim$ Normal$(0, 1)$
+\item Set $x := 10^{1.5 - |c|}n$
+\end{enumerate}
+This generates values with a maximum scale of tens-hundreds, down to
+the smallest positive value in double precision, by virtue
+of the Cauchy distribution's heavy tails.
+
+For convenience, the \code{RNG} class contains a member function \code{randh()}
+to generate values from this distribution.
+
+
+
+
+The factor of \code{1E3} is
+included to account for the prior width.
 
 When implementing a model class, it is imperative that the
 \code{from\_prior(DNest4::RNG\&)} and \code{perturb(DNest4::RNG\&)}
@@ -931,6 +968,9 @@ Dybowski, Richard, et al. Single passage in mouse organs enhances the survival a
 \bibitem[Handley et al.(2015)]{2015MNRAS.453.4384H} Handley, W.~J., Hobson, M.~P., Lasenby, A.~N.\ 2015.\ POLYCHORD: next-generation nested sampling.\ Monthly Notices of the Royal Astronomical Society 453, 4384-4398. 
 
 \bibitem[Huppenkothen et al.(2015)]{2015ApJ...810...66H} Huppenkothen, D., Brewer, B.~J., Hogg, D.~W., Murray, I., Frean, M., Elenbaas, C., Watts, A.~L., Levin, Y., van der Horst, A.~J., Kouveliotou, C.\ 2015.\ Dissecting Magnetar Variability with Bayesian Hierarchical Models.\ The Astrophysical Journal 810, 66. 
+
+\bibitem[Neal(2003)]{slice}
+Neal, R.M., 2003. Slice sampling. Annals of statistics, pp.705-741.
 
 \bibitem[\protect\citeauthoryear{O'Hagan and Forster}{2004}]{ohagan}
 O'Hagan, A., Forster,~J., 2004, Bayesian inference. London: Arnold.
