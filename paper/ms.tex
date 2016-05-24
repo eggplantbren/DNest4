@@ -560,7 +560,13 @@ in data analysis problems, but can appear in the latter
 
 Alternatively, \pkg{DNest4} can try to determine the maximum number of levels
 automatically, if you set the maximum number of levels to 0. This works well
-on problems where the MCMC exploration is efficient.
+on problems where the MCMC exploration is efficient. When it fails, this
+is detectable as the posterior weights plot (lower panel of
+Figure~\ref{fig:fig3}) will peak at the left end of its domain. However,
+such a failed run may still be useful as it can be used to suggest an order of
+magnitude for the required number of levels. For example, if the automatic
+setting results in 150 levels and is later seen to fail, it might be worth
+a try to set the maximum number of levels to, say, $1.3 \times 150 = 195$.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
