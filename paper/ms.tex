@@ -189,6 +189,22 @@ p(\theta) &=
 \frac{w_j\mathds{1}\left[L(\theta) > \ell_j\right]}{X(\ell_j)}.
 \label{eqn:mixture_of_constrained_priors}
 \end{align}
+The DNS algorithm consists of two main stages. In the first stage,
+the particle(s) are initialized from the prior $\pi(\theta)$ (equivalent
+to the mixture of constrained priors with a single level whose likelihood
+threshold is $-\infty$), and
+the mixture of constrained priors evolves by adding new levels
+(see \citet{dnest} for details). In this stage,
+the mixture weights $\{w_j\}$ are set according to
+\begin{align}
+w_j &\propto \exp(j/\lambda),\label{eqn:weighting}
+\end{align}
+where $\lambda$ is a scale length.
+This enhances the probability that particles stay close to the
+highest likelihood regions seen.
+The second stage sets the mixture weights to be approximately
+uniform ($w_j \propto 1$), with some tweaks described by \citet{dnest}.
+
 The mixture of constrained priors tends to be easier to sample than the
 posterior, as the prior is always a mixture component, allowing the
 MCMC chain to mix between different modes in some circumstances. The marginal
@@ -567,6 +583,16 @@ such a failed run may still be useful as it can be used to suggest an order of
 magnitude for the required number of levels. For example, if the automatic
 setting results in 150 levels and is later seen to fail, it might be worth
 a try to set the maximum number of levels to, say, $1.3 \times 150 = 195$.
+
+\subsection{Backtracking scale length}
+The backtracking scale length, denoted by $\lambda$, appeared in
+Equation~\ref{eqn:weighting}, and controls the degree to which particles
+are allowed to ``backtrack'' down in level during the first stage of DNS
+when levels are being built. Higher values are more fail-safe, but
+make it take longer to create the levels. The value 10 used in the linear
+regression example is a suitable default value that should work in almost all
+cases. In simple problems where MCMC exploration is easy, lower values
+from 1 to 5 work sufficiently well.
 
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
