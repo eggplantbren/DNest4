@@ -594,6 +594,24 @@ regression example is a suitable default value that should work in almost all
 cases. In simple problems where MCMC exploration is easy, lower values
 from 1 to 5 work sufficiently well.
 
+\subsection{Equal weight enforcement}
+This value is the parameter $\beta$ described in \citet{dnest4}, and compensates
+for imprecision in the spacing of the levels, so that the desired mixture
+weights $w_j \propto 1$ are achieved during the second stage of the DNS
+algorithm. The value 100 is recommended.
+
+\subsection{Maximum number of saves}
+This controls the length of a \pkg{DNest4} run, in units of saved particles
+in {\tt sample.txt}, which represent the mixture of constrained priors.
+The number of posterior samples is always less than this. In most applications
+5,000 (as in the linear regression example) provides enough posterior
+samples (typically a few hundred) for sufficiently accurate posterior
+summaries. However, if you want to plot smooth-looking posterior histograms,
+you'll need to increase this value.
+
+If you set the maximum number of saves to zero, \pkg{DNest4} will run until
+you terminate it manually.
+
 \section{Implementing models}\label{sec:models}
 The ``classic'' method of implementing models in \pkg{DNest4} is by
 writing a \proglang{C++} class, an object of which represents a
