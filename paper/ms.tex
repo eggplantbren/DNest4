@@ -350,13 +350,12 @@ in the {\tt code/Examples/StraightLine} directory. The output to the screen
 should contain information about levels and ``saving particles to disk''.
 After 5000 particles have been saved to the disk, the run should terminate.
 
-%\section{Output files}
+\section{Output files}
 The executable {\tt main} is responsible for the exploration part of the
 DNS algorithm (i.e. running the MCMC chain, building
 levels, and then exploring all the levels). It creates three text output files,
 {\tt sample.txt}, {\tt sample\_info.txt}, and {\tt levels.txt}.
 
-%\subsection{sample.txt}
 The first output
 file, {\tt sample.txt}, contains a sampling of parameter values that
 represents the {\it mixture of constrained priors} (the target distribution
@@ -368,8 +367,7 @@ are three columns in {\tt sample.txt}.
 Each time a point is saved to {\tt sample.txt}, \pkg{DNest4} prints
 the message ``Saving a particle to disk. N = ...''.
 
-%\subsection{sample\_info.txt}
-%The second output file, {\tt sample\_info.txt}, should have the same number of
+The second output file, {\tt sample\_info.txt}, should have the same number of
 rows as {\tt sample.txt}, because it contains metadata about the samples in
 {\tt sample.txt}. The first
 column is the index $j$, which tells us which ``level'' the particle was in
@@ -382,7 +380,6 @@ likelihood is constant. The final column tells us which thread the particle
 belonged to: when you use \dnest~in multithreaded mode, each thread
 is responsible for evolving one or more walkers.
 
-%\subsection{levels.txt}
 The third output file, {\tt levels.txt}, contains information about the levels
 that were built during the run. The first column has estimates of the $\log(X)$
 values of the levels, i.e. how compressed they are relative to the prior, in
@@ -825,6 +822,9 @@ std::string StraightLine::description() const
 
 \end{CodeInput}
 \end{CodeChunk}
+
+\section{Finite Mixture Models with RJObject}
+Formerly a separate project \citep{rjobject}, 
 
 \section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve ``Approximate Bayesian Computation''
