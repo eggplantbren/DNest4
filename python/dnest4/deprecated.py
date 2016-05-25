@@ -250,15 +250,23 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 				break
 		rows[i] = which
 
-	sample = loadtxt_rows("sample.txt", set(rows), single_precision=True)
-	posterior_sample = np.empty((N, sample["ncol"]), dtype="float32")
+	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
+	posterior_sample = None
+	if single_precision:
+		posterior_sample = np.empty((N, sample["ncol"]), dtype="float32")
+	else:
+		posterior_sample = np.empty((N, sample["ncol"]))
+
 	for i in range(0, N):
 		posterior_sample[i, :] = sample[rows[i]]
 
 
 	if save:
 		np.savetxt('weights.txt', w)
-		np.savetxt("posterior_sample.txt", posterior_sample)
+		if single_precision:
+			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e")
+		else:
+			np.savetxt("posterior_sample.txt", posterior_sample)
 
 	if plot:
 		if numResampleLogX > 1:
