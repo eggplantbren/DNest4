@@ -803,8 +803,7 @@ for verifying this is to sample the prior for a long time
 {\tt sample.txt} to ensure that each parameter is exploring
 the prior correctly.
 
-
-The log-likelihood code is:
+The log-likelihood code is standard:
 \begin{CodeChunk}
 \begin{CodeInput}
 double StraightLine::log_likelihood() const
@@ -848,9 +847,12 @@ std::string StraightLine::description() const
 {
     return std::string("m, b, sigma");
 }
-
 \end{CodeInput}
 \end{CodeChunk}
+The print function specifies that the parameters
+$m$, $b$, and $\sigma$ are printed a single line
+(of {\tt sample.txt}) and are separated by spaces (the
+\code{postprocess} function assumes this is the case).
 
 \section{Finite Mixture Models with RJObject}
 Formerly a separate project \citep{rjobject}, 
