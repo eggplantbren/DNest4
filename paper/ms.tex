@@ -865,7 +865,25 @@ possibilities for the data before we learned it}) we're conditioning on a
 proposition like $(D \in \mathcal{R})$ where $\mathcal{R}$ is a region, and
 then implicitly taking a limit as the size of $\mathcal{R}$ goes to zero.
 
-ABC works by replacing the proposition $D = D_{\rm observed}$ with a logically
+A simple ``rejection sampling'' version of
+ABC works by sampling the joint prior distribution for the parameters and
+data
+\begin{align}
+p(\theta, D | I) &= p(\theta | I)p(D | \theta, I)
+\end{align}
+and rejecting samples for which $D \neq D_{\rm observed}$, so that the
+samples represent
+\begin{align}
+p(\theta, D | D = D_{\rm observed}, I) &\propto p(\theta | I)p(D | \theta, I)
+\mathds{1}\left[D = D_{\rm observed}\right].
+\end{align}
+The marginal distribution for $\theta$ is also the conditional distribution
+$p(\theta | D = D_{\rm observed}, I)$, that is, the posterior.
+
+This approach is rarely usable in practice because the probability of
+generating a dataset that matches the observed one is extremely low.
+To work around this, the proposition
+So the proposition $D = D_{\rm observed}$ with a logically
 weaker one.
 
 \begin{table}[ht!]
