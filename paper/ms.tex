@@ -897,7 +897,10 @@ p(\theta, D | D = D_{\rm observed}, I) &\propto p(\theta | I)p(D | \theta, I)
 \mathds{1}\left[D = D_{\rm observed}\right].
 \end{align}
 The marginal distribution for $\theta$ is also the conditional distribution
-$p(\theta | D = D_{\rm observed}, I)$, that is, the posterior.
+$p(\theta | D = D_{\rm observed}, I)$, that is,
+the posterior\footnote{Incidentally, this usage of the {\em joint} posterior
+distribution for the parameters {\em and the data} provides a bridge
+connecting Bayesian updating to maximum entropy updating \citep{caticha,giffin}.}.
 
 This approach is rarely usable in practice because the probability of
 generating a dataset that matches the observed one is extremely low.
@@ -905,87 +908,88 @@ To work around this, the proposition
 So the proposition $D = D_{\rm observed}$ with a logically
 weaker one.
 
-\begin{table}[ht!]
-\centering
-\small
-\begin{tabular}{|l|l|l|}
-\hline
-Bayesian computation		&		Statistical mechanics		&		ABC\\
-\hline
-Parameter space	$\Theta$	&		Phase space	$\Omega$ 			& Product space $\Theta \times \mathcal{D}$\\
-Posterior $p(\params | D,I)$   &  Canonical distribution $p(\boldsymbol{x}; T)$     & \\ 
-Marginal likelihood $P(D|I)$	&	Partition function $Z(T)$	&   Marginal likelihood $p(D\in | I)$\\
-\hline
-\end{tabular}
-\caption{\it The relationship between standard Bayesian computation, statistical
-mechanics, and ABC. In each case Monte Carlo methods are used to calculate
-integrals over a space. In standard Bayesian computation, it is the parameter
-space of a model that is usually of interest, whereas in ABC it is the space
-of possible parameter values {\it and} data sets.
-\label{tab:relation}}
-\end{table}
+%\begin{table}[ht!]
+%\centering
+%\small
+%\begin{tabular}{|l|l|l|}
+%\hline
+%Bayesian computation		&		Statistical mechanics		&		ABC\\
+%\hline
+%Parameter space	$\Theta$	&		Phase space	$\Omega$ 			& Product space $\Theta \times \mathcal{D}$\\
+%Posterior $p(\params | D,I)$   &  Canonical distribution $p(\boldsymbol{x}; T)$     & \\ 
+%Marginal likelihood $P(D|I)$	&	Partition function $Z(T)$	&   Marginal likelihood $p(D\in | I)$\\
+%\hline
+%\end{tabular}
+%\caption{\it The relationship between standard Bayesian computation, statistical
+%mechanics, and ABC. In each case Monte Carlo methods are used to calculate
+%integrals over a space. In standard Bayesian computation, it is the parameter
+%space of a model that is usually of interest, whereas in ABC it is the space
+%of possible parameter values {\it and} data sets.
+%\label{tab:relation}}
+%\end{table}
 
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[scale=0.5]{figures/joint.pdf}
-\caption{\it The joint prior for parameters $\params$ and data $\data$.
-\label{fig:joint}}
-\end{figure}
+%\begin{figure}[ht!]
+%\centering
+%\includegraphics[scale=0.5]{figures/joint.pdf}
+%\caption{\it The joint prior for parameters $\params$ and data $\data$.
+%\label{fig:joint}}
+%\end{figure}
 
-The main challenges associated with ABC are:
-\begin{enumerate}[(a)]
-\item The choice of summary statistics
-\item The choice of distance function
-\item How to choose the value of $\epsilon$, or how to change it as a run
-progresses
-\item How to achieve good mixing.
-\end{enumerate}
-Challenges 1 and 2 are Bayesian in nature, i.e. they relate to the very
-definition of the posterior distribution and are well defined independent of
-the fact that we are going to use a Monte Carlo method to compute the
-results. On the other hand, challenges 3 and 4 are about the computational implementation.
+%The main challenges associated with ABC are:
+%\begin{enumerate}[(a)]
+%\item The choice of summary statistics
+%\item The choice of distance function
+%\item How to choose the value of $\epsilon$, or how to change it as a run
+%progresses
+%\item How to achieve good mixing.
+%\end{enumerate}
+%Challenges 1 and 2 are Bayesian in nature, i.e. they relate to the very
+%definition of the posterior distribution and are well defined independent of
+%the fact that we are going to use a Monte Carlo method to compute the
+%results. On the other hand, challenges 3 and 4 are about the computational implementation.
 
-\section{Parameterising the data space}
-In standard MCMC-based ABC, proposal moves are made by first proposing a
-change to the parameters (from $\params$ to $\params'$), and then generating
-a mock dataset $\data'$ from $p(\data | \params')$. As a Metropolis proposal
-for exploring the product space $\Theta \times \mathcal{D}$ this is a very
-aggressive choice, since the proposed value of the
-dataset $\params'$ is likely to be very different from the previous one.
-One of the most elementary pieces of advice we receive when learning the
-Metropolis algorithm is to be careful about how ambitious our proposal
-distributions are, since tiny and huge proposal moves are both very
-inefficient. The performance of MCMC-based ABC can therefore be improved by
-alternative choices of proposal distribution.
+%\section{Parameterising the data space}
+%In standard MCMC-based ABC, proposal moves are made by first proposing a
+%change to the parameters (from $\params$ to $\params'$), and then generating
+%a mock dataset $\data'$ from $p(\data | \params')$. As a Metropolis proposal
+%for exploring the product space $\Theta \times \mathcal{D}$ this is a very
+%aggressive choice, since the proposed value of the
+%dataset $\params'$ is likely to be very different from the previous one.
+%One of the most elementary pieces of advice we receive when learning the
+%Metropolis algorithm is to be careful about how ambitious our proposal
+%distributions are, since tiny and huge proposal moves are both very
+%inefficient. The performance of MCMC-based ABC can therefore be improved by
+%alternative choices of proposal distribution.
 
-In some cases, we might be able to find efficient proposal distributions for exploring $\Theta \times \mathcal{D}$ by having insight into the particular
-problem we're working on. However, there are also techniques that are
-completely general in that they should work on any ABC-type problem.
+%In some cases, we might be able to find efficient proposal distributions for exploring $\Theta \times \mathcal{D}$ by having insight into the particular
+%problem we're working on. However, there are also techniques that are
+%completely general in that they should work on any ABC-type problem.
 
-Consider the process of generating a mock dataset. Whatever else is involved,
-this process will involve calls to an underlying random number generator.
-Perhaps a function {\tt rand()}, generating variables from a Uniform(0, 1)
-distribution, is called $n$ times in the course of generating a dataset.
-Usually, the simulation process has the property that, if $\theta'$ is
-close to $\theta$, then the same sequence of random numbers returned by
-{\tt rand()} would produce a dataset $\data'$ that is very similar to $\data$.
-This suggests an alternative parameterisation of
-the product space $\Theta\times\mathcal{D}$: instead of using the one that
-naturally describes the data, we can use a coordinate system defined by
-$\theta$ together with $\{u_1, ..., u_n\}$, the $n$ uniform random numbers
-used to construct a mock dataset.
+%Consider the process of generating a mock dataset. Whatever else is involved,
+%this process will involve calls to an underlying random number generator.
+%Perhaps a function {\tt rand()}, generating variables from a Uniform(0, 1)
+%distribution, is called $n$ times in the course of generating a dataset.
+%Usually, the simulation process has the property that, if $\theta'$ is
+%close to $\theta$, then the same sequence of random numbers returned by
+%{\tt rand()} would produce a dataset $\data'$ that is very similar to $\data$.
+%This suggests an alternative parameterisation of
+%the product space $\Theta\times\mathcal{D}$: instead of using the one that
+%naturally describes the data, we can use a coordinate system defined by
+%$\theta$ together with $\{u_1, ..., u_n\}$, the $n$ uniform random numbers
+%used to construct a mock dataset.
 
-In this alternative coordinate system, a proposed move
-to change $\params$ while keeping
-$\{u_i\}$ fixed results in a proposed new dataset that is similar to the
-previous one, assuming the change to $\params$ is small. The standard procedure
-of generating an entirely new mock dataset each step is now viewed as a
-proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
-re-generated from their iid uniform prior}.
+%In this alternative coordinate system, a proposed move
+%to change $\params$ while keeping
+%$\{u_i\}$ fixed results in a proposed new dataset that is similar to the
+%previous one, assuming the change to $\params$ is small. The standard procedure
+%of generating an entirely new mock dataset each step is now viewed as a
+%proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
+%re-generated from their iid uniform prior}.
 
 \subsection{Python Bindings}\label{sec:python_bindings}
 
+{\bf To be written by Dan FM}
 
 
 \section*{Acknowledgements}
@@ -1008,15 +1012,15 @@ Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
 
 \bibitem[Brewer and Donovan(2015)]{2015MNRAS.448.3206B} Brewer, B.~J., Donovan, C.~P.\ 2015.\ Fast Bayesian inference for exoplanet discovery in radial velocity data.\ Monthly Notices of the Royal Astronomical Society 448, 3206-3214. 
 
-\bibitem[Caticha(2008)]{caticha} Caticha, A.\ 2008.\ Lectures 
-on Probability, Entropy, and Statistical Physics.\ ArXiv e-prints 
-arXiv:0808.0012.
+\bibitem[Caticha and Giffin(2006)]{caticha} Caticha, A., Giffin, A.\ 2006.\ Updating Probabilities.\ Bayesian Inference and Maximum Entropy Methods In Science and Engineering 872, 31-42. 
 
 \bibitem[Dybowski et al(2015)]{salmonella}
 Dybowski, Richard, et al. Single passage in mouse organs enhances the survival and spread of Salmonella enterica. Journal of The Royal Society Interface 12.113 (2015): 20150702.
 
 \bibitem[\protect\citeauthoryear{Feroz, Hobson,
 \& Bridges}{2009}]{multinest} Feroz F., Hobson M.~P., Bridges M., 2009, MNRAS, 398, 1601
+
+\bibitem[Giffin and Caticha(2007)]{giffin} Giffin, A., Caticha, A.\ 2007.\ Updating Probabilities with Data and Moments.\ Bayesian Inference and Maximum Entropy Methods in Science and Engineering 954, 74-84. 
 
 \bibitem[Handley et al.(2015)]{2015MNRAS.453.4384H} Handley, W.~J., Hobson, M.~P., Lasenby, A.~N.\ 2015.\ POLYCHORD: next-generation nested sampling.\ Monthly Notices of the Royal Astronomical Society 453, 4384-4398. 
 
