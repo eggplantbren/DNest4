@@ -839,30 +839,34 @@ std::string StraightLine::description() const
 Formerly a separate project \citep{rjobject}, 
 
 \section{Approximate Bayesian Computation}
-Nested Sampling can be used to solve ``Approximate Bayesian Computation''
+Nested Sampling can be used to solve Approximate Bayesian Computation (ABC)
 problems elegantly and efficiently.
-
-Approximate Bayesian Computation (ABC), also known as likelihood-free inference,
-is a set of Monte Carlo techniques for approximating a posterior distribution
-without having to evaluate the likelihood function $L(\theta)$.
-
-. Instead, the ability to
-generate simulated data sets from the sampling distribution is required.
-Since a sampling distribution must be specified, it is not the assumption of
-a specific likelihood that is avoided (indeed, a sampling distribution and
+Also known (misleadingly) as likelihood-free inference,
+ABC
+is a set of Monte Carlo techniques for approximating the posterior distribution
+without having to evaluate the likelihood function $L(\theta)$. Instead, 
+the user must be able to cheaply
+generate simulated data sets from the sampling distribution $p(D|\theta, I)$.
+Since a sampling distribution must be specified, it is not that there is
+no likelihood function (indeed, a sampling distribution and
 a data set imply a particular likelihood function), rather that we cannot
-evaluate it cheaply as a function of $\params$ and $\data$.
+evaluate it cheaply and therefore cannot use MCMC.
 
 All Bayesian updating conditions on the truth of a proposition. We sometimes
 speak and use notation as if we're conditioning on the value of a variable, for
-example by writing the posterior distribution as $p(\params | \data)$. However,
-this is shorthand for $p(\params | \data = \dobs)$. In the prior state of
-knowledge, the proposition $(\data = \dobs)$ could have been either true or
-false, but in the posterior state of knowledge it is definitely true.
+example by writing the posterior distribution as
+$p(\theta | D, I)$. However,
+this is shorthand for $p(\theta | D = D_{\rm observed}, I)$, and
+$D = D_{\rm observed}$ is a statement that could have been either
+true or false in the prior state of knowledge, and is known to be true
+in the posterior state of knowledge.
 In the case of ``continuous data'' (really a continuous {\it space of
 possibilities for the data before we learned it}) we're conditioning on a
-proposition like $(\data \in [\dobs, \dobs+\epsilon])$ and implicitly
-taking the limit $\epsilon \to 0$.
+proposition like $(D \in \mathcal{R})$ where $\mathcal{R}$ is a region, and
+then implicitly taking a limit as the size of $\mathcal{R}$ goes to zero.
+
+ABC works by replacing the proposition $D = D_{\rm observed}$ with a logically
+weaker one.
 
 \begin{table}[ht!]
 \centering
