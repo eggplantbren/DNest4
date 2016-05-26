@@ -651,6 +651,8 @@ The class must also define and implement the following member functions:
         This string is printed (after a comment character \#) at the top of
         the output file.
 \end{enumerate}
+These are all described (using the linear regression example) in the
+following subsections.
 
 %%\subsection{generate}
 
@@ -661,9 +663,9 @@ The class must also define and implement the following member functions:
 %\section{Examples}
 % Reasonably simple examples
 
+\subsection{Generating from the prior}
 The member function used to generate straight line parameters from the
 prior is:
-
 \begin{CodeChunk}
 \begin{CodeInput}
 void StraightLine::from_prior(DNest4::RNG& rng)
@@ -689,6 +691,7 @@ As you might expect, there are
 double precision values
 from a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
 
+\subsection{Proposal moves}
 The \code{perturb} member function for the straight line model is:
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -803,6 +806,7 @@ for verifying this is to sample the prior for a long time
 {\tt sample.txt} to ensure that each parameter is exploring
 the prior correctly.
 
+\subsection{Log-likelihood}
 The log-likelihood code is standard:
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -835,6 +839,7 @@ datasets. Since there will usually only be one dataset,
 the {\em singleton pattern} (a class of which there is one instance
 accessible from anywhere) is recommended.
 
+\subsection{Parameter output}
 The print and description functions are very simple:
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -853,6 +858,9 @@ The print function specifies that the parameters
 $m$, $b$, and $\sigma$ are printed a single line
 (of {\tt sample.txt}) and are separated by spaces (the
 \code{postprocess} function assumes this is the case).
+
+\subsection{Running the sampler}
+main.cpp
 
 \section{Finite Mixture Models with RJObject}
 Formerly a separate project \citep{rjobject}, 
