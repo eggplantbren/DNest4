@@ -341,12 +341,11 @@ These are naive diffuse priors and do not have any special status.
 This model was implemented in \proglang{C++}
 (see Section~\ref{sec:models} for details).
 The dataset is shown in Figure~\ref{fig:regression_lines}
-and the code is included in the
-{\tt code/Examples/StraightLine} subdirectory. A simplified version of the
+and the code is included in the {\tt code/Examples/StraightLine}
+subdirectory. A simplified version of the
 code is explained in Section~\ref{sec:models}.
-
-To execute \pkg{DNest4} on this problem, run the executable {\tt main}
-in the {\tt code/Examples/StraightLine} directory. The output to the screen
+To execute \pkg{DNest4} on this problem, go to this directory and
+execute {\tt main}. The output to the screen
 should contain information about levels and ``saving particles to disk''.
 After 5000 particles have been saved to the disk, the run should terminate.
 
@@ -779,13 +778,31 @@ magnitude smaller with moderate probability. We recommend using
 this strategy (a measure of prior width, multiplied by \code{randh()}) as
 a default proposal that works well in almost all problems.
 
-When implementing a model class, it is imperative that the
-\code{from\_prior(DNest4::RNG\&)} and \code{perturb(DNest4::RNG\&)}
-member functions be consistent with each other. One technique
+Recall that for Nested Sampling, the Metropolis acceptance probability,
+excluding the term for the likelihood, is
+\begin{align}
+H = \frac{q(\params'|\params)}{q(\params | \params')}
+\times \frac{\pi(\params')}{\pi(\params)}.
+\end{align}
+When implementing a model class, the
+\code{perturb(DNest4::RNG\&)}
+member function must return the logarithm of this value.
+Since the prior for $m$ is a normal distribution with
+mean zero and standard deviation $1000$, $H$ is
+\begin{align}
+H &= \frac{\exp\left[-\frac{1}{2}(m'/1000)^2\right]}
+{\exp\left[-\frac{1}{2}(m/1000)^2\right]}.
+\end{align}
+This explains the use of the \code{log\_H} variable.
+
+It is imperative that \code{from_prior} and
+\code{perturb}
+be consistent with each other. One technique
 for verifying this is to sample the prior for a long time
 (by setting the maximum number of levels to 1) and inspect
 {\tt sample.txt} to ensure that each parameter is exploring
-the correct distribution.
+the prior correctly.
+
 
 The log-likelihood code is:
 \begin{CodeChunk}
