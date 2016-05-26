@@ -681,13 +681,14 @@ void StraightLine::from_prior(DNest4::RNG& rng)
 
 This generates $m$, $b$, and $\sigma$ from their joint prior. In this case,
 the priors are all independent, so this reduces to generating the parameters
-each from their own prior distribution. For convenience, the \code{RNG} object
-has \code{rand()} and \code{randn()} member functions to generate from
-a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
-
-After generating the parameters from the prior, another member function
-\code{calculate\_mu()} is called, which computes the model prediction
-$mx_i + b$ for each data point.
+each from their own prior distribution. For convenience,
+\pkg{DNest4} provides an \code{RNG} class to represent random number
+generators. The \code{RNG} class is just a convenience wrapper for the
+random number generators built into \proglang{C++11}.
+As you might expect, there are
+\code{rand()} and \code{randn()} member functions to generate
+double precision values
+from a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
 
 The \code{perturb} member function for the straight line model is:
 \begin{CodeChunk}
@@ -728,17 +729,28 @@ double StraightLine::perturb(DNest4::RNG& rng)
 This first chooses a random integer from $[0, 3)$ using the
 \code{rand\_int(int)} member function of the \code{DNest4::RNG} class.
 This determines which of the three parameters
-$(m, b, \sigma)$ is modified.
+$(m, b, \sigma)$ is modified. In this example, there are no proposals
+that modify more than one of the parameters at a time, and all proposals
+are ``random walk'' proposals that add a perturbation
+(drawn from a symmetric distribution) to the current value.
 
 \subsection{Proposals for single parameters}
-The proposal for $m$ involves adding a perturbation to the current value
-using the line \code{m += 1E3*rng.randh();}.
+The proposal for $m$ involves adding a perturbation to the current
+value using the line
+
+\begin{CodeChunk}
+\begin{CodeInput}
+m += 1E3*rng.randh();
+\end{CodeInput}
+\end{CodeChunk}
 
 A challenge using MCMC for standard Nested Sampling is that the target
 distribution is not static --- it gets compressed over time. Similarly, in
 the first stage of DNS the target distribution gets compressed (as levels are
 added), and in the second stage the target distribution is a mixture of
 distributions that have been compressed to varying degrees.
+This makes it difficult to tune step-sizes as you would when using
+the standard Metropolis algorithm to sample the posterior distribution.
 
 Rather than trying to adapt proposal distributions as a function of level,
 it is much simpler to just use heavy-tailed proposals which have some
@@ -754,18 +766,18 @@ $x$ from a heavy-tailed distribution:
 \item Generate $n \sim$ Normal$(0, 1)$
 \item Set $x := 10^{1.5 - |c|}n$
 \end{enumerate}
-This generates values with a maximum scale of tens-hundreds, down to
+This generates values with a maximum scale of tens--hundreds, down to
 the smallest positive value in double precision, by virtue
 of the Cauchy distribution's heavy tails.
-
 For convenience, the \code{RNG} class contains a member function \code{randh()}
 to generate values from this distribution.
-
-
-
-
-The factor of \code{1E3} is
-included to account for the prior width.
+The factor of \code{1E3} is included because it is a measure of the prior
+width. Therefore, this proposal will attempt moves whose maximum order of
+magnitude is a bit wider than the prior (since it would be very surprising
+if any bigger moves were needed), and will propose moves a few orders of
+magnitude smaller with moderate probability. We recommend using
+this strategy (a measure of prior width, multiplied by \code{randh()}) as
+a default proposal that works well in almost all problems.
 
 When implementing a model class, it is imperative that the
 \code{from\_prior(DNest4::RNG\&)} and \code{perturb(DNest4::RNG\&)}
