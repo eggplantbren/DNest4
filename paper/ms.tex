@@ -939,9 +939,25 @@ connecting Bayesian updating to maximum entropy updating \citep{caticha,giffin}.
 
 This approach is rarely usable in practice because the probability of
 generating a dataset that matches the observed one is extremely low.
-To work around this, the proposition
-So the proposition $D = D_{\rm observed}$ with a logically
-weaker one.
+To work around this, we replace the proposition
+$D = D_{\rm observed}$ with a logically
+weaker one (i.e. one that is implied by $D = D_{\rm observed}$ but does not
+imply it). This is usually done by defining a few {\em summary statistics}
+$s_1(D), s_2(D), ..., s_n(D)$, which hopefully capture most of the relevant
+information in the data.
+Then, a discrepancy function
+$\rho$ is defined, measuring how different a simulated dataset $D$ is from
+the real one $D_{\rm observed}$, in terms of the summary statistics:
+\begin{align}
+\rho\left(\{s_1(D), ..., s_n(D)\}; \{s_1(D_{\rm observed}), ..., s_n(D_{\rm observed})\}\right)
+\end{align}
+The analysis then proceeds by Monte Carlo sampling the
+joint posterior for $\theta$ and $D$
+conditional on the logically weaker proposition
+\begin{align}
+\rho\left(D; D_{\rm observed}\right) < \epsilon
+\end{align}
+where $\epsilon$ is some small number.
 
 %\begin{table}[ht!]
 %\centering
