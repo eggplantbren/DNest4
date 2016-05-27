@@ -860,7 +860,34 @@ $m$, $b$, and $\sigma$ are printed a single line
 \code{postprocess} function assumes this is the case).
 
 \subsection{Running the sampler}
-main.cpp
+The file {\tt main.cpp} contains the \code{main()} function which
+is executed after compiling and linking. The contents of {\tt main.cpp}
+for the linear regression example are:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+#include <iostream>
+#include "Data.h"
+#include "DNest4/code/DNest4.h"
+#include "StraightLine.h"
+
+using namespace std;
+using namespace DNest4;
+
+int main(int argc, char** argv)
+{
+	Data::get_instance().load("road.txt");
+	start<StraightLine>(argc, argv);
+	return 0;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+
+The first line of {\tt main()} loads the data into its global instance
+(so it can be accessed from within the log-likelihood function)
+and the second line uses a \code{start} template function to construct
+and run the sampler.
 
 \section{Finite Mixture Models with RJObject}
 Formerly a separate project \citep{rjobject}, 
