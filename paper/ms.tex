@@ -35,7 +35,7 @@ solving complex problems including many where the posterior distribution is
 multimodal or has strong dependencies between variables.
 \pkg{DNest4} is an open source (MIT licensed),
 multi-threaded implementation of this algorithm in
-modern \proglang{C++} (specifically, \proglang{C++11}),
+\proglang{C++11},
 along with associated utilities including: i)
 a \pkg{Python} package allowing basic use without \proglang{C++} coding;
 ii) \pkg{RJObject}, a class template for finite mixture models;
@@ -110,7 +110,7 @@ or
      {\textnormal{marginal likelihood}}.
 \end{align}
 
-If prior information $I$ (hereby dropped)
+If prior information $I$ (dropped hereafter)
 implies a set of possible `models' $\{M_i\}$,
 rather than a single one $M$, the posterior model probabilities are given by
 \begin{align}
@@ -121,7 +121,9 @@ where
 \begin{align}
 p(\data | M_j) &= \int p(\theta_j | M_j)p(\data | \theta_j, M_j) \, d\theta_j
 \end{align}
-is the marginal likelihood of model $j$. This kind of calculation is often
+is the marginal likelihood of model $j$, equal to the expected value of the
+likelihood function with respect to the prior distribution.
+This kind of calculation is often
 called ``model selection'' or ``model averaging''.
 
 When discussing computational matters, the prior distribution for parameters
@@ -158,18 +160,21 @@ where
 \begin{align}
 X(\ell) &= \int \pi(\theta) \mathds{1}\left[L(\theta) > \ell\right] \, d\theta
 \end{align}
-is the amount of prior mass which has likelihood greater than $\ell$.
+is the amount of prior mass which has likelihood greater than $\ell$, and
+$\mathds{1}()$ is the indicator function which takes the value 1 if the
+argument is true and 0 otherwise.
 In the standard NS framework, the sequence of $\ell$ values is selected
 so that $X(\ell)$ shrinks by a factor $\approx e^{-1/N}$ per iteration, where
-$N$ is the number of particles used.
+$N$ is the number of particles used. This geometric compression of the
+parameter space is a defining feature of NS.
 
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist \citep[e.g.][]{multinest, 2015MNRAS.453.4384H}.
 Diffusive Nested Sampling \citep[DNS][]{dnest} is an alternative to NS for
 problems where MCMC is the only viable sampling method. DNS is based on the
-Metropolis algorithm. DNS evolves a point in the parameter space, along with
-an integer index variable $j$,
+Metropolis algorithm. DNS evolves one or more particles in the parameter space, along with
+an integer index variable $j$ for each particle,
 to explore the following joint distribution:
 \begin{align}
 p(\theta, j) &= p(j)p(\theta | j)\\
@@ -217,9 +222,9 @@ There are several ways of using \pkg{DNest4}. After installing the software
 a \proglang{C++} class
 (Section~\ref{sec:models}) and compile it to create an executable file
 to run \pkg{DNest4} on that problem. This method offers full control over the
-design of your class, and allows the opportunity (for example) to optimise
+design of your class, and allows the opportunity of optimizing
 performance by preventing a full re-computation of the log-likelihood when
-only a small subset of the parameters were changed.
+only a small subset of the parameters have been changed.
 
 Alternatively, the \proglang{Python}
 bindings (Section~\ref{sec:python_bindings}) allow you
