@@ -22,6 +22,7 @@ class Cauchy:public ContinuousDistribution
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;
+        double log_pdf(double x) const;
 };
 
 } // namespace DNest4

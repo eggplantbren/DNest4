@@ -19,6 +19,7 @@ class ContinuousDistribution
 
         virtual double cdf(double x) const = 0;
         virtual double cdf_inverse(double x) const = 0;
+        virtual double log_pdf(double x) const = 0;
 };
 
 } // namespace DNest4
