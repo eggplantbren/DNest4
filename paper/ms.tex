@@ -440,13 +440,17 @@ which quantifies the degree to which $D$ restricted the
 range of possible $\theta$ values,
 and the effective sample size,
 or number of saved particles with significant posterior weight.
-The {\tt postprocess} function also saves a file,
+The \code{postprocess} function also saves a file,
 {\tt posterior\_sample.txt}, containing posterior samples (one per row).
-The zero-sized error bars on $\ln(Z)$ and $\mathcal{H}$ should be ignored.
-These are only relevant if advanced options (not covered in this paper)
-are passed to {\tt postprocess}.
+Unfortunately, it is harder to compute justified error bars on $\ln(Z)$
+in DNS than it is in standard NS.
+The \code{postprocess} function does include some options
+for calculating error bars, but they are not used by default,
+and we do not describe them here.
+Hence, the zero-sized error bars on $\ln(Z)$ and $\mathcal{H}$ should
+be ignored.
 
-The {\tt postprocess} function can be called while \pkg{DNest4} is running.
+The \code{postprocess} function can be called while \pkg{DNest4} is running.
 This is helpful for monitoring the progress of a run, by inspecting the
 output plots.
 
@@ -700,33 +704,46 @@ The \code{perturb} member function for the straight line model is:
 \begin{CodeInput}
 double StraightLine::perturb(DNest4::RNG& rng)
 {
-	double log_H = 0.0;
+    double log_H = 0.0;
 
-	// Proposals explore the prior
-	// For normal priors I usually use the hastings factor to do it
-	int which = rng.rand_int(3);
-	if(which == 0)
-	{
-		log_H -= -0.5*pow(m/1E3, 2);
-		m += 1E3*rng.randh();
-		log_H += -0.5*pow(m/1E3, 2);
-	}
-	else if(which == 1)
-	{
-		log_H -= -0.5*pow(b/1E3, 2);
-		b += 1E3*rng.randh();
-		log_H += -0.5*pow(b/1E3, 2);
-	}
-	else
-	{
-		// Usual log-uniform prior trick
-		sigma = log(sigma);
-		sigma += 20.0*rng.randh();
-		DNest4::wrap(sigma, -10.0, 10.0);
-		sigma = exp(sigma);
-	}
+    // Proposals must be consistent with the prior
+    // Choose which of the three parameters to move
+    int which = rng.rand_int(3);
 
-	return log_H;
+    if(which == 0)
+    {
+        // log_H takes care of the prior ratio
+        // i.e. log_H = log(pi(theta')/pi(theta))
+        log_H -= -0.5*pow(m/1E3, 2);
+
+        // Take a step
+        m += 1E3*rng.randh();
+
+        // log_H takes care of the prior ratio
+        log_H += -0.5*pow(m/1E3, 2);
+    }
+    else if(which == 1)
+    {
+        log_H -= -0.5*pow(b/1E3, 2);
+        b += 1E3*rng.randh();
+        log_H += -0.5*pow(b/1E3, 2);
+    }
+    else
+    {
+        // Proposal for a parameter with a log-uniform
+        // prior takes the log of the parameter,
+        // takes a step with respect to a uniform prior,
+        // then takes the exp of the parameter
+        sigma = log(sigma);
+        sigma += 20.0*rng.randh();
+
+        // Wrap proposed value back into the
+        // interval allowed by the prior
+        DNest4::wrap(sigma, -10.0, 10.0);
+        sigma = exp(sigma);
+    }
+
+    return log_H;
 }
 \end{CodeInput}
 \end{CodeChunk}
@@ -879,9 +896,9 @@ using namespace DNest4;
 
 int main(int argc, char** argv)
 {
-	Data::get_instance().load("road.txt");
-	start<StraightLine>(argc, argv);
-	return 0;
+    Data::get_instance().load("road.txt");
+    start<StraightLine>(argc, argv);
+    return 0;
 }
 \end{CodeInput}
 \end{CodeChunk}
