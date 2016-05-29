@@ -786,7 +786,7 @@ $x$ from a heavy-tailed distribution:
 \begin{enumerate}
 \item Generate $c \sim$ Cauchy$(0, 1)$
 \item Generate $n \sim$ Normal$(0, 1)$
-\item Set $x := 10^{1.5 - |c|}n$
+\item Set $x := 10^{1.5 - 3|c|}n$
 \end{enumerate}
 This generates values with a maximum scale of tens--hundreds, down to
 the smallest positive value in double precision, by virtue

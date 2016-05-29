@@ -29,7 +29,8 @@ double RNG::randn()
 
 double RNG::randh()
 {
-	return pow(10., 1.5 - std::abs(tan(M_PI*(this->rand() - 0.5))))*this->randn();
+	return pow(10.0, 1.5 - 3*std::abs(tan(M_PI*(this->rand() - 0.5))))
+                        *this->randn();
 }
 
 int RNG::rand_int(int N)
