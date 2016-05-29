@@ -988,7 +988,25 @@ conditional on the logically weaker proposition
 \begin{align}
 \rho\left(D; D_{\rm observed}\right) < \epsilon
 \end{align}
-where $\epsilon$ is some small number.
+where $\epsilon$ is some small number. With this proposition, the
+rejection rate will still
+typically be very high, but lower than with $D = D_{\rm observed}$. 
+
+\subsection{Why ABC is difficult}
+The main challenges associated with ABC are:
+\begin{enumerate}[(i)]
+\item The choice of summary statistics $s_1(D), ..., s_n(D)$
+\item The choice of distance function $\rho()$
+\item How to choose the value of $\epsilon$, or how to change it as a run
+progresses
+\item How to make algorithms more efficient than rejection sampling.
+\end{enumerate}
+Challenges (i) and (ii) are Bayesian in nature, i.e. they relate to the very
+definition of the posterior distribution itself.
+On the other hand, challenges 3 and 4 are about the computational
+implementation. Most ABC analyses are done using Sequential Monte Carlo
+\citep[SMC][]{delmoral},
+
 
 %\begin{table}[ht!]
 %\centering
@@ -1018,18 +1036,6 @@ where $\epsilon$ is some small number.
 %\label{fig:joint}}
 %\end{figure}
 
-%The main challenges associated with ABC are:
-%\begin{enumerate}[(a)]
-%\item The choice of summary statistics
-%\item The choice of distance function
-%\item How to choose the value of $\epsilon$, or how to change it as a run
-%progresses
-%\item How to achieve good mixing.
-%\end{enumerate}
-%Challenges 1 and 2 are Bayesian in nature, i.e. they relate to the very
-%definition of the posterior distribution and are well defined independent of
-%the fact that we are going to use a Monte Carlo method to compute the
-%results. On the other hand, challenges 3 and 4 are about the computational implementation.
 
 %\section{Parameterising the data space}
 %In standard MCMC-based ABC, proposal moves are made by first proposing a
@@ -1097,6 +1103,9 @@ Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
 \bibitem[Brewer and Donovan(2015)]{2015MNRAS.448.3206B} Brewer, B.~J., Donovan, C.~P.\ 2015.\ Fast Bayesian inference for exoplanet discovery in radial velocity data.\ Monthly Notices of the Royal Astronomical Society 448, 3206-3214. 
 
 \bibitem[Caticha and Giffin(2006)]{caticha} Caticha, A., Giffin, A.\ 2006.\ Updating Probabilities.\ Bayesian Inference and Maximum Entropy Methods In Science and Engineering 872, 31-42. 
+
+\bibitem[Del Moral et al(2012)]{delmoral}
+Del Moral, P., Doucet, A. and Jasra, A., 2012. An adaptive sequential Monte Carlo method for approximate Bayesian computation. Statistics and Computing, 22(5), pp.1009-1020.
 
 \bibitem[Dybowski et al(2015)]{salmonella}
 Dybowski, Richard, et al. Single passage in mouse organs enhances the survival and spread of Salmonella enterica. Journal of The Royal Society Interface 12.113 (2015): 20150702.
