@@ -784,13 +784,16 @@ implement. The following procedure generates
 $x$ from a heavy-tailed distribution:
 
 \begin{enumerate}
-\item Generate $c \sim$ Cauchy$(0, 1)$
+\item Generate $a, b, c \sim$ Normal$(0, 1)$
+\item Define $t := c/\sqrt{(a^2 + b^2)/2}$
 \item Generate $n \sim$ Normal$(0, 1)$
-\item Set $x := 10^{1.5 - 3|c|}n$
+\item Set $x := 10^{1.5 - 3|t|}n$
 \end{enumerate}
-This generates values with a maximum scale of tens--hundreds, down to
-the smallest positive value in double precision, by virtue
-of the Cauchy distribution's heavy tails.
+The variable $t$ has a student-$t$ distribution with 2 degrees of freedom.
+Overall, this procedure generates values $x$
+with a maximum scale of tens--hundreds, down to
+a minimum scale of about $10^{-30}$ with 99\% probability, by virtue
+of the $t$-distribution's heavy tails.
 For convenience, the \code{RNG} class contains a member function \code{randh()}
 to generate values from this distribution.
 The factor of \code{1E3} is included because it is a measure of the prior
