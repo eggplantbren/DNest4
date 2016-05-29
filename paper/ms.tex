@@ -931,7 +931,7 @@ ABC
 is a set of Monte Carlo techniques for approximating the posterior distribution
 without having to evaluate the likelihood function $L(\theta)$. Instead, 
 the user must be able to cheaply
-generate simulated data sets from the sampling distribution $p(D|\theta, I)$.
+generate simulated data sets from the sampling distribution $p(D|\theta, M)$.
 Since a sampling distribution must be specified, it is not that there is
 no likelihood function (indeed, a sampling distribution and
 a data set imply a particular likelihood function), rather that we cannot
@@ -940,30 +940,31 @@ evaluate it cheaply and therefore cannot use MCMC.
 All Bayesian updating conditions on the truth of a proposition. We sometimes
 speak and use notation as if we're conditioning on the value of a variable, for
 example by writing the posterior distribution as
-$p(\theta | D, I)$. However,
-this is shorthand for $p(\theta | D = D_{\rm observed}, I)$, and
-$D = D_{\rm observed}$ is a statement that could have been either
-true or false in the prior state of knowledge, and is known to be true
+$p(\theta | D, M)$. However,
+this is shorthand for $p(\theta | D = D_{\rm observed}, M)$.
+In the prior state of knowledge, the statement
+$D = D_{\rm observed}$ could have been either
+true or false in the prior state of knowledge, but it is known to be true
 in the posterior state of knowledge.
 In the case of ``continuous data'' (really a continuous {\it space of
-possibilities for the data before we learned it}) we're conditioning on a
+possibilities for the data before we learned it}) we condition on a
 proposition like $(D \in \mathcal{R})$ where $\mathcal{R}$ is a region, and
-then implicitly taking a limit as the size of $\mathcal{R}$ goes to zero.
+then implicitly take a limit as the size of $\mathcal{R}$ goes to zero.
 
 A simple ``rejection sampling'' version of
 ABC works by sampling the joint prior distribution for the parameters and
 data
 \begin{align}
-p(\theta, D | I) &= p(\theta | I)p(D | \theta, I)
+p(\theta, D | M) &= p(\theta | M)p(D | \theta, M)
 \end{align}
 and rejecting samples for which $D \neq D_{\rm observed}$, so that the
 samples represent
 \begin{align}
-p(\theta, D | D = D_{\rm observed}, I) &\propto p(\theta | I)p(D | \theta, I)
+p(\theta, D | D = D_{\rm observed}, M) &\propto p(\theta | M)p(D | \theta, M)
 \mathds{1}\left[D = D_{\rm observed}\right].
 \end{align}
 The marginal distribution for $\theta$ is also the conditional distribution
-$p(\theta | D = D_{\rm observed}, I)$, that is,
+$p(\theta | D = D_{\rm observed}, M)$, that is,
 the posterior\footnote{Incidentally, this usage of the {\em joint} posterior
 distribution for the parameters {\em and the data} provides a bridge
 connecting Bayesian updating to maximum entropy updating \citep{caticha,giffin}.}.
@@ -992,7 +993,6 @@ where $\epsilon$ is some small number. With this proposition, the
 rejection rate will still
 typically be very high, but lower than with $D = D_{\rm observed}$. 
 
-\subsection{Why ABC is difficult}
 The main challenges associated with ABC are:
 \begin{enumerate}[(i)]
 \item The choice of summary statistics $s_1(D), ..., s_n(D)$
@@ -1005,7 +1005,7 @@ Challenges (i) and (ii) are Bayesian in nature, i.e. they relate to the very
 definition of the posterior distribution itself.
 On the other hand, challenges 3 and 4 are about the computational
 implementation. Most ABC analyses are done using Sequential Monte Carlo
-\citep[SMC][]{delmoral},
+\citep[SMC][]{delmoral}.
 
 
 %\begin{table}[ht!]
