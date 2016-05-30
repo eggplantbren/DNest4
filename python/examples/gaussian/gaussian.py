@@ -27,7 +27,7 @@ class Model(object):
 
     def perturb(self, coords):
         i = np.random.randint(self.ndim)
-        coords[i] += np.random.randn() * 10**np.random.uniform(-5.0, -0.1)
+        coords[i] += 2*self.rng*dnest4.randh()
         coords[i] = (coords[i] + self.rng) % (2*self.rng) - self.rng
         return 0.0
 
