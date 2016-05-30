@@ -915,6 +915,19 @@ and run the sampler.
 \section{Finite Mixture Models with RJObject}
 Formerly a separate project \citep{rjobject}, 
 
+If $N$ is the number of components, $\boldsymbol{x}_i$ is the parameters
+of the $i$th component, and $\alpha$ is the hyperparameters, the prior
+can be factorised as
+\begin{align}
+p\left(N, \alpha, \left\{\boldsymbol{x}_i\right\}_{i=1}^N\right)
+&= p(N)p(\alpha | N)p\left(\left\{\boldsymbol{x}_i\right\}_{i=1}^N | \alpha, N\right).
+\end{align}
+The specific assumptions of \pkg{RJObject} are
+\begin{align}
+p\left(N, \alpha, \left\{\boldsymbol{x}_i\right\}_{i=1}^N\right)
+&= p(N)p(\alpha)p\left(\left\{\boldsymbol{x}_i\right\}_{i=1}^N | \alpha\right).
+\end{align}
+which is depicted in Figure~\ref{fig:rjobject_pgm}.
 
 \begin{figure}[ht!]
 \begin{center}
