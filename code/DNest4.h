@@ -18,6 +18,9 @@
 #include "RJObject/ConditionalPriors/ClassicMassInf1D.h"
 #include "RJObject/ConditionalPriors/ConditionalPrior.h"
 #include "RJObject/ConditionalPriors/Pareto.h"
+#include "Distributions/Cauchy.h"
+#include "Distributions/Laplace.h"
+#include "Distributions/ContinuousDistribution.h"
 
 #endif
 
