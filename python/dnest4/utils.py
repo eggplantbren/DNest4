@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ["randh"]
+__all__ = ["randh", "wrap"]
 
 import numpy as np
 import numpy.random as rng
@@ -18,4 +18,8 @@ def randh(N=1):
     if len(x) == 1:
         return x[0]
     return x
+
+def wrap(x, a, b):
+    assert b > a
+    return (x - a)%(b - a) + a
 

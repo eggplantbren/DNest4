@@ -29,7 +29,8 @@ class Model(object):
     def perturb(self, coords):
         i = np.random.randint(self.ndim)
         coords[i] += self.width*dnest4.randh()
-        coords[i] = (coords[i] + 0.5*self.width) % self.width - 0.5*self.width
+        # Note: use the return value of wrap, unlike in C++
+        coords[i] = dnest4.wrap(coords[i], -0.5*self.width, 0.5*self.width)
         return 0.0
 
     def log_likelihood(self, coords, const=-0.5*np.log(2*np.pi)):

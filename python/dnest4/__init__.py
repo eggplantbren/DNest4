@@ -13,5 +13,5 @@ if not __DNEST4_SETUP__:
     from . import analysis
     from .sampler import DNest4Sampler
     from .deprecated import postprocess
-    from .randh import randh
-
+    from .utils import randh
+    from .utils import wrap
