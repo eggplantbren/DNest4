@@ -12,23 +12,24 @@ from scipy.special import erf
 
 class Model(object):
 
-    def __init__(self, ndim=5, rng=5.0):
+    def __init__(self, ndim=5, width=10.0):
         self.ndim = ndim
-        self.rng = rng
+        self.width = width
 
     def analytic_log_Z(self):
         return (
-            self.ndim * np.log(erf(self.rng/np.sqrt(2))) -
-            self.ndim * np.log(2*self.rng)
+            self.ndim * np.log(erf(0.5*self.width/np.sqrt(2))) -
+            self.ndim * np.log(self.width)
         )
 
     def from_prior(self):
-        return np.random.uniform(-self.rng, self.rng, size=(self.ndim,))
+        return np.random.uniform(-0.5*self.width, self.width,
+                                    size=(self.ndim,))
 
     def perturb(self, coords):
         i = np.random.randint(self.ndim)
-        coords[i] += 2*self.rng*dnest4.randh()
-        coords[i] = (coords[i] + self.rng) % (2*self.rng) - self.rng
+        coords[i] += self.width*dnest4.randh()
+        coords[i] = (coords[i] + 0.5*self.width) % self.width - 0.5*self.width
         return 0.0
 
     def log_likelihood(self, coords, const=-0.5*np.log(2*np.pi)):
