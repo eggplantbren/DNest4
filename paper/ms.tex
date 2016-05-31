@@ -821,6 +821,26 @@ H &= \frac{\exp\left[-\frac{1}{2}(m'/1000)^2\right]}
 \end{align}
 This explains the use of the \code{log\_H} variable.
 
+In the example, the proposal for $\sigma$ is implemented by taking advantage
+of the uniform prior for $\ln(\sigma)$. So $\sigma$ is transformed by
+taking a logarithm, a proposal move is made (that satisfies detailed balance
+with respect to a uniform distribution), and then $\sigma$ is exponentiated
+again. The step for the uniform prior between -10 and +10
+uses the following code:
+\begin{CodeChunk}
+\begin{CodeInput}
+sigma += 20.0*rng.randh();
+DNest4::wrap(sigma, -10.0, 10.0);
+\end{CodeInput}
+\end{CodeChunk}
+The factor of 20 accounts for the prior width, and
+the \code{wrap(double\&, double, double)} function uses the modulo operator
+to construct periodic boundaries. For example, if the perturbation results
+in a value of 10.2, which is outside the prior range, the value is modified to
+$-9.8$.
+The \code{wrap} function has no return value and works by modifying its
+first argument, which is passed by reference.
+
 It is imperative that \code{from_prior} and
 \code{perturb}
 be consistent with each other. One technique
