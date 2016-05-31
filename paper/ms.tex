@@ -942,7 +942,14 @@ and the second line uses a \code{start} template function to construct
 and run the sampler.
 
 \section{Finite Mixture Models with RJObject}
-Formerly a separate project \citep{rjobject}, 
+Mixture models are a useful way of representing realistic prior information
+in Bayesian data analysis. To reduce the amount of effort needed to
+implement mixture models in DNS, \citet{rjobject} implemented
+a template class called \code{RJObject} to handle the MCMC moves
+required. The RJ in \code{RJObject} stands for Reversible Jump \citep{green}, as
+\code{RJObject} implements birth and death moves for mixture
+models with an unknown number of components. An updated version of
+\code{RJObject} is included in \pkg{DNest4}.
 
 If $N$ is the number of components, $\boldsymbol{x}_i$ is the parameters
 of the $i$th component, and $\alpha$ is the hyperparameters, the prior
@@ -1156,6 +1163,9 @@ Dybowski, Richard, et al. Single passage in mouse organs enhances the survival a
 \& Bridges}{2009}]{multinest} Feroz F., Hobson M.~P., Bridges M., 2009, MNRAS, 398, 1601
 
 \bibitem[Giffin and Caticha(2007)]{giffin} Giffin, A., Caticha, A.\ 2007.\ Updating Probabilities with Data and Moments.\ Bayesian Inference and Maximum Entropy Methods in Science and Engineering 954, 74-84. 
+
+\bibitem[\protect\citeauthoryear{Green}{1995}]{green}
+Green, P.~J., 1995, Reversible Jump Markov Chain Monte Carlo Computation and Bayesian Model Determination, Biometrika 82 (4): 711–732.
 
 \bibitem[Handley et al.(2015)]{2015MNRAS.453.4384H} Handley, W.~J., Hobson, M.~P., Lasenby, A.~N.\ 2015.\ POLYCHORD: next-generation nested sampling.\ Monthly Notices of the Royal Astronomical Society 453, 4384-4398. 
 
