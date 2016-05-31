@@ -840,11 +840,20 @@ in a value of 10.2, which is outside the prior range, the value is modified to
 $-9.8$.
 The \code{wrap} function has no return value and works by modifying its
 first argument, which is passed by reference.
+Alternatively, the log-uniform prior, which has density proportional
+to $1/\sigma$, could have been used directly by not using the log/exponential
+trick and adding $\ln\left[(1/\sigma')/(1/\sigma)\right]$ to the
+return value. However, this isn't recommended for a distribution like this
+which covers several orders of magnitude, because the appropriate scale size
+for the proposal is less clear. This is likely to cause inefficient
+sampling.
 
+\subsection{Consistency of prior and proposal}
 It is imperative that \code{from_prior} and
 \code{perturb}
-be consistent with each other. One technique
-for verifying this is to sample the prior for a long time
+be consistent with each other, and that each implements
+the prior distributions that you want to use. One technique
+for testing this is to sample the prior for a long time
 (by setting the maximum number of levels to 1) and inspect
 {\tt sample.txt} to ensure that each parameter is exploring
 the prior correctly.
