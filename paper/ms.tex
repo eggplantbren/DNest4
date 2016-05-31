@@ -951,28 +951,31 @@ required. The RJ in \code{RJObject} stands for Reversible Jump \citep{green}, as
 models with an unknown number of components. An updated version of
 \code{RJObject} is included in \pkg{DNest4}.
 
-If $N$ is the number of components, $\boldsymbol{x}_i$ is the parameters
-of the $i$th component, and $\alpha$ is the hyperparameters, the prior
+If $N$ is the number of components, $x_i$ denotes the vector of parameters
+of the $i$th component, and $\alpha$ is the vector of hyperparameters, the prior
 can be factorised via the product rule, giving
 \begin{align}
-p\left(N, \alpha, \left\{\boldsymbol{x}_i\right\}_{i=1}^N\right)
-&= p(N)p(\alpha | N)p\left(\left\{\boldsymbol{x}_i\right\}_{i=1}^N | \alpha, N\right).
+p\left(N, \alpha, \left\{x_i\right\}_{i=1}^N\right)
+&= p(N)p(\alpha | N)p\left(\left\{x_i\right\}_{i=1}^N | \alpha, N\right).
 \end{align}
 The specific assumptions of \pkg{RJObject} are that this simplifies to
 \begin{align}
-p\left(N, \alpha, \left\{\boldsymbol{x}_i\right\}_{i=1}^N\right)
+p\left(N, \alpha, \left\{x_i\right\}_{i=1}^N\right)
 &= p(N)p(\alpha)
 \prod_{i=1}^N
-p\left(\boldsymbol{x}_i | \alpha\right).
+p\left(x_i | \alpha\right).
 \end{align}
 That is, the prior for the hyperparameters is independent of the number of
-components, and each component is independent given the hyperparameters.
+components, and each component is independent and identically
+distributed given the hyperparameters.
 A probabilistic graphical model (PGM) is shown in Figure~\ref{fig:rjobject_pgm}.
 
 \begin{figure}[ht!]
 \begin{center}
-\includegraphics[width=0.4\textwidth]{figures/rjobject_pgm.pdf}
-\caption{A PGM created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
+\hspace*{-2cm}\includegraphics[width=0.4\textwidth]{figures/rjobject_pgm.pdf}
+\caption{A PGM showing the kind of prior information the \code{RJObject}
+template class expresses.
+Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 \end{center}
 \end{figure}
 
