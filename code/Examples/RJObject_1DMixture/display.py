@@ -1,12 +1,11 @@
 from pylab import *
 import dnest4.classic as dn4
-import os
+
+rc("font", size=18, family="serif", serif="Computer Sans")
+rc("text", usetex=True)
 
 data = loadtxt('galaxies.txt')
 posterior_sample = atleast_2d(dn4.my_loadtxt('posterior_sample.txt'))
-
-os.system("mkdir Frames")
-os.system("rm Frames/*.png")
 
 x = linspace(0., 50.0, 10001)
 def mixture(x, params):
@@ -22,23 +21,18 @@ def mixture(x, params):
 
     return y
 
-total = zeros(x.shape)
 
-for i in range(0, posterior_sample.shape[0]):
-    hold(False)
-    hist(data, 100, alpha=0.5, normed=True)
+hold(False)
+hist(data, 100, alpha=0.3, normed=True)
+
+for i in range(0, min([posterior_sample.shape[0], 100])):
     hold(True)
     y = mixture(x, posterior_sample[i, :])
-    total += y
-    plot(x, y, 'r', linewidth=2)
-    title("{a} / {b}".format(a=(i+1), b=posterior_sample.shape[0]))
-    savefig('Frames/' + '%0.6d'%(i+1) + '.png', bbox_inches='tight')
-    print('Frames/' + '%0.6d'%(i+1) + '.png')
+    plot(x, y, 'k', linewidth=2, alpha=0.2)
 
+xlabel("Velocity (1000 km/s)")
+ylabel("Density")
+savefig("galaxies.pdf", bbox_inches="tight")
 show()
 
-hist(data, 100, alpha=0.5, normed=True)
-hold(True)
-plot(x, total/posterior_sample.shape[0], 'r', linewidth=2)
-show()
 
