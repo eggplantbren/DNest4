@@ -996,6 +996,40 @@ p(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}) &=
 
 
 
+
+The prior for $N$ was
+\begin{align}
+p(N) \propto \frac{1}{N+1}
+\end{align}
+for $N \in \{1, 2, ..., 100\}$.
+
+We used the following priors for the hyperparameters:
+\begin{align}
+a_\mu &\sim \textnormal{Uniform}(-1000, 1000)\\
+\ln b_\mu &\sim \textnormal{Uniform}(-10, 10)\\
+a_{\ln\sigma} &\sim \textnormal{Uniform}(-10, 10)\\
+b_{\ln\sigma} &\sim \textnormal{Uniform}(0, 5)\\
+b_{\ln W} &\sim \textnormal{Uniform}(0, 5)
+\end{align}
+Location parameters $a$, scale parameters $b$.
+
+The priors for the parameters given the hyperparameters were:
+\begin{align}
+\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
+\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
+\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
+\end{align}
+
+A Laplace (or bi-exponential)
+distribution with location parameter $a$ and scale parameter
+$b$ has density
+\begin{align}
+p(x | a, b) &= \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right).
+\end{align}
+
+The normalized weights are $w_k = W_k/\sum w_j$.
+
+
 Some illustrative posterior samples are plotted
 in Figure~\ref{fig:galaxies}.
 
@@ -1005,6 +1039,7 @@ in Figure~\ref{fig:galaxies}.
 \caption{\label{fig:galaxies}}
 \end{center}
 \end{figure}
+
 
 \section{Approximate Bayesian Computation}
 Nested Sampling can be used to solve Approximate Bayesian Computation (ABC)
