@@ -234,8 +234,13 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	H_error = np.std(H_estimates)
 	ESS = np.exp(-np.sum(P_samples*np.log(P_samples+1E-300)))
 
-	print("log(Z) = " + str(logz_estimate) + " +- " + str(logz_error))
-	print("Information = " + str(H_estimate) + " +- " + str(H_error) + " nats.")
+	errorbar1 = ""
+	errorbar2 = ""
+	if numResampleLogX > 1:
+		errorbar1 += " +- " + str(logz_error)
+		errorbar2 += " +- " + str(H_error)
+	print("log(Z) = " + str(logz_estimate) + errorbar1)
+	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
 	print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
