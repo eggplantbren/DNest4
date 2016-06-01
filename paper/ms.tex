@@ -984,6 +984,15 @@ about the Metropolis proposals underlying it. Here, we demonstrate how to
 implement a finite mixture model using \code{RJObject}.
 
 \subsection{An example mixture model}
+Consider a sampling distribution
+for data $D=\{D_1, D_2, ..., D_n\}$ which is a mixture of $N$ gaussians
+with means $\{\mu_j\}$, standard deviations $\{\sigma_j\}$, and
+mixture weights $\{w_j\}$. The likelihood for the $i$th data point is
+\begin{align}
+p(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}) &=
+\sum_{j=1}^N \frac{w_j}{\sigma_j\sqrt{2\pi}}
+\exp\left[-\frac{1}{2\sigma_j^2}\left(D_i - \mu_j\right)^2\right].
+\end{align}
 
 
 \section{Approximate Bayesian Computation}
