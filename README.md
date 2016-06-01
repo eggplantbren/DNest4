@@ -7,7 +7,10 @@ Monte Carlo (MCMC) algorithm for Bayesian Inference and Statistical Mechanics.
 The Paper
 =========
 
-Before you use DNest4, you might want to read the paper describing the
+There is a draft paper describing DNest4
+in the paper/ directory of this repository.
+
+You might also want to read the paper describing the
 Diffusive Nested Sampling algorithm. If you find this software useful in your
 research, please cite this paper.
 
