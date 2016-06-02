@@ -8,6 +8,7 @@ default:
 	rm -f *.o
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
+	make nolib -C Examples/RJObject_1DMixture
 	make nolib -C Examples/RJObject_SineWaves
 	make nolib -C Examples/RJObject_GalaxyField
 	make nolib -C Examples/ABC

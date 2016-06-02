@@ -964,12 +964,16 @@ The specific assumptions of \pkg{RJObject} are that this simplifies to
 p\left(N, \alpha, \left\{x_i\right\}_{i=1}^N\right)
 &= p(N)p(\alpha)
 \prod_{i=1}^N
-p\left(x_i | \alpha\right).
+p\left(x_i | \alpha\right).\label{eqn:rjobject}
 \end{align}
 That is, the prior for the hyperparameters is independent of the number of
 components, and each component is independent and identically
 distributed given the hyperparameters.
-A probabilistic graphical model (PGM) is shown in Figure~\ref{fig:rjobject_pgm}.
+A probabilistic graphical model (PGM) is showing this dependence
+structure is shown in Figure~\ref{fig:rjobject_pgm}. There are no observed
+data nodes here, but if such a structure forms part of a
+Bayesian model, an \code{RJObject} object within your model class
+can encapsulate this part of the model.
 
 \begin{figure}[ht!]
 \begin{center}
@@ -983,6 +987,11 @@ Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 \citet{rjobject} described the motivation for \code{RJObject} and some details
 about the Metropolis proposals underlying it. Here, we demonstrate how to
 implement a finite mixture model using \code{RJObject}.
+This example can be found in the
+\begin{center}
+{\tt code/Examples/RJObject\_1DMixture}
+\end{center}
+directory.
 
 \subsection{An example mixture model}
 Consider a sampling distribution
@@ -994,15 +1003,48 @@ p(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}) &=
 \sum_{j=1}^N \frac{w_j}{\sigma_j\sqrt{2\pi}}
 \exp\left[-\frac{1}{2\sigma_j^2}\left(D_i - \mu_j\right)^2\right].
 \end{align}
+Colloquially, one might say the data were 'drawn from' a mixture of
+$N$ normal distributions, and we want to infer $N$ along with the
+properties of those normal distributions.
 
+Making the connection with Equation~\ref{eqn:rjobject} and
+Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
+the gaussian parameters are $x_j = \{\mu_j, \sigma_j, w_j\}$
+and hyperparameters $\alpha$ may be used to help specify
+a sensible joint prior for the gaussian parameters.
+To implement this model for \pkg{DNest4}, the model
+class only needs to contain an instance of an
+\code{RJObject}, like so:
 
+\begin{CodeChunk}
+\begin{CodeInput}
+class MyModel
+{
+	private:
+        DNest4::RJObject<MyConditionalPrior> gaussians;
+....
+\end{CodeInput}
+\end{CodeChunk}
+where the template argument \code{<MyConditionalPrior>}
+is a class implementing the prior for the hyperparameters
+$\alpha$ and the form of the conditional prior $p(x_i | \alpha)$.
 
-
-The prior for $N$ was
+The specific prior for $N$ was
 \begin{align}
 p(N) \propto \frac{1}{N+1}
 \end{align}
 for $N \in \{1, 2, ..., 100\}$.
+For the conditional prior of the gaussian parameters,
+we used Laplace (biexponential)
+distributions\footnote{A Laplace
+distribution with location parameter $a$ and scale parameter
+$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}
+
+\begin{align}
+\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
+\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
+\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
+\end{align}
 
 We used the following priors for the hyperparameters:
 \begin{align}
@@ -1014,19 +1056,9 @@ b_{\ln W} &\sim \textnormal{Uniform}(0, 5)
 \end{align}
 Location parameters $a$, scale parameters $b$.
 
-The priors for the parameters given the hyperparameters were:
-\begin{align}
-\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
-\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
-\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
-\end{align}
 
-A Laplace (or bi-exponential)
-distribution with location parameter $a$ and scale parameter
-$b$ has density
-\begin{align}
-p(x | a, b) &= \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right).
-\end{align}
+
+
 
 The normalized weights are $w_k = W_k/\sum w_j$.
 
@@ -1035,10 +1067,18 @@ Some illustrative posterior samples are plotted
 in Figure~\ref{fig:galaxies}.
 
 \begin{figure}
-\begin{center}
-\includegraphics[width=0.6\textwidth]{figures/galaxies.pdf}
-\caption{\label{fig:galaxies}}
-\end{center}
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/galaxies.pdf}
+\caption{The `galaxy' data, with some illustrative fits drawn
+from the posterior distribution.\label{fig:galaxies}}
+\end{minipage} \hspace{0.05\textwidth}
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/galaxies_N.pdf}
+\caption{The posterior distribution for $N$ given the
+galaxy data.\label{fig:galaxies_N}}
+\end{minipage}
 \end{figure}
 
 
@@ -1080,7 +1120,7 @@ and rejecting samples for which $D \neq D_{\rm observed}$, so that the
 samples represent
 \begin{align}
 p(\theta, D | D = D_{\rm observed}, M) &\propto p(\theta | M)p(D | \theta, M)
-\mathds{1}\left[D = D_{\rm observed}\right].
+\mathds{1}\left[D = D_{\rm observed}\right].\label{eqn:abc_posterior}
 \end{align}
 The marginal distribution for $\theta$ is also the conditional distribution
 $p(\theta | D = D_{\rm observed}, M)$, that is,
@@ -1093,15 +1133,18 @@ generating a dataset that matches the observed one is extremely low.
 To work around this, we replace the proposition
 $D = D_{\rm observed}$ with a logically
 weaker one (i.e. one that is implied by $D = D_{\rm observed}$ but does not
-imply it). This is usually done by defining a few {\em summary statistics}
-$s_1(D), s_2(D), ..., s_n(D)$, which hopefully capture most of the relevant
-information in the data.
-Then, a discrepancy function
-$\rho$ is defined, measuring how different a simulated dataset $D$ is from
-the real one $D_{\rm observed}$, in terms of the summary statistics:
+imply it).
+
+The weaker proposition is defined using
+a discrepancy function
+$\rho$, which measures how different a simulated dataset $D$ is from
+the real one $D_{\rm observed}$:
 \begin{align}
-\rho\left(\{s_1(D), ..., s_n(D)\}; \{s_1(D_{\rm observed}), ..., s_n(D_{\rm observed})\}\right)
+\rho\left(D; D_{\rm observed}\right).
 \end{align}
+The discrepancy function should take the value zero when
+$D = D_{\rm observed}$.
+
 The analysis then proceeds by Monte Carlo sampling the
 joint posterior for $\theta$ and $D$
 conditional on the logically weaker proposition
@@ -1110,21 +1153,35 @@ conditional on the logically weaker proposition
 \end{align}
 where $\epsilon$ is some small number. With this proposition, the
 rejection rate will still
-typically be very high, but lower than with $D = D_{\rm observed}$. 
+typically be very high, but lower than with $D = D_{\rm observed}$.
+Typically, $\rho$ is defined by introducing a few {\em summary statistics}
+$s_1(D), s_2(D), ..., s_n(D)$, which hopefully capture most of the relevant
+information in the data, and then computing the Euclidian distance
+between the summary statistics of $D$ and $D_{\rm observed}$.
+That is,
+\begin{align}
+\rho(D; D_{\rm observed}) &=
+\sqrt{\sum_i \left[s_i(D) - s_i(D_{\rm observed})\right]^2}.
+\end{align}
 
 The main challenges associated with ABC are:
 \begin{enumerate}[(i)]
-\item The choice of summary statistics $s_1(D), ..., s_n(D)$
-\item The choice of distance function $\rho()$
+\item The choice of discrepancy function $\rho(D; D_{\rm observed})$, which
+may involve a choice of summary statistics,
 \item How to choose the value of $\epsilon$, or how to change it as a run
-progresses
+progresses,
 \item How to make algorithms more efficient than rejection sampling.
 \end{enumerate}
-Challenges (i) and (ii) are Bayesian in nature, i.e. they relate to the very
+Challenge (i) is Bayesian in nature, i.e. it relates to the very
 definition of the posterior distribution itself.
-On the other hand, challenges 3 and 4 are about the computational
+On the other hand, challenges (ii) and (iii) are about the computational
 implementation. Most ABC analyses are done using Sequential Monte Carlo
-\citep[SMC][]{delmoral}.
+\citep[SMC; ][]{delmoral}, another family of algorithms closely related
+to Nested Sampling and annealing in the sense that they work with
+sequences of probability distributions.
+
+NS can be used for ABC by noting that Equation~\ref{eqn:abc_posterior}
+is of the same form as a constrained prior.
 
 
 %\begin{table}[ht!]
@@ -1194,7 +1251,7 @@ implementation. Most ABC analyses are done using Sequential Monte Carlo
 %proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
 %re-generated from their iid uniform prior}.
 
-\subsection{Python Bindings}\label{sec:python_bindings}
+\section{Python Bindings}\label{sec:python_bindings}
 
 {\bf To be written by Dan FM}
 
