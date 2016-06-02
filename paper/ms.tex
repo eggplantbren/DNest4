@@ -1033,6 +1033,17 @@ The specific prior for $N$ was
 p(N) \propto \frac{1}{N+1}
 \end{align}
 for $N \in \{1, 2, ..., 100\}$.
+For the conditional prior of the gaussian parameters,
+we used Laplace (biexponential)
+distributions\footnote{A Laplace
+distribution with location parameter $a$ and scale parameter
+$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}
+
+\begin{align}
+\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
+\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
+\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
+\end{align}
 
 We used the following priors for the hyperparameters:
 \begin{align}
@@ -1044,19 +1055,9 @@ b_{\ln W} &\sim \textnormal{Uniform}(0, 5)
 \end{align}
 Location parameters $a$, scale parameters $b$.
 
-The priors for the parameters given the hyperparameters were:
-\begin{align}
-\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
-\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
-\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
-\end{align}
 
-A Laplace (or bi-exponential)
-distribution with location parameter $a$ and scale parameter
-$b$ has density
-\begin{align}
-p(x | a, b) &= \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right).
-\end{align}
+
+
 
 The normalized weights are $w_k = W_k/\sum w_j$.
 
@@ -1065,10 +1066,18 @@ Some illustrative posterior samples are plotted
 in Figure~\ref{fig:galaxies}.
 
 \begin{figure}
-\begin{center}
-\includegraphics[width=0.6\textwidth]{figures/galaxies.pdf}
-\caption{\label{fig:galaxies}}
-\end{center}
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/galaxies.pdf}
+\caption{The `galaxy' data, with some illustrative fits drawn
+from the posterior distribution.\label{fig:galaxies}}
+\end{minipage} \hspace{0.05\textwidth}
+\begin{minipage}{0.45\textwidth}
+\centering
+\includegraphics[width=0.95\textwidth]{figures/galaxies_N.pdf}
+\caption{The posterior distribution for $N$ given the
+galaxy data.\label{fig:galaxies_N}}
+\end{minipage}
 \end{figure}
 
 

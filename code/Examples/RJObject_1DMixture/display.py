@@ -38,7 +38,7 @@ show()
 width = 0.3
 bins = arange(0, 101) - 0.5*width
 hist(posterior_sample[:,7], bins, width=width, normed=True, alpha=0.3)
-xlim([0, 10])
+xlim([0, 15])
 ylim([0, 0.5])
 xlabel("Number of gaussians, $N$")
 ylabel("Posterior Probability")
