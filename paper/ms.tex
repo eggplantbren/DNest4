@@ -963,12 +963,16 @@ The specific assumptions of \pkg{RJObject} are that this simplifies to
 p\left(N, \alpha, \left\{x_i\right\}_{i=1}^N\right)
 &= p(N)p(\alpha)
 \prod_{i=1}^N
-p\left(x_i | \alpha\right).
+p\left(x_i | \alpha\right).\label{eqn:rjobject}
 \end{align}
 That is, the prior for the hyperparameters is independent of the number of
 components, and each component is independent and identically
 distributed given the hyperparameters.
-A probabilistic graphical model (PGM) is shown in Figure~\ref{fig:rjobject_pgm}.
+A probabilistic graphical model (PGM) is showing this dependence
+structure is shown in Figure~\ref{fig:rjobject_pgm}. There are no observed
+data nodes here, but if such a structure forms part of a
+Bayesian model, an \code{RJObject} object within your model class
+can encapsulate this part of the model.
 
 \begin{figure}[ht!]
 \begin{center}
@@ -982,6 +986,11 @@ Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 \citet{rjobject} described the motivation for \code{RJObject} and some details
 about the Metropolis proposals underlying it. Here, we demonstrate how to
 implement a finite mixture model using \code{RJObject}.
+This example can be found in the
+\begin{center}
+{\tt code/Examples/RJObject\_1DMixture}
+\end{center}
+directory.
 
 \subsection{An example mixture model}
 Consider a sampling distribution
@@ -993,11 +1002,35 @@ p(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}) &=
 \sum_{j=1}^N \frac{w_j}{\sigma_j\sqrt{2\pi}}
 \exp\left[-\frac{1}{2\sigma_j^2}\left(D_i - \mu_j\right)^2\right].
 \end{align}
+Colloquially, one might say the data were 'drawn from' a mixture of
+$N$ normal distributions, and we want to infer $N$ along with the
+properties of those normal distributions.
+
+Making the connection with Equation~\ref{eqn:rjobject} and
+Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
+the gaussian parameters are $x_j = \{\mu_j, \sigma_j, w_j\}$
+and hyperparameters $\alpha$ may be used to help specify
+a sensible joint prior for the gaussian parameters.
+To implement this model for \pkg{DNest4}, the model
+class only needs to contain an instance of an
+\code{RJObject}, like so:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+class MyModel
+{
+	private:
+        DNest4::RJObject<MyConditionalPrior> gaussians;
+....
+\end{CodeInput}
+\end{CodeChunk}
 
 
 
 
-The prior for $N$ was
+
+
+The specific prior for $N$ was
 \begin{align}
 p(N) \propto \frac{1}{N+1}
 \end{align}
@@ -1193,7 +1226,7 @@ implementation. Most ABC analyses are done using Sequential Monte Carlo
 %proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
 %re-generated from their iid uniform prior}.
 
-\subsection{Python Bindings}\label{sec:python_bindings}
+\section{Python Bindings}\label{sec:python_bindings}
 
 {\bf To be written by Dan FM}
 
