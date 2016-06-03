@@ -1192,7 +1192,11 @@ to Nested Sampling and annealing in the sense that they work with
 sequences of probability distributions.
 
 NS can be used for ABC by noting that Equation~\ref{eqn:abc_posterior}
-is of the same form as a constrained prior.
+is of the same form as a constrained prior, only instead of being the prior
+for the parameters $p(\theta | M)$ defined on the parameter space, it is
+the {\em joint prior} for the parameters and the data,
+$p(\theta, D |M) = p(\theta | M)p(D | \theta, M)$, defined on the product
+space of possible parameters and datasets.
 
 
 %\begin{table}[ht!]
