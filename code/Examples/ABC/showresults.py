@@ -1,32 +1,86 @@
-# For ABC, the showresults needs to do different things...
 import copy
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
-from dnest4.classic import logsumexp, logdiffexp
 
-def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None):
+def logsumexp(values):
+	biggest = np.max(values)
+	x = values - biggest
+	result = np.log(np.sum(np.exp(x))) + biggest
+	return result
+
+def logdiffexp(x1, x2):
+	biggest = x1
+	xx1 = x1 - biggest
+	xx2 = x2 - biggest
+	result = np.log(np.exp(xx1) - np.exp(xx2)) + biggest
+	return result
+
+def my_loadtxt(filename, single_precision=False):
+    if single_precision:
+        return pd.read_csv(filename, header=None, sep=' ',\
+                           comment="#", dtype=np.float32)\
+                                    .dropna(axis=1).values
+    return pd.read_csv(filename, header=None, sep=' ', comment="#")\
+                                                 .dropna(axis=1).values
+
+def loadtxt_rows(filename, rows, single_precision=False):
+    """
+    Load only certain rows
+    """
+    # Open the file
+    f = open(filename, "r")
+
+    # Storage
+    results = {}
+
+    # Row number
+    i = 0
+
+    # Number of columns
+    ncol = None
+
+    while(True):
+        # Read the line and split by whitespace
+        line = f.readline()
+        cells = line.split()
+
+        # Quit when you see a different number of columns
+        if ncol is not None and len(cells) != ncol:
+            break
+
+        # Non-comment lines
+        if cells[0] != "#":
+            # If it's the first one, get the number of columns
+            if ncol is None:
+                ncol = len(cells)
+
+            # Otherwise, include in results
+            if i in rows:
+                if single_precision:
+                    results[i] = np.array([float(cell) for cell in cells],\
+                                                              dtype="float32")
+                else:
+                    results[i] = np.array([float(cell) for cell in cells])
+            i += 1
+
+    results["ncol"] = ncol
+    return results
+
+
+def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
 	if len(loaded) == 0:
-		levels_orig = np.atleast_2d(np.loadtxt("levels.txt"))
-		sample_info = np.atleast_2d(np.loadtxt("sample_info.txt"))
-		sample = np.atleast_2d(np.loadtxt("sample.txt"))
-		#if(sample.shape[0] == 1):
-		#	sample = sample.T
+		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
+		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
 	else:
-		levels_orig, sample_info, sample = loaded[0], loaded[1], loaded[2]
+		levels_orig, sample_info = loaded[0], loaded[1]
 
 	# Remove regularisation from levels_orig if we asked for it
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample = sample[int(cut*sample.shape[0]):, :]
 	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
-
-	if sample.shape[0] != sample_info.shape[0]:
-		print('# Size mismatch. Truncating...')
-		lowest = np.min([sample.shape[0], sample_info.shape[0]])
-		sample = sample[0:lowest, :]
-		sample_info = sample_info[0:lowest, :]
 
 	if plot:
 		if numResampleLogX > 1:
@@ -63,7 +117,7 @@ def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
-	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample.shape[0])] # logl, tiebreaker, id
+	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample_info.shape[0])] # logl, tiebreaker, id
 	logx_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logp_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logP_samples = np.zeros((sample_info.shape[0], numResampleLogX))
@@ -73,7 +127,7 @@ def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
 
 	# Find sandwiching level for each sample
 	sandwich = sample_info[:,0].copy().astype('int')
-	for i in range(0, sample.shape[0]):
+	for i in range(0, sample_info.shape[0]):
 		while sandwich[i] < levels_orig.shape[0]-1 and logl_samples[i] > logl_levels[sandwich[i] + 1]:
 			sandwich[i] += 1
 
@@ -119,7 +173,7 @@ def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
 					left = -1E300
 				else:
 					left = levels[i+1][0]
-				
+
 				if j != 0:
 					right = logx_samples_thisLevel[j-1]
 				else:
@@ -187,25 +241,44 @@ def postprocess(temperature=1E300, numResampleLogX=1, plot=True, loaded=[], \
 	H_error = np.std(H_estimates)
 	ESS = np.exp(-np.sum(P_samples*np.log(P_samples+1E-300)))
 
-	print("log(Z) = " + str(logz_estimate) + " +- " + str(logz_error))
-	print("Information = " + str(H_estimate) + " +- " + str(H_error) + " nats.")
+	errorbar1 = ""
+	errorbar2 = ""
+	if numResampleLogX > 1:
+		errorbar1 += " +- " + str(logz_error)
+		errorbar2 += " +- " + str(H_error)
+	print("log(Z) = " + str(logz_estimate) + errorbar1)
+	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
 	print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
-	posterior_sample = np.zeros((N, sample.shape[1]))
 	w = P_samples
 	w = w/np.max(w)
-	if save:
-		np.savetxt('weights.txt', w) # Save weights
+	rows = np.empty(N, dtype="int64")
 	for i in range(0, N):
 		while True:
-			which = np.random.randint(sample.shape[0])
+			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		posterior_sample[i,:] = sample[which,:]
+		rows[i] = which
+
+	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
+	posterior_sample = None
+	if single_precision:
+		posterior_sample = np.empty((N, sample["ncol"]), dtype="float32")
+	else:
+		posterior_sample = np.empty((N, sample["ncol"]))
+
+	for i in range(0, N):
+		posterior_sample[i, :] = sample[rows[i]]
+
+
 	if save:
-		np.savetxt("posterior_sample.txt", posterior_sample)
+		np.savetxt('weights.txt', w)
+		if single_precision:
+			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e")
+		else:
+			np.savetxt("posterior_sample.txt", posterior_sample)
 
 	if plot:
 		if numResampleLogX > 1:
