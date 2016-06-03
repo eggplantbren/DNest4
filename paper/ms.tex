@@ -988,10 +988,9 @@ Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 about the Metropolis proposals underlying it. Here, we demonstrate how to
 implement a finite mixture model using \code{RJObject}.
 This example can be found in the
-\begin{center}
 {\tt code/Examples/RJObject\_1DMixture}
-\end{center}
-directory.
+directory. The ``SineWave'' and ``GalaxyField'' models
+from \citet{rjobject} are also included in the \pkg{DNest4} repository.
 
 \subsection{An example mixture model}
 Consider a sampling distribution
@@ -1009,7 +1008,7 @@ properties of those normal distributions.
 
 Making the connection with Equation~\ref{eqn:rjobject} and
 Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
-the gaussian parameters are $x_j = \{\mu_j, \sigma_j, w_j\}$
+the gaussian parameters are $\{x_j\} = \{(\mu_j, \sigma_j, w_j)\}$,
 and hyperparameters $\alpha$ may be used to help specify
 a sensible joint prior for the gaussian parameters.
 To implement this model for \pkg{DNest4}, the model
@@ -1020,7 +1019,7 @@ class only needs to contain an instance of an
 \begin{CodeInput}
 class MyModel
 {
-	private:
+    private:
         DNest4::RJObject<MyConditionalPrior> gaussians;
 ....
 \end{CodeInput}
@@ -1032,8 +1031,8 @@ $\alpha$ and the form of the conditional prior $p(x_i | \alpha)$.
 To help with implementing the member functions for the \code{MyModel} class,
 the \code{gaussians} object can be generated from its prior, proposed,
 and printed trivially as follows:
-\begin{CodeInput}
 \begin{CodeChunk}
+\begin{CodeInput}
     // Generate the components from the prior
     gaussians.from_prior(rng);
 
@@ -1042,9 +1041,17 @@ and printed trivially as follows:
 
     // Print to output stream 'out'
     gaussians.print(out);
-\end{CodeChunk}
 \end{CodeInput}
+\end{CodeChunk}
 
+The \code{RJObject} constructor definition is:
+\begin{CodeChunk}
+\begin{CodeInput}
+RJObject(int num_dimensions, int max_num_components, bool fixed,
+         const ConditionalPrior& conditional_prior,
+         PriorType prior_type=PriorType::uniform);
+\end{CodeInput}
+\end{CodeChunk}
 
 The specific prior for $N$ was
 \begin{align}

@@ -23,12 +23,15 @@ def mixture(x, params):
 
 
 hold(False)
-hist(data, 100, alpha=0.3, normed=True)
+hist(data, 100, alpha=0.2, normed=True)
+y_tot = zeros(len(x))
 
-for i in range(0, min([posterior_sample.shape[0], 100])):
-    hold(True)
+for i in range(0, posterior_sample.shape[0]):
     y = mixture(x, posterior_sample[i, :])
-    plot(x, y, 'k', linewidth=2, alpha=0.2)
+    y_tot += y
+
+hold(True)
+plot(x, y_tot/posterior_sample.shape[0], 'k', linewidth=2)
 
 xlabel("Velocity (1000 km/s)")
 ylabel("Density")
