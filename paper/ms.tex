@@ -1121,6 +1121,7 @@ solution.
 
 
 \section{Approximate Bayesian Computation}
+\subsection{Background}
 Nested Sampling can be used to solve Approximate Bayesian Computation (ABC)
 problems elegantly and efficiently.
 Also known (misleadingly) as likelihood-free inference,
@@ -1172,7 +1173,6 @@ To work around this, we replace the proposition
 $D = D_{\rm observed}$ with a logically
 weaker one (i.e. one that is implied by $D = D_{\rm observed}$ but does not
 imply it).
-
 The weaker proposition is defined using
 a discrepancy function
 $\rho$, which measures how different a simulated dataset $D$ is from
@@ -1180,9 +1180,8 @@ the real one $D_{\rm observed}$:
 \begin{align}
 \rho\left(D; D_{\rm observed}\right).
 \end{align}
-The discrepancy function should take the value zero when
+The discrepancy function should take a minimum value of zero when
 $D = D_{\rm observed}$.
-
 The analysis then proceeds by Monte Carlo sampling the
 joint posterior for $\theta$ and $D$
 conditional on the logically weaker proposition
@@ -1218,13 +1217,46 @@ implementation. Most ABC analyses are done using Sequential Monte Carlo
 to Nested Sampling and annealing in the sense that they work with
 sequences of probability distributions.
 
+\subsection{ABC with Nested Sampling}
 NS can be used for ABC by noting that Equation~\ref{eqn:abc_posterior}
 is of the same form as a constrained prior, only instead of being the prior
 for the parameters $p(\theta | M)$ defined on the parameter space, it is
 the {\em joint prior} for the parameters and the data,
 $p(\theta, D |M) = p(\theta | M)p(D | \theta, M)$, defined on the product
-space of possible parameters and datasets.
+space of possible parameters and datasets. Therefore, to implement
+ABC in \pkg{DNest4}, you implement a model class
+whose \code{from\_prior} member function generates parameters {\em and simulated
+data} from the joint prior, and whose \code{perturb} member function
+proposes changes to the parameters and/or the simulated data, in a
+manner consistent with the joint prior. The \code{log\_likelihood} function
+of the class, instead of actually evaluating the log likelihood, should
+evaluate $-\rho(D; D_{\rm observed})$. Then, running the sampler
+will create levels which systematically decrease $\rho$. The samples from
+a particular level then represent the ABC posterior defined in
+Equation~\ref{eqn:abc_posterior} with $\epsilon$ corresponding to minus
+the ``log likelihood'' of the level.
+A single \pkg{DNest4} run allows you to test sensitivity
+to the value of $\epsilon$ using a single run.
 
+\subsection{ABC Example}
+A simple ABC example is included in the directory
+{\tt code/Examples/ABC}. The example tries to infer the mean
+$\mu$ and standard deviation $\sigma$ of a normal distribution
+from a set of samples. The sampling distribution is
+\begin{align}
+x_i &\sim \textnormal{Normal}(\mu, \sigma^2).
+\end{align}
+and the prior is
+\begin{align}
+\mu &\sim \textnormal{Uniform}(-10, 10)\\
+\ln\sigma &= \textnormal{Uniform}(-10, 10).
+\end{align}
+However, instead of conditioning on the full dataset $\{x_i\}$, the example
+uses the minimum and maximum values in the data,
+$\min(\{x_i\})$ and $\max(\{x_i\})$, as summary statistics\footnote{This is
+not a serious application of ABC, since the likelihood function can easily
+be evaluated. It is included to demonstrate the principle of using
+Nested Sampling as an ABC method.}.
 
 %\begin{table}[ht!]
 %\centering
@@ -1333,7 +1365,8 @@ Dybowski, Richard, et al. Single passage in mouse organs enhances the survival a
 \bibitem[\protect\citeauthoryear{Feroz, Hobson,
 \& Bridges}{2009}]{multinest} Feroz F., Hobson M.~P., Bridges M., 2009, MNRAS, 398, 1601
 
-\bibitem[Giffin and Caticha(2007)]{giffin} Giffin, A., Caticha, A.\ 2007.\ Updating Probabilities with Data and Moments.\ Bayesian Inference and Maximum Entropy Methods in Science and Engineering 954, 74-84. 
+\bibitem[Giffin and Caticha(2007)]{giffin} Giffin, A., Caticha, A.\ 2007.\ Updating Probabilities with Data and Moments.\ Bayesian Inference and Maximum Entropy
+Methods in Science and Engineering 954, 74-84. 
 
 \bibitem[\protect\citeauthoryear{Green}{1995}]{green}
 Green, P.~J., 1995, Reversible Jump Markov Chain Monte Carlo Computation and Bayesian Model Determination, Biometrika 82 (4): 711–732.
