@@ -1029,6 +1029,23 @@ where the template argument \code{<MyConditionalPrior>}
 is a class implementing the prior for the hyperparameters
 $\alpha$ and the form of the conditional prior $p(x_i | \alpha)$.
 
+To help with implementing the member functions for the \code{MyModel} class,
+the \code{gaussians} object can be generated from its prior, proposed,
+and printed trivially as follows:
+\begin{CodeInput}
+\begin{CodeChunk}
+    // Generate the components from the prior
+    gaussians.from_prior(rng);
+
+    // Do a Metropolis proposal
+    double logH = gaussians.perturb(rng);
+
+    // Print to output stream 'out'
+    gaussians.print(out);
+\end{CodeChunk}
+\end{CodeInput}
+
+
 The specific prior for $N$ was
 \begin{align}
 p(N) \propto \frac{1}{N+1}
@@ -1038,7 +1055,10 @@ For the conditional prior of the gaussian parameters,
 we used Laplace (biexponential)
 distributions\footnote{A Laplace
 distribution with location parameter $a$ and scale parameter
-$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}
+$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}.
+Normal distributions would be more convenional, but the analytic cumulative
+distribution function (CDF) of the Laplace distribution makes it easier to
+implement.
 
 \begin{align}
 \mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
