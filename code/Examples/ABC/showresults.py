@@ -2,71 +2,7 @@ import copy
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
-def logsumexp(values):
-	biggest = np.max(values)
-	x = values - biggest
-	result = np.log(np.sum(np.exp(x))) + biggest
-	return result
-
-def logdiffexp(x1, x2):
-	biggest = x1
-	xx1 = x1 - biggest
-	xx2 = x2 - biggest
-	result = np.log(np.exp(xx1) - np.exp(xx2)) + biggest
-	return result
-
-def my_loadtxt(filename, single_precision=False):
-    if single_precision:
-        return pd.read_csv(filename, header=None, sep=' ',\
-                           comment="#", dtype=np.float32)\
-                                    .dropna(axis=1).values
-    return pd.read_csv(filename, header=None, sep=' ', comment="#")\
-                                                 .dropna(axis=1).values
-
-def loadtxt_rows(filename, rows, single_precision=False):
-    """
-    Load only certain rows
-    """
-    # Open the file
-    f = open(filename, "r")
-
-    # Storage
-    results = {}
-
-    # Row number
-    i = 0
-
-    # Number of columns
-    ncol = None
-
-    while(True):
-        # Read the line and split by whitespace
-        line = f.readline()
-        cells = line.split()
-
-        # Quit when you see a different number of columns
-        if ncol is not None and len(cells) != ncol:
-            break
-
-        # Non-comment lines
-        if cells[0] != "#":
-            # If it's the first one, get the number of columns
-            if ncol is None:
-                ncol = len(cells)
-
-            # Otherwise, include in results
-            if i in rows:
-                if single_precision:
-                    results[i] = np.array([float(cell) for cell in cells],\
-                                                              dtype="float32")
-                else:
-                    results[i] = np.array([float(cell) for cell in cells])
-            i += 1
-
-    results["ncol"] = ncol
-    return results
-
+from dnest4.classic import logsumexp, logdiffexp, my_loadtxt, loadtxt_rows
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
@@ -289,4 +225,20 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 
 postprocess()
+
+plt.rc("font", size=18, family="serif", serif="Computer Sans")
+plt.rc("text", usetex=True)
+
+posterior_sample = np.atleast_2d(my_loadtxt("posterior_sample.txt"))
+plt.plot(posterior_sample[:,0], np.exp(posterior_sample[:,1]),\
+                    "ko", alpha=0.1, markersize=5, label="Posterior samples")
+plt.hold(True)
+plt.plot(0, 1, "r*", markersize=20, label="Truth", alpha=0.5)
+plt.xlabel("$\\mu$")
+plt.ylabel("$\\sigma$")
+plt.legend(loc="upper left", numpoints=1)
+plt.title("ABC Results")
+plt.axis([-1.5, 1.5, 0.5, 1.5])
+plt.savefig("abc_results.pdf", bbox_inches="tight")
+plt.show()
 
