@@ -1,7 +1,7 @@
-PYTHON = python #/home/$(USER)/local/anaconda3/bin/python
+#PYTHON = python #/home/$(USER)/local/anaconda3/bin/python
 
 default:
-	$(PYTHON) joint.py
+#	$(PYTHON) joint.py
 	pdflatex ms
 	pdflatex ms
 	pdflatex ms
