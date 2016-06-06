@@ -87,7 +87,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.ion()
 
 		plt.figure(1)
-		plt.plot(sample_info[:,0])
+		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
 		plt.ylabel("Level")
 		if numResampleLogX > 1:
@@ -95,19 +95,19 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 		plt.figure(2)
 		plt.subplot(2,1,1)
-		plt.plot(np.diff(levels_orig[:,0]))
+		plt.plot(np.diff(levels_orig[:,0]), "k")
 		plt.ylabel("Compression")
 		plt.xlabel("Level")
 		xlim = plt.gca().get_xlim()
-		plt.axhline(-1., color='r')
-		plt.axhline(-np.log(10.), color='g')
+		plt.axhline(-1., color='g')
+		plt.axhline(-np.log(10.), color='g', linestyle="--")
 		plt.ylim(ymax=0.05)
 		if numResampleLogX > 1:
 			plt.draw()
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
-		plt.plot(levels_orig[good,3]/levels_orig[good,4])
+		plt.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
 		plt.xlim(xlim)
 		plt.ylim([0., 1.])
 		plt.xlabel("Level")
@@ -195,9 +195,9 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 			plt.subplot(2,1,1)
 			plt.hold(False)
-			plt.plot(logx_samples[:,z], sample_info[:,1], 'b.', label='Samples')
+			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
 			plt.hold(True)
-			plt.plot(levels[1:,0], levels[1:,1], 'r.', label='Levels')
+			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
 			plt.legend(numpoints=1, loc='lower left')
 			plt.ylabel('log(L)')
 			plt.title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
@@ -219,7 +219,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		if plot:
 			plt.subplot(2,1,2)
 			plt.hold(False)
-			plt.plot(logx_samples[:,z], P_samples[:,z], 'b.')
+			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
@@ -299,7 +299,7 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.ion()
 
 		plt.figure(1)
-		plt.plot(sample_info[:,0])
+		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
 		plt.ylabel("Level")
 		if numResampleLogX > 1:
@@ -307,19 +307,19 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 		plt.figure(2)
 		plt.subplot(2,1,1)
-		plt.plot(np.diff(levels_orig[:,0]))
+		plt.plot(np.diff(levels_orig[:,0]), "k")
 		plt.ylabel("Compression")
 		plt.xlabel("Level")
 		xlim = plt.gca().get_xlim()
-		plt.axhline(-1., color='r')
-		plt.axhline(-np.log(10.), color='g')
+		plt.axhline(-1., color='g')
+		plt.axhline(-np.log(10.), color='g', linestyle="--")
 		plt.ylim(ymax=0.05)
 		if numResampleLogX > 1:
 			plt.draw()
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
-		plt.plot(levels_orig[good,3]/levels_orig[good,4])
+		plt.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
 		plt.xlim(xlim)
 		plt.ylim([0., 1.])
 		plt.xlabel("Level")
@@ -414,9 +414,9 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 			plt.subplot(2,1,1)
 			plt.hold(False)
-			plt.plot(logx_samples[:,z], sample_info[:,1], 'b.', label='Samples')
+			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
 			plt.hold(True)
-			plt.plot(levels[1:,0], levels[1:,1], 'r.', label='Levels')
+			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
 			plt.legend(numpoints=1, loc='lower left')
 			plt.ylabel('log(L)')
 			plt.title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
@@ -438,7 +438,7 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		if plot:
 			plt.subplot(2,1,2)
 			plt.hold(False)
-			plt.plot(logx_samples[:,z], P_samples[:,z], 'b.')
+			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
@@ -527,9 +527,9 @@ def levels_plot():
 	"""
 	levels = my_loadtxt('levels.txt')
 
-	plt.plot(np.log10(np.diff(levels[:,1])))
+	plt.plot(np.log10(np.diff(levels[:,1])), "k.")
 	plt.ylim([-1, 4])
-	plt.axhline(0., color='k', linewidth=2)
+	plt.axhline(0., color='g', linewidth=2)
 	plt.axhline(np.log10(np.log(10.)), color='g')
 	plt.axhline(np.log10(0.8), color='r', linestyle='--')
 	plt.xlabel('Level')
