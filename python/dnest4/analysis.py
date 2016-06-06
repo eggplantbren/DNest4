@@ -277,8 +277,8 @@ def make_compression_plot(backend):
 
     ax = axes[0]
     ax.plot(np.diff(levels["log_X"]), color="k")
-    ax.axhline(-1., color="r")
-    ax.axhline(-np.log(10.), color="g")
+    ax.axhline(-1., color="g")
+    ax.axhline(-np.log(10.), color="g", linestyle="--")
     ax.set_ylim(ymax=0.05)
     ax.set_ylabel("Compression")
 
@@ -286,9 +286,10 @@ def make_compression_plot(backend):
     m = levels["tries"] > 0
     ax.plot(np.arange(len(levels))[m],
             levels[m]["accepts"]/levels[m]["tries"],
-            "ok")
+            "ko-")
     ax.set_ylabel("MH Acceptance")
     ax.set_xlabel("level")
+    ax.set_ylim([0.0, 1.0])
 
     return fig
 
@@ -303,15 +304,26 @@ def make_log_X_log_L_plot(backend):
 
     ax = axes[0]
     ax.plot(sample_log_X.flatten(), sample_info["log_likelihood"].flatten(),
-            "b.", label="Samples")
-    ax.plot(levels["log_X"][1:], levels["log_likelihood"][1:], "r.",
+            "k.", label="Samples")
+    ax.plot(levels["log_X"][1:], levels["log_likelihood"][1:], "g.",
             label="Levels")
     ax.legend(numpoints=1, loc="lower left")
     ax.set_ylabel("log(L)")
     ax.set_title("log(Z) = {0}".format(backend.stats["log_Z"]))
 
+    # Use all plotted logl values to set ylim
+    combined_logl = np.hstack([sample_info["log_likelihood"],\
+                                levels["log_likelihood"][1:]])
+    combined_logl = np.sort(combined_logl)
+    lower = combined_logl[int(0.1*combined_logl.size)]
+    upper = combined_logl[-1]
+    diff = upper - lower
+    lower -= 0.05*diff
+    upper += 0.05*diff
+    ax.set_ylim([lower, upper])
+
     ax = axes[1]
-    ax.plot(sample_log_X, weights, ".b")
+    ax.plot(sample_log_X, weights, "k.")
     ax.set_ylabel("posterior weight")
     ax.set_xlabel("log(X)")
 
