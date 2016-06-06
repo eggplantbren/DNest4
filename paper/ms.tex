@@ -1011,6 +1011,12 @@ Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
 the gaussian parameters are $\{x_j\} = \{(\mu_j, \sigma_j, w_j)\}$,
 and hyperparameters $\alpha$ may be used to help specify
 a sensible joint prior for the gaussian parameters.
+
+The mixture weights $\{w_j\}$ must obey a normalization condition
+$\sum_j w_j = 1$. The easiest way of implementing this is to use
+un-normalized weights $\{W_j\}$ which do not obey
+such a condition and then normalise them by dividing by their sum.
+
 To implement this model for \pkg{DNest4}, the model
 class only needs to contain an instance of an
 \code{RJObject}, like so:
