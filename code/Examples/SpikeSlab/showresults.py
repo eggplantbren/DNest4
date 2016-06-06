@@ -1,3 +1,3 @@
-import dnest4
-dnest4.postprocess()
+import dnest4.classic as dn4
+dn4.postprocess()
 
