@@ -55,8 +55,8 @@ class RJObject
 		std::vector< std::vector<double> > removed;
 
 		// Helper methods -- these do one thing at a time
-		double perturb_num_components(RNG& rng, double scale);
-		double perturb_components(RNG& rng, double chance);
+		double perturb_num_components(RNG& rng);
+		double perturb_components(RNG& rng);
 
 		// Helper methods -- add or remove single component
 		double add_component(RNG& rng);

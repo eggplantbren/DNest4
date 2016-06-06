@@ -50,14 +50,12 @@ void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 }
 
 template<class ConditionalPrior>
-double RJObject<ConditionalPrior>::perturb_components(RNG& rng, double chance)
+double RJObject<ConditionalPrior>::perturb_components(RNG& rng)
 {
 	if(num_components == 0)
 		return 0.;
 
-	// Enforce P(change only one) >~ 0.5
-	if(rng.rand() <= 0.5)
-		chance = 0.;
+    double chance = pow(10.0, -3*std::abs(rng.randt2()));
 
 	// A flag for whether each component gets changed or not
 	std::vector<bool> change(num_components, false);
@@ -127,12 +125,12 @@ double RJObject<ConditionalPrior>::add_component(RNG& rng)
 }
 
 template<class ConditionalPrior>
-double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng, double scale)
+double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 {
 	double logH = 0.;
 
 	// Work out how many components we will have after the change
-	double delta = max_num_components*scale*rng.randn();
+	double delta = max_num_components*rng.randh();
 	int difference = (int)delta;
 	// In case difference is zero, make it +1 or -1
 	if(difference == 0)
@@ -180,7 +178,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng)
 	if(which == 0)
 	{
 		// Do some birth or death
-		logH += perturb_num_components(rng,	pow(10., 1.5 - 6.*rng.rand()));
+		logH += perturb_num_components(rng);
 	}
 	else if(which == 1)
 	{
@@ -198,7 +196,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng)
 	}
 	else if(which == 2)
 	{
-		logH += perturb_components(rng, pow(10., 0.5 - 4.*rng.rand()));
+		logH += perturb_components(rng);
 	}
 
 	return logH;
