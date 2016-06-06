@@ -2,6 +2,7 @@
 
 import os
 import numpy as np
+from .loading import my_loadtxt, loadtxt_rows
 
 __all__ = ["MemoryBackend", "CSVBackend"]
 
@@ -151,7 +152,7 @@ class CSVBackend(object):
         sep = self.sep
         if not len(self.sep.strip()):
             sep = None
-        return np.loadtxt(self._samples_filename, delimiter=sep)
+        return np.atleast_2d(my_loadtxt(self._samples_filename, delimiter=sep))
 
     @property
     def levels(self):
@@ -183,21 +184,23 @@ class CSVBackend(object):
         sep = self.sep
         if not len(self.sep.strip()):
             sep = None
-        return np.loadtxt(self._sample_log_X_filename, delimiter=sep)
+        return np.atleast_2d(my_loadtxt(self._sample_log_X_filename,\
+                                            delimiter=sep))
 
     @property
     def weights(self):
         sep = self.sep
         if not len(self.sep.strip()):
             sep = None
-        return np.loadtxt(self._weights_filename, delimiter=sep)
+        return my_loadtxt(self._weights_filename, delimiter=sep)
 
     @property
     def posterior_samples(self):
         sep = self.sep
         if not len(self.sep.strip()):
             sep = None
-        return np.loadtxt(self._posterior_samples_filename, delimiter=sep)
+        return np.atleast_2d(my_loadtxt(self._posterior_samples_filename,\
+                                                                 delimiter=sep))
 
     @property
     def stats(self):
