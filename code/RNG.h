@@ -34,6 +34,9 @@ class RNG
 		// Normal(0, 1)
 		double randn();
 
+        // t(location=0, scale=1, nu=2)
+        double randt2();
+
 		// My favourite heavy-tailed distribution
 		double randh();
 
