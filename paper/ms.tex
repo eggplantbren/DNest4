@@ -1285,6 +1285,16 @@ are independent of the parameters and
 can be used to parameterize the data set. In the example,
 the $\{n_i\}$ variables play this role.
 
+\begin{CodeChunk}
+\begin{CodeInput}
+class MyModel
+{
+    private:
+        double mu, log_sigma;
+        std::vector<double> n;
+\end{CodeInput}
+\end{CodeChunk}
+
 
 We show posterior samples in Figure~\ref{fig:abc_results}.
 

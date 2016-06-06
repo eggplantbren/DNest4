@@ -9,7 +9,7 @@ class MyModel
 {
 	private:
 		double mu, log_sigma;
-		std::vector<double> x_fake_latent;
+		std::vector<double> n;
 
 
 	public:

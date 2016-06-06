@@ -7,7 +7,7 @@ using namespace std;
 using namespace DNest4;
 
 MyModel::MyModel()
-:x_fake_latent(Data::get_instance().get_x().size())
+:n(Data::get_instance().get_x().size())
 {
 
 }
@@ -16,8 +16,8 @@ void MyModel::from_prior(RNG& rng)
 {
 	mu = -10. + 20.*rng.rand();
 	log_sigma = -10. + 20.*rng.rand();
-	for(size_t i=0; i<x_fake_latent.size(); i++)
-		x_fake_latent[i] = rng.randn();
+	for(size_t i=0; i<n.size(); i++)
+		n[i] = rng.randn();
 }
 
 double MyModel::perturb(RNG& rng)
@@ -36,8 +36,8 @@ double MyModel::perturb(RNG& rng)
 	}
 	if(which == 2)
 	{
-		int i = rng.rand_int(x_fake_latent.size());
-		x_fake_latent[i] = rng.randn();
+		int i = rng.rand_int(n.size());
+		n[i] = rng.randn();
 	}
 
 	return 0.;
@@ -51,7 +51,7 @@ double MyModel::log_likelihood() const
 	double sigma = exp(log_sigma);
 
 	// Assemble fake dataset
-	vector<double> x_fake = x_fake_latent;
+	vector<double> x_fake = n;
 	for(size_t i=0; i<x_fake.size(); i++)
 		x_fake[i] = mu + sigma*x_fake[i];
 
@@ -66,8 +66,8 @@ double MyModel::log_likelihood() const
 void MyModel::print(std::ostream& out) const
 {
 	out<<mu<<' '<<log_sigma<<' ';
-	for(size_t i=0; i<x_fake_latent.size(); i++)
-		out<<x_fake_latent[i]<<' ';
+	for(size_t i=0; i<n.size(); i++)
+		out<<n[i]<<' ';
 }
 
 string MyModel::description() const
