@@ -998,11 +998,11 @@ for data $D=\{D_1, D_2, ..., D_n\}$ which is a mixture of $N$ gaussians
 with means $\{\mu_j\}$, standard deviations $\{\sigma_j\}$, and
 mixture weights $\{w_j\}$. The likelihood for the $i$th data point is
 \begin{align}
-p(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}) &=
+p\left(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}\right) &=
 \sum_{j=1}^N \frac{w_j}{\sigma_j\sqrt{2\pi}}
 \exp\left[-\frac{1}{2\sigma_j^2}\left(D_i - \mu_j\right)^2\right].
 \end{align}
-Colloquially, one might say the data were 'drawn from' a mixture of
+Colloquially, one might say the data were `drawn from' a mixture of
 $N$ normal distributions, and we want to infer $N$ along with the
 properties of those normal distributions.
 
@@ -1052,6 +1052,9 @@ RJObject(int num_dimensions, int max_num_components, bool fixed,
          PriorType prior_type=PriorType::uniform);
 \end{CodeInput}
 \end{CodeChunk}
+where \code{num\_dimensions} is the number of parameters needed to
+specify a single component (three in this example),
+...
 
 The specific prior for $N$ was
 \begin{align}
