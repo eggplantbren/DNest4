@@ -1275,9 +1275,13 @@ n_i &= \textnormal{Normal}(0, 1)
 \end{align}
 where each of the $n_i$ enables a data point to be calculated using
 \begin{align}
-x_i &= \mu + \sigma n_i
+x_i &= \mu + \sigma n_i.
 \end{align}
-
+A general procedure for achieving this is to imagine generating a
+simulated data set from the parameters along with a collection of
+numbers which are the results of random number calls.
+The random numbers are independent of the parameters and
+can be used to parameterize the data set.
 
 
 We show posterior samples in Figure~\ref{fig:abc_results}.
