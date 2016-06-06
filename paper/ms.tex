@@ -1258,6 +1258,28 @@ not a serious application of ABC, since the likelihood function can easily
 be evaluated. It is included to demonstrate the principle of using
 Nested Sampling as an ABC method.}.
 
+In ABC applications the model class needs to describe a point in the joint
+(parameters, data) space, and the \code{from\_prior} and \code{perturb}
+functions need to respect the joint prior distribution.
+In Bayesian inference the joint prior tends to make the
+parameters and data highly dependent
+--- otherwise the data wouldn't ever be informative about the parameters.
+To improve efficiency, it is helpful to use a change of variables such that
+the parameters and data-controlling variables are independent. In this
+example we use
+
+\begin{align}
+\mu &\sim \textnormal{Uniform}(-10, 10)\\
+\ln\sigma &= \textnormal{Uniform}(-10, 10)\\
+n_i &= \textnormal{Normal}(0, 1)
+\end{align}
+where each of the $n_i$ enables a data point to be calculated using
+\begin{align}
+x_i &= \mu + \sigma n_i
+\end{align}
+
+
+
 We show posterior samples in Figure~\ref{fig:abc_results}.
 
 \begin{figure}[ht!]
