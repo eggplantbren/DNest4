@@ -83,15 +83,10 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
 
 	if plot:
-		if numResampleLogX > 1:
-			plt.ion()
-
 		plt.figure(1)
 		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
 		plt.ylabel("Level")
-		if numResampleLogX > 1:
-			plt.draw()
 
 		plt.figure(2)
 		plt.subplot(2,1,1)
@@ -102,8 +97,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		plt.axhline(-1., color='g')
 		plt.axhline(-np.log(10.), color='g', linestyle="--")
 		plt.ylim(ymax=0.05)
-		if numResampleLogX > 1:
-			plt.draw()
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
@@ -112,8 +105,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		plt.ylim([0., 1.])
 		plt.xlabel("Level")
 		plt.ylabel("MH Acceptance")
-		if numResampleLogX > 1:
-			plt.draw()
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
@@ -211,9 +202,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			upper += 0.05*diff
 			if zoom_in:
 				plt.ylim([lower, upper])
-
-			if numResampleLogX > 1:
-				plt.draw()
 			xlim = plt.gca().get_xlim()
 
 		if plot:
@@ -223,8 +211,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
-			if numResampleLogX > 1:
-				plt.draw()
 
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
@@ -274,8 +260,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			np.savetxt("posterior_sample.txt", posterior_sample)
 
 	if plot:
-		if numResampleLogX > 1:
-			plt.ioff()
 		plt.show()
 
 	return [logz_estimate, H_estimate, logx_samples]
@@ -295,15 +279,10 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
 
 	if plot:
-		if numResampleLogX > 1:
-			plt.ion()
-
 		plt.figure(1)
 		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
 		plt.ylabel("Level")
-		if numResampleLogX > 1:
-			plt.draw()
 
 		plt.figure(2)
 		plt.subplot(2,1,1)
@@ -314,8 +293,6 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		plt.axhline(-1., color='g')
 		plt.axhline(-np.log(10.), color='g', linestyle="--")
 		plt.ylim(ymax=0.05)
-		if numResampleLogX > 1:
-			plt.draw()
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
@@ -324,8 +301,6 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		plt.ylim([0., 1.])
 		plt.xlabel("Level")
 		plt.ylabel("MH Acceptance")
-		if numResampleLogX > 1:
-			plt.draw()
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
@@ -431,8 +406,6 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			if zoom_in:
 				plt.ylim([lower, upper])
 
-			if numResampleLogX > 1:
-				plt.draw()
 			xlim = plt.gca().get_xlim()
 
 		if plot:
@@ -442,8 +415,6 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
-			if numResampleLogX > 1:
-				plt.draw()
 
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
@@ -493,8 +464,6 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			np.savetxt("posterior_sample.txt", posterior_sample)
 
 	if plot:
-		if numResampleLogX > 1:
-			plt.ioff()
 		plt.show()
 
 	return [logz_estimate, H_estimate, logx_samples]
