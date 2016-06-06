@@ -281,7 +281,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	return [logz_estimate, H_estimate, logx_samples]
 
 def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
@@ -398,7 +398,7 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		logp_samples[:,z] = logp_samples[:,z] - logsumexp(logp_samples[:,z])
 
 		# Define the threshold for ABC, in terms of log(X)
-		threshold = 0.8*levels[:,0].min()
+		threshold = threshold_fraction*levels[:,0].min()
 
 		# Particles below threshold get no posterior weight
 		logp_samples[logx_samples > threshold] = -1E300

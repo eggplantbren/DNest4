@@ -1284,7 +1284,7 @@ The results of the random number calls
 are independent of the parameters and
 can be used to parameterize the data set. In the example,
 the $\{n_i\}$ variables play this role.
-
+Therefore, the variables in the model class are:
 \begin{CodeChunk}
 \begin{CodeInput}
 class MyModel
@@ -1294,6 +1294,8 @@ class MyModel
         std::vector<double> n;
 \end{CodeInput}
 \end{CodeChunk}
+
+
 
 
 We show posterior samples in Figure~\ref{fig:abc_results}.
@@ -1306,13 +1308,23 @@ We show posterior samples in Figure~\ref{fig:abc_results}.
 
 
 
-For ABC applications, there is an alternate \code{postprocess()} function:
+For ABC applications, there is an alternate \code{postprocess} function
+called \code{postprocess_abc}.
+This generates posterior samples using the $\epsilon$ value that
+compresses the joint prior by 80\% as much as the final level.
 \begin{CodeChunk}
 \begin{CodeInput}
-import dnest4.classic as dn4
-dn4.postprocess_abc()
+dnest4.classic.postprocess_abc()
 \end{CodeInput}
 \end{CodeChunk}
+To try different values of $\epsilon$, you can set the argument
+\code{threshold\_fraction} to a value other than 0.8. For example
+\begin{CodeChunk}
+\begin{CodeInput}
+dnest4.classic.postprocess_abc(threshold_fraction=0.6)
+\end{CodeInput}
+\end{CodeChunk}
+
 
 %\begin{table}[ht!]
 %\centering
