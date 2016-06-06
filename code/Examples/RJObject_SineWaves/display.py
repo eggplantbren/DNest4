@@ -11,9 +11,9 @@ if saveFrames:
 ion()
 for i in range(0, posterior_sample.shape[0]):
   hold(False)
-  plot(data[:,0], data[:,1], 'b.')
+  plot(data[:,0], data[:,1], 'k.')
   hold(True)
-  plot(data[:,0], posterior_sample[i, 0:data.shape[0]], 'r')
+  plot(data[:,0], posterior_sample[i, 0:data.shape[0]], 'g')
   xlabel('Time', fontsize=16)
   ylabel('y', fontsize=16)
   draw()
