@@ -12,7 +12,7 @@ if not __DNEST4_SETUP__:
 
     from . import analysis
     from .sampler import DNest4Sampler
-    from .analysis import postprocess
+    from .deprecated import postprocess, postprocess_abc
     from .loading import my_loadtxt, loadtxt_rows
     from .utils import randh
     from .utils import wrap
