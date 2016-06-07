@@ -23,7 +23,7 @@ def mixture(x, params):
 
 
 hold(False)
-hist(data, 100, alpha=0.2, normed=True)
+hist(data, 100, alpha=0.2, color="k", normed=True)
 y_tot = zeros(len(x))
 
 for i in range(0, posterior_sample.shape[0]):
@@ -31,7 +31,7 @@ for i in range(0, posterior_sample.shape[0]):
     y_tot += y
 
 hold(True)
-plot(x, y_tot/posterior_sample.shape[0], 'k', linewidth=2)
+plot(x, y_tot/posterior_sample.shape[0], 'g', linewidth=2)
 
 xlabel("Velocity (1000 km/s)")
 ylabel("Density")
@@ -40,7 +40,7 @@ show()
 
 width = 0.3
 bins = arange(0, 101) - 0.5*width
-hist(posterior_sample[:,7], bins, width=width, normed=True, alpha=0.3)
+hist(posterior_sample[:,7], bins, width=width, normed=True, color="k", alpha=0.2)
 xlim([0, 15])
 ylim([0, 0.5])
 xlabel("Number of gaussians, $N$")
