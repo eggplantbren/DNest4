@@ -1156,6 +1156,11 @@ The order of $\{(\mu_j, \sigma_j, w_j)\}$
 is determined by the conditional prior class, and is
 explained in the following subsection.
 
+\code{RJObject}'s \code{print} function prints the dimensionality of each
+component and the maximum value of $N$, followed by the hyperparameters,
+then parameter zero of each component (zero padded when $N<N_{\rm max}$),
+parameter one for each component, and so on.
+
 \subsection{Conditional priors}
 The \code{RJObject} class is used to manage the components. An additional
 class is needed to define and manage the hyperparameters $\alpha$ (i.e.
