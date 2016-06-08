@@ -968,7 +968,9 @@ p\left(x_i | \alpha\right).\label{eqn:rjobject}
 \end{align}
 That is, the prior for the hyperparameters is independent of the number of
 components, and each component is independent and identically
-distributed given the hyperparameters.
+distributed given the hyperparameters. The sampling distribution
+$p(D | x, \alpha)$ (not shown in the PGM)
+cannot depend on the ordering of the components.
 A probabilistic graphical model (PGM) is showing this dependence
 structure is shown in Figure~\ref{fig:rjobject_pgm}. There are no observed
 data nodes here, but if such a structure forms part of a
@@ -1155,7 +1157,20 @@ is determined by the conditional prior class, and is
 explained in the following subsection.
 
 \subsection{Conditional priors}
+The \code{RJObject} class is used to manage the components. An additional
+class is needed to define and manage the hyperparameters $\alpha$ (i.e.
+define how they are generated from the prior, how they are proposed, and
+so on). The and the iid
+conditional prior $p(x_i | \alpha)$.
+In the example, the class is called \code{MyConditionalPrior} and
+is inherited from an abstract base class \code{DNest4::ConditionalPrior}.
 
+The member functions \code{from\_prior}, \code{perturb\_hyperparameters}, and
+\code{print} do the same things as the similar functions in a standard model
+class, but for the hyperparameters $\alpha$. In addition, three functions
+\code{from\_uniform}, \code{to\_uniform}, and \code{log\_pdf}
+together define the form of the conditional prior for the
+component parameters, $p(x_i | \alpha)$.
 
 \subsection{Mixture model results}
 The data and the posterior mean fit are shown
