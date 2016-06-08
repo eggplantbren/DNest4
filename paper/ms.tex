@@ -1033,9 +1033,9 @@ Normal distributions would be more convenional, but the analytic cumulative
 distribution function (CDF) of the Laplace distribution makes it easier to
 implement. These were:
 \begin{align}
-\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
-\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
-\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
+\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\label{eqn:cond_prior1}\\
+\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\label{eqn:cond_prior2}\\
+\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).\label{eqn:cond_prior3}
 \end{align}
 The location parameters are denoted with $a$ and scale parameters with $b$.
 These priors express the idea that the centers, widths, and relative weights
@@ -1160,17 +1160,81 @@ explained in the following subsection.
 The \code{RJObject} class is used to manage the components. An additional
 class is needed to define and manage the hyperparameters $\alpha$ (i.e.
 define how they are generated from the prior, how they are proposed, and
-so on). The and the iid
-conditional prior $p(x_i | \alpha)$.
+so on). The iid
+conditional prior $p(x_i | \alpha)$ is also defined by this extra class.
 In the example, the class is called \code{MyConditionalPrior} and
-is inherited from an abstract base class \code{DNest4::ConditionalPrior}.
+is inherited from an abstract base class \code{DNest4::ConditionalPrior}
+which insists that certain member functions be specified.
 
 The member functions \code{from\_prior}, \code{perturb\_hyperparameters}, and
 \code{print} do the same things as the similar functions in a standard model
-class, but for the hyperparameters $\alpha$. In addition, three functions
+class, but for the hyperparameters $\alpha$. 
+In addition, three functions
 \code{from\_uniform}, \code{to\_uniform}, and \code{log\_pdf}
 together define the form of the conditional prior for the
-component parameters, $p(x_i | \alpha)$.
+component parameters, $p(x_i | \alpha)$. Each of these takes a
+\code{std::vector} of \code{double}s by reference as input.
+
+The \code{log\_pdf} function just evaluates $\ln p(x_i | \alpha)$
+at the current value of $\alpha$. The position $x_i$ where this is evaluated
+is passed in via the input vector. In the example, these
+were defined using Equations~\ref{eqn:cond_prior1}--\ref{eqn:cond_prior3}.
+To simplify this, we have defined a class for Laplace distributions,
+rather than explicitly writing out the densities. We decided (arbitarily)
+that parameters 0,1, and 2 are $\mu$, $\ln(\sigma)$, and $W$ respectively.
+\begin{CodeChunk}
+\begin{CodeInput}
+// vec = {mu, log_sigma, log_weight}
+double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
+{
+    // Three Laplace distributions
+    Laplace l1(location_mu, scale_mu);
+    Laplace l2(location_log_sigma, scale_log_sigma);
+    Laplace l3(0.0, scale_log_weight);
+	return l1.log_pdf(vec[0]) + l2.log_pdf(vec[1]) + l3.log_pdf(vec[2]);
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+The functions \code{to\_uniform} and \code{from\_uniform} must implement
+the cumulative distribution function (CDF) of the conditional
+prior and its inverse. i.e. \code{from\_uniform}, if the input vector contains
+iid draws from Uniform(0, 1), these should be modified to become draws from
+$p(x|\alpha)$, and \code{to\_uniform} should be the inverse of
+\code{from\_uniform}.
+Both of these functions modify the vector argument in-place.
+For the example, we again used an external class to define these functions
+for the Laplace distribution:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+// vec = {mu, log_sigma, log_weight}
+void MyConditionalPrior::from_uniform(std::vector<double>& vec) const
+{
+    // Three Laplace distributions
+    Laplace l1(location_mu, scale_mu);
+    Laplace l2(location_log_sigma, scale_log_sigma);
+    Laplace l3(0.0, scale_log_weight);
+
+    vec[0] = l1.cdf_inverse(vec[0]);
+    vec[1] = l2.cdf_inverse(vec[1]);
+    vec[2] = l3.cdf_inverse(vec[2]);
+}
+
+// vec = {mu, log_sigma, log_weight}
+void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
+{
+    // Three Laplace distributions
+    Laplace l1(location_mu, scale_mu);
+    Laplace l2(location_log_sigma, scale_log_sigma);
+    Laplace l3(0.0, scale_log_weight);
+
+    vec[0] = l1.cdf(vec[0]);
+    vec[1] = l2.cdf(vec[1]);
+    vec[2] = l3.cdf(vec[2]);
+}
+\end{CodeInput}
+\end{CodeChunk}
 
 \subsection{Mixture model results}
 The data and the posterior mean fit are shown
