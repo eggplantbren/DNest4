@@ -1196,7 +1196,7 @@ double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
     Laplace l1(location_mu, scale_mu);
     Laplace l2(location_log_sigma, scale_log_sigma);
     Laplace l3(0.0, scale_log_weight);
-	return l1.log_pdf(vec[0]) + l2.log_pdf(vec[1]) + l3.log_pdf(vec[2]);
+    return l1.log_pdf(vec[0]) + l2.log_pdf(vec[1]) + l3.log_pdf(vec[2]);
 }
 \end{CodeInput}
 \end{CodeChunk}
@@ -1454,25 +1454,25 @@ one of the \code{n}s:
 \begin{CodeInput}
 double MyModel::perturb(RNG& rng)
 {
-	int which = rng.rand_int(3);
+    int which = rng.rand_int(3);
 
-	if(which == 0)
-	{
-		mu += 20.*rng.randh();
-		wrap(mu, -10., 10.);
-	}
-	if(which == 1)
-	{
-		log_sigma += 20.*rng.randh();
-		wrap(log_sigma, -10., 10.);
-	}
-	if(which == 2)
-	{
-		int i = rng.rand_int(n.size());
-		n[i] = rng.randn();
-	}
+    if(which == 0)
+    {
+        mu += 20.*rng.randh();
+        wrap(mu, -10., 10.);
+    }
+    if(which == 1)
+    {
+        log_sigma += 20.*rng.randh();
+        wrap(log_sigma, -10., 10.);
+    }
+    if(which == 2)
+    {
+        int i = rng.rand_int(n.size());
+        n[i] = rng.randn();
+    }
 
-	return 0.0;
+    return 0.0;
 }
 \end{CodeInput}
 \end{CodeChunk}
@@ -1631,6 +1631,10 @@ This option is incompatible with setting the maximum number of levels to 0
 
 \code{-t <num\_threads>}\\
 Run on the specified number of threads. The default is 1.
+Be aware that the number of particles specified in the {\tt OPTIONS}
+file is actually the number of particles {\em per thread}. Therefore,
+if running on 8 or more cores, we recommend setting the number of particles
+per thread to 1, so the number of particles equals the number of threads.
 
 %\section{Specifying models in Python with dnest4.builder}
 
