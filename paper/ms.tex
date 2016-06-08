@@ -1448,8 +1448,65 @@ class MyModel
 \end{CodeInput}
 \end{CodeChunk}
 
+The proposal involves changing either \code{mu}, \code{log\_sigma}, or
+one of the \code{n}s:
+\begin{CodeChunk}
+\begin{CodeInput}
+double MyModel::perturb(RNG& rng)
+{
+	int which = rng.rand_int(3);
 
+	if(which == 0)
+	{
+		mu += 20.*rng.randh();
+		wrap(mu, -10., 10.);
+	}
+	if(which == 1)
+	{
+		log_sigma += 20.*rng.randh();
+		wrap(log_sigma, -10., 10.);
+	}
+	if(which == 2)
+	{
+		int i = rng.rand_int(n.size());
+		n[i] = rng.randn();
+	}
 
+	return 0.0;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+The ``log-likelihood'' is really minus the discrepancy function.
+Since we parameterized joint (parameter, data) space using the
+$n$ variables instead of the data $\{x_i\}$ itself, we must
+``assemble'' the simulated dataset in order to evaluate the
+discrepancy function:
+\begin{CodeChunk}
+\begin{CodeInput}
+double MyModel::log_likelihood() const
+{
+    double x_min = Data::get_instance().get_x_min();
+    double x_max = Data::get_instance().get_x_max();
+
+    double sigma = exp(log_sigma);
+
+    // Assemble fake dataset
+    vector<double> x_fake = n;
+    for(size_t i=0; i<x_fake.size(); i++)
+        x_fake[i] = mu + sigma*x_fake[i];
+
+    // Goodness
+    double logL = 0.;
+    logL -= pow(*min_element(x_fake.begin(), x_fake.end()) - x_min, 2);
+    logL -= pow(*max_element(x_fake.begin(), x_fake.end()) - x_max, 2);
+
+    return logL;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+\subsection{ABC Example Results}
 We show posterior samples in Figure~\ref{fig:abc_results}.
 
 \begin{figure}[ht!]
@@ -1477,73 +1534,6 @@ dnest4.classic.postprocess_abc(threshold_fraction=0.6)
 \end{CodeInput}
 \end{CodeChunk}
 
-
-%\begin{table}[ht!]
-%\centering
-%\small
-%\begin{tabular}{|l|l|l|}
-%\hline
-%Bayesian computation		&		Statistical mechanics		&		ABC\\
-%\hline
-%Parameter space	$\Theta$	&		Phase space	$\Omega$ 			& Product space $\Theta \times \mathcal{D}$\\
-%Posterior $p(\params | D,I)$   &  Canonical distribution $p(\boldsymbol{x}; T)$     & \\ 
-%Marginal likelihood $P(D|I)$	&	Partition function $Z(T)$	&   Marginal likelihood $p(D\in | I)$\\
-%\hline
-%\end{tabular}
-%\caption{\it The relationship between standard Bayesian computation, statistical
-%mechanics, and ABC. In each case Monte Carlo methods are used to calculate
-%integrals over a space. In standard Bayesian computation, it is the parameter
-%space of a model that is usually of interest, whereas in ABC it is the space
-%of possible parameter values {\it and} data sets.
-%\label{tab:relation}}
-%\end{table}
-
-
-%\begin{figure}[ht!]
-%\centering
-%\includegraphics[scale=0.5]{figures/joint.pdf}
-%\caption{\it The joint prior for parameters $\params$ and data $\data$.
-%\label{fig:joint}}
-%\end{figure}
-
-
-%\section{Parameterising the data space}
-%In standard MCMC-based ABC, proposal moves are made by first proposing a
-%change to the parameters (from $\params$ to $\params'$), and then generating
-%a mock dataset $\data'$ from $p(\data | \params')$. As a Metropolis proposal
-%for exploring the product space $\Theta \times \mathcal{D}$ this is a very
-%aggressive choice, since the proposed value of the
-%dataset $\params'$ is likely to be very different from the previous one.
-%One of the most elementary pieces of advice we receive when learning the
-%Metropolis algorithm is to be careful about how ambitious our proposal
-%distributions are, since tiny and huge proposal moves are both very
-%inefficient. The performance of MCMC-based ABC can therefore be improved by
-%alternative choices of proposal distribution.
-
-%In some cases, we might be able to find efficient proposal distributions for exploring $\Theta \times \mathcal{D}$ by having insight into the particular
-%problem we're working on. However, there are also techniques that are
-%completely general in that they should work on any ABC-type problem.
-
-%Consider the process of generating a mock dataset. Whatever else is involved,
-%this process will involve calls to an underlying random number generator.
-%Perhaps a function {\tt rand()}, generating variables from a Uniform(0, 1)
-%distribution, is called $n$ times in the course of generating a dataset.
-%Usually, the simulation process has the property that, if $\theta'$ is
-%close to $\theta$, then the same sequence of random numbers returned by
-%{\tt rand()} would produce a dataset $\data'$ that is very similar to $\data$.
-%This suggests an alternative parameterisation of
-%the product space $\Theta\times\mathcal{D}$: instead of using the one that
-%naturally describes the data, we can use a coordinate system defined by
-%$\theta$ together with $\{u_1, ..., u_n\}$, the $n$ uniform random numbers
-%used to construct a mock dataset.
-
-%In this alternative coordinate system, a proposed move
-%to change $\params$ while keeping
-%$\{u_i\}$ fixed results in a proposed new dataset that is similar to the
-%previous one, assuming the change to $\params$ is small. The standard procedure
-%of generating an entirely new mock dataset each step is now viewed as a
-%proposal where $\params$ is moved {\it and all of the $u_i$ coordinates are
-%re-generated from their iid uniform prior}.
 
 \section{Python Bindings}\label{sec:python_bindings}
 
@@ -1642,7 +1632,7 @@ This option is incompatible with setting the maximum number of levels to 0
 \code{-t <num\_threads>}\\
 Run on the specified number of threads. The default is 1.
 
-\section{Specifying models in Python with dnest4.builder}
+%\section{Specifying models in Python with dnest4.builder}
 
 
 \section{Specifying models in Julia}
