@@ -1050,6 +1050,7 @@ b_{\ln W} &\sim \textnormal{Uniform}(0, 5).
 \end{align}
 The normalized weights are $w_k = W_k/\sum w_j$.
 
+\subsection{Using the RJObject class}
 To implement this model for \pkg{DNest4}, the model
 class needs to contain an instance of an
 \code{RJObject}, which contains the parameters
@@ -1108,9 +1109,40 @@ MyModel::MyModel()
 \end{CodeChunk}
 Passing \code{PriorType::log_uniform} for the final argument
 specifies the $1/(N+1)$ prior for $N$.
+One complication for this model is that \code{RJObject}, by default,
+allows $N$ to be zero, which makes no sense for this particular
+problem. Therefore, we prevent $N=0$ from being generated in
+\code{MyModel::from\_prior}, and assert that it should always be
+rejected if proposed in \code{MyModel::perturb}:
 
+\begin{CodeChunk}
+\begin{CodeInput}
+void MyModel::from_prior(RNG& rng)
+{
+    do
+    {
+        gaussians.from_prior(rng);
+    }while(gaussians.get_components().size() == 0);
+}
+
+double MyModel::perturb(RNG& rng)
+{
+    double logH = 0.0;
+
+    logH += gaussians.perturb(rng);
+    if(gaussians.get_components().size() == 0)
+        return -std::numeric_limits<double>::max();
+
+    return logH;
+}
+\end{CodeInput}
+\end{CodeChunk}
+
+
+\subsection{Mixture model results}
 The data and the posterior mean fit are shown
-in Figure~\ref{fig:galaxies}.
+in Figure~\ref{fig:galaxies} and the posterior distribution for
+$N$ is shown in Figure~\ref{fig:galaxies_N}.
 
 \begin{figure}
 \begin{minipage}{0.45\textwidth}
