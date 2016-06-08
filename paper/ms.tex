@@ -1005,17 +1005,16 @@ p\left(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}\right) &=
 Colloquially, one might say the data were `drawn from' a mixture of
 $N$ normal distributions, and we want to infer $N$ along with the
 properties of those normal distributions.
-
-Making the connection with Equation~\ref{eqn:rjobject} and
-Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
-the gaussian parameters are $\{x_j\} = \{(\mu_j, \sigma_j, w_j)\}$,
-and hyperparameters $\alpha$ may be used to help specify
-a sensible joint prior for the gaussian parameters.
-
 The mixture weights $\{w_j\}$ must obey a normalization condition
 $\sum_j w_j = 1$. The easiest way of implementing this is to use
 un-normalized weights $\{W_j\}$ which do not obey
 such a condition and then normalise them by dividing by their sum.
+
+Making the connection with Equation~\ref{eqn:rjobject} and
+Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
+the gaussian parameters are $\{x_j\} = \{(\mu_j, \sigma_j, W_j)\}$,
+and hyperparameters $\alpha$ may be used to help specify
+a sensible joint prior for the gaussian parameters.
 
 We now describe the specific prior distributions we used in this example.
 The prior for $N$ was
@@ -1068,7 +1067,7 @@ where the template argument \code{<MyConditionalPrior>}
 is a class implementing the prior for the hyperparameters
 $\alpha$ and the form of the conditional prior $p(x_i | \alpha)$.
 The main advantage of the \code{RJObject} class is that
-we do not need to implement any proposals for $\{(\mu_j, \sigma_j, w_j)\}$.
+we do not need to implement any proposals for $\{(\mu_j, \sigma_j, W_j)\}$.
 Rather, these can be done trivially as follows:
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -1092,10 +1091,23 @@ RJObject(int num_dimensions, int max_num_components, bool fixed,
 \end{CodeInput}
 \end{CodeChunk}
 where \code{num\_dimensions} is the number of parameters needed to
-specify a single component (three in this example),
-...
-
-
+specify a single component (three in this example), \code{max\_num\_components}
+is the maximum value of $N$ allowed, \code{fixed} determines whether
+$N$ is fixed at $N_{\rm max}$ or allowed to vary,
+\code{conditional\_prior} is an instance of a conditional prior,
+and \code{prior\_type} controls the prior for $N$ (the default is uniform
+from $\{0, 1, 2, ..., N_{\rm max}\}$). The {\tt RJObject\_1DMixture}
+\code{MyModel} initializes its {\tt RJObject} as follows:
+\begin{CodeChunk}
+\begin{CodeInput}
+MyModel::MyModel()
+:gaussians(3, 100, false, MyConditionalPrior(), PriorType::log_uniform)
+{
+}
+\end{CodeInput}
+\end{CodeChunk}
+Passing \code{PriorType::log_uniform} for the final argument
+specifies the $1/(N+1)$ prior for $N$.
 
 The data and the posterior mean fit are shown
 in Figure~\ref{fig:galaxies}.
