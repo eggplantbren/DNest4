@@ -1017,10 +1017,44 @@ $\sum_j w_j = 1$. The easiest way of implementing this is to use
 un-normalized weights $\{W_j\}$ which do not obey
 such a condition and then normalise them by dividing by their sum.
 
-To implement this model for \pkg{DNest4}, the model
-class only needs to contain an instance of an
-\code{RJObject}, like so:
+We now describe the specific prior distributions we used in this example.
+The prior for $N$ was
+\begin{align}
+p(N) \propto \frac{1}{N+1}
+\end{align}
+for $N \in \{1, 2, ..., 100\}$.
+For the conditional prior of the gaussian parameters,
+we used Laplace (biexponential)
+distributions\footnote{A Laplace
+distribution with location parameter $a$ and scale parameter
+$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}.
+Normal distributions would be more convenional, but the analytic cumulative
+distribution function (CDF) of the Laplace distribution makes it easier to
+implement. These were:
+\begin{align}
+\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
+\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
+\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
+\end{align}
+The location parameters are denoted with $a$ and scale parameters with $b$.
+These priors express the idea that the centers, widths, and relative weights
+of the gaussian mixture components are probably clustered around some typical
+value.
 
+We used the following priors for the hyperparameters:
+\begin{align}
+a_\mu &\sim \textnormal{Uniform}(-1000, 1000)\\
+\ln b_\mu &\sim \textnormal{Uniform}(-10, 10)\\
+a_{\ln\sigma} &\sim \textnormal{Uniform}(-10, 10)\\
+b_{\ln\sigma} &\sim \textnormal{Uniform}(0, 5)\\
+b_{\ln W} &\sim \textnormal{Uniform}(0, 5).
+\end{align}
+The normalized weights are $w_k = W_k/\sum w_j$.
+
+To implement this model for \pkg{DNest4}, the model
+class needs to contain an instance of an
+\code{RJObject}, which contains the parameters
+$\{(\mu_j, \sigma_j, w_j)\}$:
 \begin{CodeChunk}
 \begin{CodeInput}
 class MyModel
@@ -1033,10 +1067,9 @@ class MyModel
 where the template argument \code{<MyConditionalPrior>}
 is a class implementing the prior for the hyperparameters
 $\alpha$ and the form of the conditional prior $p(x_i | \alpha)$.
-
-To help with implementing the member functions for the \code{MyModel} class,
-the \code{gaussians} object can be generated from its prior, proposed,
-and printed trivially as follows:
+The main advantage of the \code{RJObject} class is that
+we do not need to implement any proposals for $\{(\mu_j, \sigma_j, w_j)\}$.
+Rather, these can be done trivially as follows:
 \begin{CodeChunk}
 \begin{CodeInput}
     // Generate the components from the prior
@@ -1062,41 +1095,6 @@ where \code{num\_dimensions} is the number of parameters needed to
 specify a single component (three in this example),
 ...
 
-The specific prior for $N$ was
-\begin{align}
-p(N) \propto \frac{1}{N+1}
-\end{align}
-for $N \in \{1, 2, ..., 100\}$.
-For the conditional prior of the gaussian parameters,
-we used Laplace (biexponential)
-distributions\footnote{A Laplace
-distribution with location parameter $a$ and scale parameter
-$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}.
-Normal distributions would be more convenional, but the analytic cumulative
-distribution function (CDF) of the Laplace distribution makes it easier to
-implement.
-
-\begin{align}
-\mu_j &\sim \textnormal{Laplace}(a_\mu, b_\mu)\\
-\ln\sigma_j &\sim \textnormal{Laplace}(a_{\ln\sigma}, b_{\ln\sigma})\\
-\ln W_j &\sim \textnormal{Laplace}(0, b_{\ln W}).
-\end{align}
-
-We used the following priors for the hyperparameters:
-\begin{align}
-a_\mu &\sim \textnormal{Uniform}(-1000, 1000)\\
-\ln b_\mu &\sim \textnormal{Uniform}(-10, 10)\\
-a_{\ln\sigma} &\sim \textnormal{Uniform}(-10, 10)\\
-b_{\ln\sigma} &\sim \textnormal{Uniform}(0, 5)\\
-b_{\ln W} &\sim \textnormal{Uniform}(0, 5)
-\end{align}
-Location parameters $a$, scale parameters $b$.
-
-
-
-
-
-The normalized weights are $w_k = W_k/\sum w_j$.
 
 
 The data and the posterior mean fit are shown
