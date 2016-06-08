@@ -1138,6 +1138,24 @@ double MyModel::perturb(RNG& rng)
 \end{CodeInput}
 \end{CodeChunk}
 
+To access the component parameters, the \code{RJObject} member function
+\code{get_components} is used. This was used in the above functions, but more
+typically it is needed in the log likelihood.
+The member function \code{get_components} returns (by const reference) a
+\code{std::vector} of \code{std::vector}s of \code{double}s. For example,
+parameter two of component zero is:
+\begin{CodeChunk}
+\begin{CodeInput}
+gaussians.get_components()[0][2]
+\end{CodeInput}
+\end{CodeChunk}
+The order of $\{(\mu_j, \sigma_j, w_j)\}$
+(i.e. which one is parameter 0, 1, and 2)
+is determined by the conditional prior class, and is
+explained in the following subsection.
+
+\subsection{Conditional priors}
+
 
 \subsection{Mixture model results}
 The data and the posterior mean fit are shown
@@ -1345,7 +1363,6 @@ class MyModel
         std::vector<double> n;
 \end{CodeInput}
 \end{CodeChunk}
-
 
 
 
