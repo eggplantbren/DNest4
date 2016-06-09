@@ -446,7 +446,7 @@ def levels_plot():
 	"""
 	levels = my_loadtxt('levels.txt')
 
-	plt.plot(np.log10(np.diff(levels[:,1])), "k.")
+	plt.plot(np.log10(np.diff(levels[:,1])), "ko-")
 	plt.ylim([-1, 4])
 	plt.axhline(0., color='g', linewidth=2)
 	plt.axhline(np.log10(np.log(10.)), color='g')
