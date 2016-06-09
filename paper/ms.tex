@@ -749,7 +749,7 @@ double StraightLine::perturb(DNest4::RNG& rng)
 \end{CodeInput}
 \end{CodeChunk}
 
-This first chooses a random integer from $[0, 3)$ using the
+This first chooses a random integer from $\{0, 1, 2\}$ using the
 \code{rand\_int(int)} member function of the \code{DNest4::RNG} class.
 This determines which of the three parameters
 $(m, b, \sigma)$ is modified. In this example, there are no proposals
@@ -777,8 +777,9 @@ the standard Metropolis algorithm to sample the posterior distribution.
 
 Rather than trying to adapt proposal distributions as a function of level,
 it is much simpler to just use heavy-tailed proposals which have some
-probability of making a jump of appropriate size. This may seem slightly
-wasteful of CPU time, but it saves a lot of human time.
+probability of making a jump of appropriate size. This is slightly
+wasteful of CPU time, but it saves a lot of human time and is more
+fail-safe than tuned step sizes.
 In simple experiments, we have found that heavy-tailed proposals are
 about as efficient as slice sampling \citep{slice}, but much easier to
 implement. The following procedure generates
@@ -843,9 +844,10 @@ $-9.8$.
 The \code{wrap} function has no return value and works by modifying its
 first argument, which is passed by reference.
 Alternatively, the log-uniform prior, which has density proportional
-to $1/\sigma$, could have been used directly by not using the log/exponential
-trick and adding $\ln\left[(1/\sigma')/(1/\sigma)\right]$ to the
-return value. However, this isn't recommended for a distribution like this
+to $1/\sigma$, could have been used directly by adding
+$\ln\left[(1/\sigma')/(1/\sigma)\right]$ to the
+return value instead of using the log/exp trick.
+However, this isn't recommended for a prior distribution like this
 which covers several orders of magnitude, because the appropriate scale size
 for the proposal is less clear. This is likely to cause inefficient
 sampling.
@@ -892,6 +894,29 @@ regression example, this is achieved by having a
 datasets. Since there will usually only be one dataset,
 the {\em singleton pattern} (a class of which there is one instance
 accessible from anywhere) is recommended.
+The \code{Data} class has
+one static member which is itself an object of class \code{Data}, and is
+accessible using \code{Data::get_instance()} --- this is the singleton pattern,
+essentially a way of defining quasi-`global' variables:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+class Data
+{
+    private:
+        // 'static' means this exists at the level of the class
+        // instead of being truly global
+        static Data instance;
+
+    public:
+        // Getter
+        static Data& get_instance();
+};
+\end{CodeInput}
+\end{CodeChunk}
+
+Alternatively, the data could be defined using static members of your
+model class.
 
 \subsection{Parameter output}
 The print and description functions are very simple:
@@ -911,7 +936,7 @@ std::string StraightLine::description() const
 The print function specifies that the parameters
 $m$, $b$, and $\sigma$ are printed a single line
 (of {\tt sample.txt}) and are separated by spaces (the
-\code{postprocess} function assumes this is the case).
+\code{postprocess} function assumes the delimeter is a space).
 
 \subsection{Running the sampler}
 The file {\tt main.cpp} contains the \code{main()} function which
@@ -926,12 +951,11 @@ for the linear regression example are:
 #include "StraightLine.h"
 
 using namespace std;
-using namespace DNest4;
 
 int main(int argc, char** argv)
 {
     Data::get_instance().load("road.txt");
-    start<StraightLine>(argc, argv);
+    DNest4::start<StraightLine>(argc, argv);
     return 0;
 }
 \end{CodeInput}
