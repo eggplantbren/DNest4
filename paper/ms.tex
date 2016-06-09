@@ -979,7 +979,7 @@ models with an unknown number of components. An updated version of
 
 If $N$ is the number of components, $x_i$ denotes the vector of parameters
 of the $i$th component, and $\alpha$ is the vector of hyperparameters, the prior
-can be factorised via the product rule, giving
+can be factorized via the product rule, giving
 \begin{align}
 p\left(N, \alpha, \left\{x_i\right\}_{i=1}^N\right)
 &= p(N)p(\alpha | N)p\left(\left\{x_i\right\}_{i=1}^N | \alpha, N\right).
@@ -1031,11 +1031,11 @@ p\left(D_i | N, \{\mu_j\}, \{\sigma_j\}, \{w_j\}\right) &=
 \end{align}
 Colloquially, one might say the data were `drawn from' a mixture of
 $N$ normal distributions, and we want to infer $N$ along with the
-properties of those normal distributions.
+properties (positions, widths, and weights) of those normal distributions.
 The mixture weights $\{w_j\}$ must obey a normalization condition
 $\sum_j w_j = 1$. The easiest way of implementing this is to use
 un-normalized weights $\{W_j\}$ which do not obey
-such a condition and then normalise them by dividing by their sum.
+such a condition and then normalize them by dividing by their sum.
 
 Making the connection with Equation~\ref{eqn:rjobject} and
 Figure~\ref{fig:rjobject_pgm}, the ``components'' are the gaussians,
@@ -1238,7 +1238,8 @@ for the Laplace distribution:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-// vec = {mu, log_sigma, log_weight}
+// vec (input) = {u1, u2, u3} ~ Uniform(0, 1) in the prior
+// gets modified to {mu, log_sigma, log_weight}
 void MyConditionalPrior::from_uniform(std::vector<double>& vec) const
 {
     // Three Laplace distributions
@@ -1251,7 +1252,9 @@ void MyConditionalPrior::from_uniform(std::vector<double>& vec) const
     vec[2] = l3.cdf_inverse(vec[2]);
 }
 
-// vec = {mu, log_sigma, log_weight}
+// vec (input) = {mu, log_sigma, log_weight}
+// gets modified to {u1, u2, u3} using the CDF of the conditional prior
+// This is the inverse of from_uniform
 void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
 {
     // Three Laplace distributions
@@ -1532,16 +1535,6 @@ double MyModel::log_likelihood() const
 \end{CodeChunk}
 
 \subsection{ABC Example Results}
-We show posterior samples in Figure~\ref{fig:abc_results}.
-
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=0.6\textwidth]{figures/abc_results.pdf}
-\caption{ABC results.\label{fig:abc_results}}
-\end{figure}
-
-
-
 For ABC applications, there is an alternate \code{postprocess} function
 called \code{postprocess_abc}.
 This generates posterior samples using the $\epsilon$ value that
@@ -1559,6 +1552,17 @@ dnest4.postprocess_abc(threshold_fraction=0.6)
 \end{CodeInput}
 \end{CodeChunk}
 
+In the example directory there is a dataset generated from
+a standard normal distribution. The inference should
+result in a joint posterior for $\mu$ and $\sigma$ with
+significant density near $(\mu=0, \sigma=1)$.
+We show posterior samples in Figure~\ref{fig:abc_results}.
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/abc_results.pdf}
+\caption{Posterior samples for $\mu$ and $\sigma$ for the
+ABC demonstration.\label{fig:abc_results}}
+\end{figure}
 
 \section{Python Bindings}\label{sec:python_bindings}
 In \pkg{DNest4}, it is also possible to specify and run models in
@@ -1655,7 +1659,8 @@ for i, sample in enumerate(gen):
 \end{CodeInput}
 \end{CodeChunk}
 
-
+The text file output can be analyzed using \code{dnest4.postprocess()}
+as usual.
 
 \section*{Acknowledgements}
 John Veitch (Birmingham)
