@@ -785,8 +785,9 @@ implement. The following procedure generates
 $x$ from a heavy-tailed distribution:
 
 \begin{enumerate}
-\item Generate $a, b, c \sim$ Normal$(0, 1)$
-\item Define $t := c/\sqrt{(a^2 + b^2)/2}$
+\item Generate $a \sim$ Normal$(0, 1)$
+\item Generate $b \sim$ Uniform$(0, 1)$
+\item Define $t := a/\sqrt{-\ln(b)}$
 \item Generate $n \sim$ Normal$(0, 1)$
 \item Set $x := 10^{1.5 - 3|t|}n$
 \end{enumerate}

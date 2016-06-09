@@ -30,8 +30,7 @@ double RNG::randn()
 double RNG::randt2()
 {
     // t-distribution with 2 degrees of freedom (less ridiculous than Cauchy)
-    return this->randn()/
-                sqrt((pow(this->randn(), 2) + pow(this->randn(), 2))/2);
+    return this->randn()/sqrt(-log(this->rand()));
 }
 
 double RNG::randh()
