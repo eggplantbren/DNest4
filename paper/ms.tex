@@ -37,12 +37,13 @@ multimodal or has strong dependencies between variables.
 \pkg{DNest4} is an open source (MIT licensed),
 multi-threaded implementation of this algorithm in
 \proglang{C++11},
-along with associated utilities including: i)
-a \pkg{Python} package allowing basic use without \proglang{C++} coding;
-ii) \pkg{RJObject}, a class template for finite mixture models;
-iii) Experimental support for models implemented in \proglang{Julia}; and
-iv) An experimental \proglang{Python} tool to
-generate \pkg{C++} code from a model specification.
+along with associated utilities including:
+i)
+\pkg{RJObject}, a class template for finite mixture models;
+(ii)
+A \pkg{Python} package allowing basic use without \proglang{C++} coding; and
+iii)
+Experimental support for models implemented in \proglang{Julia}.
 In this paper we demonstrate \pkg{DNest4} usage through examples including
 simple Bayesian data analysis, finite mixture models, and Approximate
 Bayesian Computation.
@@ -89,7 +90,7 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 %\setlength{\parskip}{8pt}
 
 \section{Introduction}
-Bayesian inference, where probability theory is used to describe degrees of
+Bayesian inference, where probability theory describes degrees of
 logical implication or subjective certainty, provides a powerful general basis
 for data analysis \citep{ohagan, sivia}. The result of such
 an analysis is typically
@@ -125,8 +126,9 @@ p(\data | M_j) &= \int p(\theta_j | M_j)p(\data | \theta_j, M_j) \, d\theta_j
 is the marginal likelihood of model $j$, equal to the expected value of the
 likelihood function with respect to the prior distribution.
 This kind of calculation is often
-called ``model selection'' or ``model averaging''.
-
+called ``model selection'' or ``model averaging'', and the results
+are often presented as ratios
+of marginal likelihoods, known as Bayes Factors.
 When discussing computational matters, the prior distribution for parameters
 is
 often written $\pi(\theta)$, the likelihood $L(\theta)$,
@@ -174,7 +176,7 @@ is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist \citep[e.g.][]{multinest, 2015MNRAS.453.4384H}.
 Diffusive Nested Sampling \citep[DNS][]{dnest} is an alternative to NS for
 problems where MCMC is the only viable sampling method. DNS is based on the
-Metropolis algorithm. DNS evolves one or more particles in the parameter space, along with
+Metropolis algorithm, and evolves one or more particles in the parameter space, along with
 an integer index variable $j$ for each particle,
 to explore the following joint distribution:
 \begin{align}
@@ -197,7 +199,8 @@ p(\theta) &=
 The DNS algorithm consists of two stages. In the first stage,
 the particle(s) are initialized from the prior $\pi(\theta)$, equivalent
 to the mixture of constrained priors with a single level whose likelihood
-threshold is $-\infty$. The mixture of constrained priors evolves by adding new levels
+threshold is $-\infty$. The mixture of constrained priors evolves by adding new levels,
+each of which compresses the distribution by a factor of about $e \approx 2.71818$
 (see \citet{dnest} for details). In this stage,
 the mixture weights $\{w_j\}$ are set according to
 \begin{align}
@@ -225,7 +228,7 @@ a \proglang{C++} class
 to run \pkg{DNest4} on that problem. This method offers full control over the
 design of your class, and allows the opportunity of optimizing
 performance by preventing a full re-computation of the log-likelihood when
-only a small subset of the parameters have been changed.
+only a subset of the parameters has been changed.
 
 Alternatively, the \proglang{Python}
 bindings (Section~\ref{sec:python_bindings}) allow you
@@ -263,7 +266,9 @@ for a proposed move from $\theta$ to $\theta'$ is
 \right]
 \label{eqn:log_hastings}
 \end{align}
-where $\ell_j$ is the likelihood threshold for level $j$.
+where $\ell_j$ is the likelihood threshold for the current level $j$.
+There are also moves that propose a change to $j$ while keeping
+$\params$ fixed, but the details are less relevant to the user.
 
 For convenience later on, we 
 separate the prior and proposal-related terms from
@@ -294,15 +299,15 @@ H\times
 
 
 \section{Dependencies and installation}\label{sec:installation}
-
-\subsection{Unix-like operating systems}
 The following instructions apply to Unix-like operating systems such as
-GNU/Linux, Mac OS X, and FreeBSD.
-\pkg{DNest4} can be obtained from the \pkg{git} repository located at
+GNU/Linux, Mac OS X, and FreeBSD. Currently we have not tested
+\pkg{DNest4} on Microsoft Windows.
+
+The software can be obtained from the \pkg{git} repository located at
 \begin{center}
 {\tt https://github.com/eggplantbren/DNest4/}\\
 \end{center}
-and is licensed under the
+and is licensed under the permissive open source
 MIT license. To obtain and compile \pkg{DNest4},
 you require \pkg{git} and a recent version of the GNU
 \proglang{C++} compiler, \pkg{g++}. The \proglang{Python}
@@ -322,11 +327,8 @@ python setup.py install
 
 We recommend you create an environment variable called \code{DNEST4\_PATH}
 and set it to the directory {\em above} the \pkg{DNest4} directory. Then,
-if the examples or templates from the \pkg{DNest4} repository are copied
+if the templates from the \pkg{DNest4} repository are copied
 to any other location on your system, their Makefiles will continue to work.
-
-\subsection{Microsoft Windows}
-
 
 \section{Running DNest4}\label{sec:running}
 To demonstrate \pkg{DNest4},
@@ -342,16 +344,14 @@ b &\sim \textnormal{Normal}(0, 1000^2)\\
 \ln\sigma &\sim \textnormal{Uniform}(-10, 10).
 \end{align}
 These are naive diffuse priors and do not have any special status.
-This model was implemented in \proglang{C++}
-(see Section~\ref{sec:models} for details).
 The dataset is shown in Figure~\ref{fig:regression_lines}
 and the code is included in the {\tt code/Examples/StraightLine}
-subdirectory. A simplified version of the
+subdirectory, and a slightly simplified version of the
 code is explained in Section~\ref{sec:models}.
 To execute \pkg{DNest4} on this problem, go to this directory and
 execute {\tt main}. The output to the screen
 should contain information about levels and ``saving particles to disk''.
-After 5000 particles have been saved to the disk, the run should terminate.
+After 5000 particles have been saved to the disk, the run will terminate.
 
 \section{Output files}
 The executable {\tt main} is responsible for the exploration part of the
@@ -380,8 +380,9 @@ The second column is the log-likelihood value, and the third column is
 the likelihood ``tiebreaker'', which allows Nested Sampling to work when
 there is a region in parameter space with nonzero prior probability where the
 likelihood is constant. The final column tells us which thread the particle
-belonged to: when you use \dnest~in multithreaded mode, each thread
-is responsible for evolving one or more walkers.
+belonged to: when you use \dnest~in multithreaded mode
+(see Appendix~\ref{sec:command_line_options}), each thread
+is responsible for evolving one or more particles.
 
 The third output file, {\tt levels.txt}, contains information about the levels
 that were built during the run. The first column has estimates of the $\log(X)$
@@ -399,8 +400,7 @@ of proposals that have occurred within each level, which are useful for
 monitoring the Metropolis acceptance ratio as a function of level.
 The final two columns, called ``exceeds'', and ``visits'', are used to refine
 the estimates of the level compressions (and hence the $\log(X)$ values of
-the levels in column 1), as discussed in Section 3 of the
-paper. The visits column counts the number of times a level (level $j$, say)
+the levels in column 1), as discussed in Section 3 of \citet{dnest}. The visits column counts the number of times a level (level $j$, say)
 has been visited, but only starts counting after the next level ($j+1$) has been created. The exceeds column counts the number of times a particle that was
 in level $j$ had a likelihood that exceeded that of level $j+1$.
 
@@ -418,8 +418,8 @@ Figure~\ref{fig:regression_lines}.}:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-import dnest4.classic
-dnest4.classic.postprocess()
+import dnest4
+dnest4.postprocess()
 \end{CodeInput}
 \end{CodeChunk}
 This produces the three diagnostic plots in Figures~\ref{fig:fig1},
@@ -1524,14 +1524,14 @@ This generates posterior samples using the $\epsilon$ value that
 compresses the joint prior by 80\% as much as the final level.
 \begin{CodeChunk}
 \begin{CodeInput}
-dnest4.classic.postprocess_abc()
+dnest4.postprocess_abc()
 \end{CodeInput}
 \end{CodeChunk}
 To try different values of $\epsilon$, you can set the argument
 \code{threshold\_fraction} to a value other than 0.8. For example
 \begin{CodeChunk}
 \begin{CodeInput}
-dnest4.classic.postprocess_abc(threshold_fraction=0.6)
+dnest4.postprocess_abc(threshold_fraction=0.6)
 \end{CodeInput}
 \end{CodeChunk}
 
