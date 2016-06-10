@@ -879,7 +879,10 @@ for testing this is to sample the prior for a long time
 the prior correctly.
 
 \subsection{Log-likelihood}
-The log-likelihood code is standard:
+The log-likelihood for the model is evaluated and returned by the
+\code{log\_likelihood} member function. For the straight line
+fitting example, the log likelihood is based on the
+normal density, and the code is given below.
 \begin{CodeChunk}
 \begin{CodeInput}
 double StraightLine::log_likelihood() const
