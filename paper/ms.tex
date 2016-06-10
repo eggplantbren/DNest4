@@ -1292,6 +1292,8 @@ void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
 The data and the posterior mean fit are shown
 in Figure~\ref{fig:galaxies} and the posterior distribution for
 $N$ is shown in Figure~\ref{fig:galaxies_N}.
+The marginal likelihood was $\ln(Z) = -242.2$, and
+the information (measured in nats) was $\mathcal{H} = 32.3$.
 
 \begin{figure}
 \begin{minipage}{0.45\textwidth}
@@ -1437,6 +1439,11 @@ Equation~\ref{eqn:abc_posterior} with $\epsilon$ corresponding to minus
 the ``log likelihood'' of the level.
 A single \pkg{DNest4} run allows you to test sensitivity
 to the value of $\epsilon$ using a single run.
+The marginal likelihood reported will be
+the probability that $\rho\left(D; D_{\rm observed}\right) < \epsilon$
+given the model, although caution should be applied if
+using this for model selection \citep{robert}.
+
 
 \subsection{ABC Example}
 A simple ABC example is included in the directory
@@ -1741,6 +1748,9 @@ Edition, Oxford University Press
 \bibitem[P{\'a}rtay et al.(2009)]{2009arXiv0906.3544P} P{\'a}rtay, L.~B., 
 Bart{\'o}k, A.~P., Cs{\'a}nyi, G.\ 2009.\ Efficient sampling of atomic 
 configurational spaces.\ ArXiv e-prints arXiv: 0906.3544. 
+
+\bibitem[Robert et al.(2011)]{robert}
+Robert, C.P., Cornuet, J.M., Marin, J.M. and Pillai, N.S., 2011. Lack of confidence in approximate Bayesian computation model choice. Proceedings of the National Academy of Sciences, 108(37), pp.15112-15117.
 
 \bibitem[\protect\citeauthoryear{Skilling}{2006}]{skilling} Skilling, J., 2006, Nested Sampling for General Bayesian Computation, Bayesian Analysis 4, pp. 833-860.
 
