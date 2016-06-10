@@ -1,9 +1,11 @@
 #ifndef DNest4_DNest4
+#define DNest4_DNest4
 
 /*
 * Include every header file in DNest4
 */
 
+#include "Version.h"
 #include "Barrier.h"
 #include "CommandLineOptions.h"
 #include "Level.h"
