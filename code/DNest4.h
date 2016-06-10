@@ -5,6 +5,7 @@
 * Include every header file in DNest4
 */
 
+#include "Version.h"
 #include "Barrier.h"
 #include "CommandLineOptions.h"
 #include "Level.h"
