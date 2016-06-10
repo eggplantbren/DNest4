@@ -1,4 +1,5 @@
 from pylab import *
+import dnest4
 
 import os
 
@@ -13,7 +14,7 @@ saveFrames = False # For making movies
 if saveFrames:
 	os.system('rm Frames/*.png')
 
-posterior_sample = atleast_2d(loadtxt('posterior_sample.txt'))
+posterior_sample = atleast_2d(dnest4.my_loadtxt('posterior_sample.txt'))
 data = loadtxt('Data/test_image.txt')
 sig = loadtxt('Data/test_sigma.txt')
 
