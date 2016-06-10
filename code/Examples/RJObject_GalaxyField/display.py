@@ -23,7 +23,7 @@ hold(False)
 for i in range(0, posterior_sample.shape[0]):
 	img = posterior_sample[i, 0:200**2].reshape((200, 200))
 	subplot(1, 2, 1)
-	imshow(-stretch(img), cmap='viridis')
+	imshow(stretch(img), cmap='viridis')
 	title('Model {i}'.format(i=i))
 	gca().set_xticks([-0.5, 99.5, 199.5])
 	gca().set_yticks([-0.5, 99.5, 199.5])
