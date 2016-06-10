@@ -13,8 +13,10 @@ my_python = "python"
 def run_example(directory):
     os.chdir(directory)
     os.system("./main -s 0")
-    os.system(my_python + " showresults.py") 
+    os.system(my_python + " showresults.py")
+    os.chdir("..")
 
+os.chdir("../code/Examples")
 run_example("StraightLine")
 run_example("RJObject_1DMixture")
 run_example("ABC")
