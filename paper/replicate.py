@@ -4,6 +4,8 @@ presented in the paper. Note:
 plots will be generated, which need to be manually
 closed for the script to continue. It assumes
 everything has been compiled already.
+
+NOTE: the RJObject_1DMixture example is fairly time-consuming.
 """
 import os
 
