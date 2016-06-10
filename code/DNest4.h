@@ -1,4 +1,5 @@
 #ifndef DNest4_DNest4
+#define DNest4_DNest4
 
 /*
 * Include every header file in DNest4
