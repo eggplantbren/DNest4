@@ -275,14 +275,24 @@ separate the prior and proposal-related terms from
 the likelihood-related term, and write the former as
 \begin{align}
 H = \frac{q(\params'|\params)}{q(\params | \params')}
-\times \frac{\pi(\params')}{\pi(\params)}
+\times \frac{\pi(\params')}{\pi(\params)}.
 \end{align}
-so the acceptance probability becomes
+
+The logarithm of $H$,
+\begin{align}
+\ln(H) = \ln\left[\frac{q(\params'|\params)}{q(\params | \params')}
+\times \frac{\pi(\params')}{\pi(\params)}\right],
+\end{align}
+is the user's responsibility when implementing models,
+and will become relevant in Sections~\ref{sec:perturb}
+and~\ref{sec:proposals}.
+In terms of $\ln(H)$, the
+acceptance probability becomes
 \begin{align}
 \alpha &= \min\left[1,
-H\times
+e^{\ln(H)}\times
 \mathds{1}\left(L(\params') > \ell_j\right)
-\right]
+\right].\label{eqn:logH}
 \end{align}
 
 
@@ -649,7 +659,7 @@ The class must also define and implement the following member functions:
         values from the prior;
 \item \code{double perturb(DNest4::RNG\& rng)}, which proposes a
         change to the parameter values, and returns $\ln(H)$ as defined in
-        Equation~\ref{eqn:log_hastings};
+        Equation~\ref{eqn:logH};
 \item \code{double log\_likelihood() const}, which evaluates the log of
         the likelihood function;
 \item \code{void print(std::ostream\& out) const}, which prints parameters of
@@ -699,12 +709,18 @@ As you might expect, there are
 double precision values
 from a Uniform$(0,1)$ and Normal$(0,1)$ distribution respectively.
 
-\subsection{Proposal moves}
-The \code{perturb} member function for the straight line model is:
+\subsection{Proposal moves}\label{sec:perturb}
+The \code{perturb} member function for the straight line model is given below.
+This takes a random number generator as input, makes changes to
+a subset of the parameters, and returns a \code{double} corresponding
+to $\ln(H)$ as defined in Equation~\ref{eqn:logH}. The combination of
+the choice of proposal and the $\ln(H)$ value returned must be consistent
+with the prior distribution.
 \begin{CodeChunk}
 \begin{CodeInput}
 double StraightLine::perturb(DNest4::RNG& rng)
 {
+    // log_H value to be returned
     double log_H = 0.0;
 
     // Proposals must be consistent with the prior
@@ -749,7 +765,7 @@ double StraightLine::perturb(DNest4::RNG& rng)
 \end{CodeInput}
 \end{CodeChunk}
 
-This first chooses a random integer from $\{0, 1, 2\}$ using the
+This function first chooses a random integer from $\{0, 1, 2\}$ using the
 \code{rand\_int(int)} member function of the \code{DNest4::RNG} class.
 This determines which of the three parameters
 $(m, b, \sigma)$ is modified. In this example, there are no proposals
@@ -757,7 +773,7 @@ that modify more than one of the parameters at a time, and all proposals
 are ``random walk'' proposals that add a perturbation
 (drawn from a symmetric distribution) to the current value.
 
-\subsection{Proposals for single parameters}
+\subsection{Proposals for single parameters}\label{sec:proposals}
 The proposal for $m$ involves adding a perturbation to the current
 value using the line
 
