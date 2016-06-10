@@ -10,7 +10,7 @@ MyModel::MyModel()
 :objects(8, 100, false, MyConditionalPrior(
 	Data::get_instance().get_x_min(), Data::get_instance().get_x_max(),
 	Data::get_instance().get_y_min(), Data::get_instance().get_y_max(),
-			1E-3, 1E3))
+			1E-3, 1E3), PriorType::log_uniform)
 ,image(Data::get_instance().get_ni(),
 	vector<long double>(Data::get_instance().get_nj()))
 {
