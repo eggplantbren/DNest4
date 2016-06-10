@@ -7,4 +7,4 @@
 20	# maximum number of levels
 10	# Backtracking scale length (lambda in the paper)
 100	# Strength of effect to force histogram to equal push. 0-10 is best. (beta in the paper)
-10000	# Maximum number of saves (0 = infinite)
+5000	# Maximum number of saves (0 = infinite)
