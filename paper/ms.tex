@@ -186,7 +186,7 @@ p(\theta, j) &= p(j)p(\theta | j)\\
 \label{eqn:target_distribution}
 \end{align}
 where the $\{\ell_j\}$ are a sequence of increasing likelihood thresholds
-or {\em levels}, and
+or {\em levels},
 $\ell_0 = 0$, and $\{w_j\}$ is the marginal distribution for $j$.
 The marginal distribution for $\theta$ is then a {\em mixture} of
 constrained priors:
@@ -198,7 +198,7 @@ p(\theta) &=
 \end{align}
 The DNS algorithm consists of two stages. In the first stage,
 the particle(s) are initialized from the prior $\pi(\theta)$, equivalent
-to the mixture of constrained priors with a single level whose likelihood
+to the mixture of constrained priors with a single level whose log likelihood
 threshold is $-\infty$. The mixture of constrained priors evolves by adding new levels,
 each of which compresses the distribution by a factor of about $e \approx 2.71818$
 (see \citet{dnest} for details). In this stage,
