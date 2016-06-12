@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = "0.0.1.dev0"
+__version__ = "0.1.0"
 
 try:
     __DNEST4_SETUP__
