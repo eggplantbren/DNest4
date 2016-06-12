@@ -313,13 +313,14 @@ The following instructions apply to Unix-like operating systems such as
 GNU/Linux, Mac OS X, and FreeBSD. Currently we have not tested
 \pkg{DNest4} on Microsoft Windows.
 
-The software can be obtained from the \pkg{git} repository located at
+Development of \pkg{DNest4} takes place in the \pkg{git} repository located at
 \begin{center}
 {\tt https://github.com/eggplantbren/DNest4/}\\
 \end{center}
-and is licensed under the permissive open source
-MIT license. To obtain and compile \pkg{DNest4},
-you require \pkg{git} and a recent version of the GNU
+The software
+is licensed under the permissive open source
+MIT license. To compile and run \pkg{DNest4},
+you require a recent version of the GNU
 \proglang{C++} compiler, \pkg{g++}. The \proglang{Python}
 packages \pkg{NumPy}, \pkg{matplotlib},
 \pkg{Pandas}, and \pkg{Cython} are also needed.
@@ -327,7 +328,9 @@ To download and compile \pkg{DNest4}
 the following steps are sufficient:
 \begin{CodeChunk}
 \begin{CodeInput}
-git clone https://github.com/eggplantbren/DNest4
+wget https://github.com/eggplantbren/DNest4/archive/0.1.0.tar.gz
+tar xvzf 0.1.0.tar.gz
+mv DNest4-0.1.0 DNest4
 cd DNest4/code
 make
 cd ../python
@@ -337,8 +340,9 @@ python setup.py install
 
 We recommend you create an environment variable called \code{DNEST4\_PATH}
 and set it to the directory {\em above} the \pkg{DNest4} directory. Then,
-if the templates from the \pkg{DNest4} repository are copied
-to any other location on your system, their Makefiles will continue to work.
+if the model templates from the \pkg{DNest4} repository are copied
+to any other location on your system and used as the basis for
+new work, their Makefiles will continue to function.
 
 \section{Running DNest4}\label{sec:running}
 To demonstrate \pkg{DNest4},
