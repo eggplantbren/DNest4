@@ -92,7 +92,7 @@ metropolis algorithm, bayesian computation, nested sampling, c++11, python} %% w
 \section{Introduction}
 Bayesian inference, where probability theory describes degrees of
 logical implication or subjective certainty, provides a powerful general basis
-for data analysis \citep{ohagan, sivia}. The result of such
+for data analysis \citep{o2004kendall, sivia2006data}. The result of such
 an analysis is typically
 posterior probabilities of various hypotheses, or
 a joint posterior probability distribution for the values of unknown
@@ -136,13 +136,14 @@ and the marginal likelihood $Z$. A popular alternative name for the marginal
 likelihood, which emphasizes its role in Bayesian model averaging,
 is the ``evidence''.
 
-Nested Sampling \citep[NS;][]{skilling} is a Monte Carlo method whose main
+Nested Sampling \citep[NS;][]{skilling2006nested} is a Monte Carlo method whose main
 aim is to calculate $Z$. However, it can also be used to generate samples
 to represent the posterior distribution $\pi(\theta)L(\theta)/Z$, or
 any other distribution proportional to
 $\pi(\theta)\Phi\left[L(\theta)\right]$ where $\Phi$ is any monotonic function.
 This latter property makes NS particularly useful for statistical mechanics
-calculations \citep{2009arXiv0906.3544P, 2015arXiv150303404B}, where the
+calculations \citep{partay2010efficient, baldock2016determining},
+where the
 ``canonical'' family of distributions proportional to
 $\pi(\theta)L(\theta)^\beta$ is of interest. In such applications,
 $L(\theta)$ is usually equivalent to
@@ -173,8 +174,10 @@ parameter space is a defining feature of NS.
 
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
-this, although alternatives exist \citep[e.g.][]{multinest, 2015MNRAS.453.4384H}.
-Diffusive Nested Sampling \citep[DNS][]{dnest} is an alternative to NS for
+this, although alternatives exist
+\citep[e.g.][]{feroz2009multinest, handley2015polychord}.
+Diffusive Nested Sampling \citep[DNS;][]{brewer2011diffusive}
+is an alternative to NS for
 problems where MCMC is the only viable sampling method. DNS is based on the
 Metropolis algorithm, and evolves one or more particles in the parameter space, along with
 an integer index variable $j$ for each particle,
@@ -201,7 +204,7 @@ the particle(s) are initialized from the prior $\pi(\theta)$, equivalent
 to the mixture of constrained priors with a single level whose log likelihood
 threshold is $-\infty$. The mixture of constrained priors evolves by adding new levels,
 each of which compresses the distribution by a factor of about $e \approx 2.71818$
-(see \citet{dnest} for details). In this stage,
+(see \citet{brewer2011diffusive} for details). In this stage,
 the mixture weights $\{w_j\}$ are set according to
 \begin{align}
 w_j &\propto \exp(j/\lambda),\label{eqn:weighting}
@@ -210,16 +213,19 @@ where $\lambda$ is a scale length.
 This enhances the probability that particles stay close to the
 highest likelihood regions seen.
 The second stage sets the mixture weights to be approximately
-uniform ($w_j \propto 1$), with some tweaks described by \citet{dnest}.
+uniform ($w_j \propto 1$), with some tweaks described by
+\citet{brewer2011diffusive}.
 
 The mixture of constrained priors tends to be easier to sample than the
 posterior, as the prior is always a mixture component, allowing the
 MCMC chain to mix between different modes in some circumstances. The marginal
 likelihood estimate can also be more accurate than standard MCMC-based NS
-\citep{dnest}, as less information is discarded.
+\citep{brewer2011diffusive}, as less information is discarded.
 DNS has been applied several times in astrophysics
-\citep[e.g.][]{2014MNRAS.445.3055P, 2015ApJ...810...66H, 2015MNRAS.448.3206B}
-and was recently used in a biological application \citep{salmonella}.
+\citep[e.g.][]{pancoast2014modelling, huppenkothen2015dissecting,
+brewer2015fast}
+and was recently used in a biological application
+\citep{dybowski2015single}.
 
 There are several ways of using \pkg{DNest4}. After installing the software
 (Section~\ref{sec:installation}), you can implement a model as
@@ -414,7 +420,9 @@ of proposals that have occurred within each level, which are useful for
 monitoring the Metropolis acceptance ratio as a function of level.
 The final two columns, called ``exceeds'', and ``visits'', are used to refine
 the estimates of the level compressions (and hence the $\log(X)$ values of
-the levels in column 1), as discussed in Section 3 of \citet{dnest}. The visits column counts the number of times a level (level $j$, say)
+the levels in column 1), as discussed in Section 3 of
+\citet{brewer2011diffusive}.
+The visits column counts the number of times a level (level $j$, say)
 has been visited, but only starts counting after the next level ($j+1$) has been created. The exceeds column counts the number of times a particle that was
 in level $j$ had a likelihood that exceeded that of level $j+1$.
 
@@ -586,11 +594,11 @@ maximum number of levels. A clear peak should be visible in the posterior
 weights plot in the lower panel, such that moving further to the left would not
 add any more particles with comparable weight to those in the peak.
 
-As described by \citet{skilling}, there is no guarantee in principle that
+As described by \citet{skilling2006nested}, there is no guarantee in principle that
 another peak might have appeared had a run continued for longer. These
 {\em phase changes} are more common in statistical mechanics problems than
 in data analysis problems, but can appear in the latter
-\citep[e.g.][]{rjobject, 2015MNRAS.448.3206B}.
+\citep[e.g.][]{brewer2014inference, brewer2015fast}.
 
 Alternatively, \pkg{DNest4} can try to determine the maximum number of levels
 automatically, if you set the maximum number of levels to 0. This works well
@@ -613,7 +621,8 @@ cases. In simple problems where MCMC exploration is easy, lower values
 from 1 to 5 work sufficiently well.
 
 \subsection{Equal weight enforcement}
-This value is the parameter $\beta$ described in \citet{dnest}, and compensates
+This value is the parameter $\beta$ described in
+\citet{brewer2011diffusive}, and compensates
 for imprecision in the spacing of the levels, so that the desired mixture
 weights $w_j \propto 1$ are achieved during the second stage of the DNS
 algorithm. The value 100 is recommended.
@@ -801,7 +810,7 @@ probability of making a jump of appropriate size. This is slightly
 wasteful of CPU time, but it saves a lot of human time and is more
 fail-safe than tuned step sizes.
 In simple experiments, we have found that heavy-tailed proposals are
-about as efficient as slice sampling \citep{slice}, but much easier to
+about as efficient as slice sampling \citep{neal2003slice}, but much easier to
 implement. The following procedure generates
 $x$ from a heavy-tailed distribution:
 
@@ -993,9 +1002,10 @@ and run the sampler.
 \section{Finite Mixture Models with RJObject}
 Mixture models are a useful way of representing realistic prior information
 in Bayesian data analysis. To reduce the amount of effort needed to
-implement mixture models in DNS, \citet{rjobject} implemented
+implement mixture models in DNS, \citet{brewer2014inference} implemented
 a template class called \code{RJObject} to handle the MCMC moves
-required. The RJ in \code{RJObject} stands for Reversible Jump \citep{green}, as
+required. The RJ in \code{RJObject} stands for Reversible Jump
+\citep{green1995reversible}, as
 \code{RJObject} implements birth and death moves for mixture
 models with an unknown number of components. An updated version of
 \code{RJObject} is included in \pkg{DNest4}.
@@ -1034,13 +1044,15 @@ Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 \end{center}
 \end{figure}
 
-\citet{rjobject} described the motivation for \code{RJObject} and some details
+\citet{brewer2014inference}
+described the motivation for \code{RJObject} and some details
 about the Metropolis proposals underlying it. Here, we demonstrate how to
 implement a finite mixture model using \code{RJObject}.
 This example can be found in the
 {\tt code/Examples/RJObject\_1DMixture}
 directory. The ``SineWave'' and ``GalaxyField'' models
-from \citet{rjobject} are also included in the \pkg{DNest4} repository.
+from \citet{brewer2014inference}
+are also included in the \pkg{DNest4} repository.
 
 \subsection{An example mixture model}
 Consider a sampling distribution
@@ -1320,7 +1332,7 @@ galaxy data.\label{fig:galaxies_N}}
 \includegraphics[width=0.7\textwidth]{figures/galaxies_fig3.pdf}
 \caption{The log-likelihood and posterior weights as a function
 of compression $X$ for the galaxy data. There are phase changes
-\citep{skilling} for which Nested Sampling is the best known
+\citep{skilling2006nested} for which Nested Sampling is the best known
 solution.
 \label{fig:galaxies_fig3}}
 \end{figure}
@@ -1371,7 +1383,8 @@ The marginal distribution for $\theta$ is also the conditional distribution
 $p(\theta | D = D_{\rm observed}, M)$, that is,
 the posterior\footnote{Incidentally, this usage of the {\em joint} posterior
 distribution for the parameters {\em and the data} provides a bridge
-connecting Bayesian updating to maximum entropy updating \citep{caticha,giffin}.}.
+connecting Bayesian updating to maximum entropy updating
+\citep{caticha2006updating,giffin2007updating}.}.
 
 This approach is rarely usable in practice because the probability of
 generating a dataset that matches the observed one is extremely low.
@@ -1419,7 +1432,7 @@ Challenge (i) is Bayesian in nature, i.e. it relates to the very
 definition of the posterior distribution itself.
 On the other hand, challenges (ii) and (iii) are about the computational
 implementation. Most ABC analyses are done using Sequential Monte Carlo
-\citep[SMC; ][]{delmoral}, another family of algorithms closely related
+\citep[SMC; ][]{del2012adaptive}, another family of algorithms closely related
 to Nested Sampling and annealing in the sense that they work with
 sequences of probability distributions.
 
@@ -1446,7 +1459,7 @@ to the value of $\epsilon$ using a single run.
 The marginal likelihood reported will be
 the probability that $\rho\left(D; D_{\rm observed}\right) < \epsilon$
 given the model, although caution should be applied if
-using this for model selection \citep{robert}.
+using this for model selection \citep{robert2011lack}.
 
 
 \subsection{ABC Example}
@@ -1702,63 +1715,7 @@ Ewan Cameron (Oxford), David Hogg (NYU), and Daniela Huppenkothen (NYU)
 for valuable discussions. BJB was supported by a Marsden Fast-Start grant
 from the Royal Society of New Zealand.
 
-\begin{thebibliography}{99}
-\bibitem[Baldock et al.(2015)]{2015arXiv150303404B} Baldock, R.~J.~N., 
-P{\'a}rtay, L.~v.~B., Bart{\'o}k, A.~P., Payne, M.~C., Cs{\'a}nyi, G.\ 
-2015.\ Determining pressure-temperature phase diagrams of materials.\ ArXiv 
-e-prints arXiv: 1503.03404. 
-
-\bibitem[\protect\citeauthoryear{Brewer, P{\'a}rtay,
-\& Cs{\'a}nyi}{2011}]{dnest} Brewer B.~J., P{\'a}rtay L.~B., Cs{\'a}nyi G., 2011,
-Statistics and Computing, 21, 4, 649-656. arXiv:0912.2380
-
-\bibitem[Brewer(2014)]{rjobject} Brewer, B.~J.\ 2014.\ Inference for Trans-dimensional Bayesian Models with Diffusive Nested Sampling.\ ArXiv e-prints arXiv:1411.3921.
-
-\bibitem[Brewer and Donovan(2015)]{2015MNRAS.448.3206B} Brewer, B.~J., Donovan, C.~P.\ 2015.\ Fast Bayesian inference for exoplanet discovery in radial velocity data.\ Monthly Notices of the Royal Astronomical Society 448, 3206-3214. 
-
-\bibitem[Caticha and Giffin(2006)]{caticha} Caticha, A., Giffin, A.\ 2006.\ Updating Probabilities.\ Bayesian Inference and Maximum Entropy Methods In Science and Engineering 872, 31-42. 
-
-\bibitem[Del Moral et al(2012)]{delmoral}
-Del Moral, P., Doucet, A. and Jasra, A., 2012. An adaptive sequential Monte Carlo method for approximate Bayesian computation. Statistics and Computing, 22(5), pp.1009-1020.
-
-\bibitem[Dybowski et al(2015)]{salmonella}
-Dybowski, Richard, et al. Single passage in mouse organs enhances the survival and spread of Salmonella enterica. Journal of The Royal Society Interface 12.113 (2015): 20150702.
-
-\bibitem[\protect\citeauthoryear{Feroz, Hobson,
-\& Bridges}{2009}]{multinest} Feroz F., Hobson M.~P., Bridges M., 2009, MNRAS, 398, 1601
-
-\bibitem[Giffin and Caticha(2007)]{giffin} Giffin, A., Caticha, A.\ 2007.\ Updating Probabilities with Data and Moments.\ Bayesian Inference and Maximum Entropy
-Methods in Science and Engineering 954, 74-84. 
-
-\bibitem[\protect\citeauthoryear{Green}{1995}]{green}
-Green, P.~J., 1995, Reversible Jump Markov Chain Monte Carlo Computation and Bayesian Model Determination, Biometrika 82 (4): 711–732.
-
-\bibitem[Handley et al.(2015)]{2015MNRAS.453.4384H} Handley, W.~J., Hobson, M.~P., Lasenby, A.~N.\ 2015.\ POLYCHORD: next-generation nested sampling.\ Monthly Notices of the Royal Astronomical Society 453, 4384-4398. 
-
-\bibitem[Huppenkothen et al.(2015)]{2015ApJ...810...66H} Huppenkothen, D., Brewer, B.~J., Hogg, D.~W., Murray, I., Frean, M., Elenbaas, C., Watts, A.~L., Levin, Y., van der Horst, A.~J., Kouveliotou, C.\ 2015.\ Dissecting Magnetar Variability with Bayesian Hierarchical Models.\ The Astrophysical Journal 810, 66. 
-
-\bibitem[Neal(2003)]{slice}
-Neal, R.M., 2003. Slice sampling. Annals of statistics, pp.705-741.
-
-\bibitem[\protect\citeauthoryear{O'Hagan and Forster}{2004}]{ohagan}
-O'Hagan, A., Forster,~J., 2004, Bayesian inference. London: Arnold.
-
-\bibitem[Pancoast et al.(2014)]{2014MNRAS.445.3055P} Pancoast, A., Brewer, B.~J., Treu, T.\ 2014.\ Modelling reverberation mapping data - I. Improved geometric and dynamical models and comparison with cross-correlation results.\ Monthly Notices of the Royal Astronomical Society 445, 3055-3072.
-
-\bibitem[\protect\citeauthoryear{Sivia and Skilling}{2006}]{sivia} Sivia, 
-D.~ S., Skilling, J., 2006, Data Analysis: A Bayesian Tutorial, 2nd 
-Edition, Oxford University Press
-
-\bibitem[P{\'a}rtay et al.(2009)]{2009arXiv0906.3544P} P{\'a}rtay, L.~B., 
-Bart{\'o}k, A.~P., Cs{\'a}nyi, G.\ 2009.\ Efficient sampling of atomic 
-configurational spaces.\ ArXiv e-prints arXiv: 0906.3544. 
-
-\bibitem[Robert et al.(2011)]{robert}
-Robert, C.P., Cornuet, J.M., Marin, J.M. and Pillai, N.S., 2011. Lack of confidence in approximate Bayesian computation model choice. Proceedings of the National Academy of Sciences, 108(37), pp.15112-15117.
-
-\bibitem[\protect\citeauthoryear{Skilling}{2006}]{skilling} Skilling, J., 2006, Nested Sampling for General Bayesian Computation, Bayesian Analysis 4, pp. 833-860.
-
-\end{thebibliography}
+\bibliography{references}
 
 \appendix
 \section{Command Line Options}\label{sec:command_line_options}
@@ -1812,7 +1769,8 @@ proposals are used). To use a different prior, transform the parameters inside
 your {\tt log\_likelihood} function before using them.
 You may add other functions to {\tt julia\_model.jl}, for example to load
 a dataset to refer to in your {\tt log\_likelihood}. The example in
-the repository is the ``SpikeSlab'' likelihood from \citet{dnest}.
+the repository is the ``SpikeSlab'' likelihood from
+\citet{brewer2011diffusive}.
 
 You can compile the model by invoking {\tt make}
 from the {\tt JuliaModel} directory.
