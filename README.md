@@ -9,7 +9,8 @@ Papers
 
 There is a manuscript describing DNest4 installation and usage
 in the paper/ directory of this repository.
-You can compile it with pdflatex.
+You can compile it with pdflatex. Alternatively, you can get the
+preprint [here](http://arxiv.org/abs/1606.03757).
 
 You might also want to read the paper describing the
 Diffusive Nested Sampling algorithm. If you find this software useful in your
