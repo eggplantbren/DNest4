@@ -327,7 +327,11 @@ The software
 is licensed under the permissive open source
 MIT license. To compile and run \pkg{DNest4},
 you require a recent version of the GNU
-\proglang{C++} compiler, \pkg{g++}. The \proglang{Python}
+\proglang{C++} compiler, \pkg{g++} \citep{gcc}.
+\pkg{DNest4} uses features from the \proglang{C++11} standard
+\citep{c++11}.
+
+The \proglang{Python}
 packages \pkg{NumPy} \citep{numpy}, \pkg{matplotlib} \citep{matplotlib},
 \pkg{Pandas} \citep{pandas}, and \pkg{Cython} \citep{cython} are also needed.
 To download and compile \pkg{DNest4}
@@ -1753,7 +1757,8 @@ per thread to 1, so the number of particles equals the number of threads.
 
 \section{Specifying models in Julia}
 Experimental support for model specification in the
-\proglang{Julia} language is provided, with an example given in the
+\proglang{Julia} language \citep{julia}
+is provided, with an example given in the
 {\tt code/Templates/JuliaModel} directory.
 Set an enviroment variable {\tt JULIA\_LIB\_PATH} to the directory on your
 system that contains the libraries {\tt libjulia.so} and
