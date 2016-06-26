@@ -163,7 +163,7 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 }
 
 template<class ConditionalPrior>
-double RJObject<ConditionalPrior>::perturb(RNG& rng)
+double RJObject<ConditionalPrior>::perturb(RNG& rng, bool hyperparameters)
 {
 	if(max_num_components == 0)
 		return 0.;
@@ -173,7 +173,11 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng)
 
 	double logH = 0.;
 
-	int which = (fixed)?(1 + rng.rand_int(2)):(rng.rand_int(3));
+	int which;
+    do
+    {
+        which = (fixed)?(1 + rng.rand_int(2)):(rng.rand_int(3));
+    }while(!hyperparameters && which == 1);
 
 	if(which == 0)
 	{

@@ -80,7 +80,7 @@ class RJObject
 		void from_prior(RNG& rng);
 
 		// The top-level perturb method
-		double perturb(RNG& rng);
+		double perturb(RNG& rng, bool hyperparameters=true);
 
 		// Take "removed" components and put them into "added" with
 		// negative amplitude. Only applicable to certain models!
