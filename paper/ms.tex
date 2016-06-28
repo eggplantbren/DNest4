@@ -6,7 +6,10 @@
 \usepackage{enumerate}
 \usepackage{microtype}
 \usepackage{dsfont}
+\usepackage{pifont}
 
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\cmark}{\ding{51}}%
 \newcommand{\dnest}{\pkg{DNest4}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -257,7 +260,9 @@ than
 \pkg{DNest4} only on low to moderate dimensional problems with slow
 likelihood evaluations.
 
-\pkg{emcee} \citep{emcee}
+\pkg{emcee} \citep{emcee} is a popular \proglang{Python} package for MCMC
+based on affine-invariant ensemble sampling.
+
 
 The popular \pkg{JAGS} \citep{jags} and \pkg{Stan} \citep{stan} packages
 are more convenient than \pkg{DNest4} for specifying models, by virtue
@@ -265,6 +270,36 @@ of their model-specification languages. However, being based on Gibbs
 sampling and Hamiltonian MCMC respectively, they can run into difficulty
 on multimodal posterior distributions. Also, they do not calculate
 marginal likelihoods.
+
+The advantages and disadvantages of these various packages, in the opinion
+of the authors, are summarized in Table~\ref{tab:packages}.
+
+%\begin{table}
+%
+%  \begin{tabular}{cc}
+%    Knuth & Lamport
+%  \end{tabular}}
+%\end{table}
+
+\begin{table}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+Package     &   Easy to     & High   &   Multimodal     & Dependent   &   Phase   &   Computes $Z$?\\
+            &   implement & dimensions? & distributions? & distributions? & changes? & \\
+& models? & & & & &\\
+\hline
+\pkg{DNest4}    & \xmark  & \cmark & \cmark & \cmark &\cmark &\cmark\\
+\pkg{emcee}    & \cmark  & \xmark & \xmark & \cmark &\xmark &\xmark\\
+\pkg{JAGS}    & \cmark  & \cmark & \xmark & \xmark & \xmark &\xmark\\
+\pkg{MultiNest}    & \cmark  & \xmark & \cmark & \cmark & \cmark &\cmark\\
+\pkg{Stan}    & \cmark  & \cmark & \xmark & \cmark & \xmark &\xmark\\
+\hline
+\end{tabular}}
+\caption{\label{tab:packages}}
+\end{center}
+\end{table}
 
 \section{Markov Chain Monte Carlo}\label{sec:mcmc}
 DNS is build upon the Metropolis-Hastings algorithm.
