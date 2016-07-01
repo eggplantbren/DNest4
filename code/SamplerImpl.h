@@ -514,11 +514,14 @@ void Sampler<ModelType>::kill_lagging_particles()
 	double max_log_push = -std::numeric_limits<double>::max();
 
 	unsigned int num_bad = 0;
+    double kill_probability = 0.0;
 	for(size_t i=0; i<particles.size(); ++i)
 	{
 		if(log_push(level_assignments[i]) > max_log_push)
 			max_log_push = log_push(level_assignments[i]);
-		if(log_push(level_assignments[i]) < -6.)
+        kill_probability = pow(1.0 - 1.0/(1.0 + exp(-log_push(level_assignments[i]) - 4.0)), 2);
+
+		if(rngs[0].rand() <= kill_probability)
 		{
 			good[i] = false;
 			++num_bad;
