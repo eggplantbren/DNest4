@@ -519,7 +519,7 @@ void Sampler<ModelType>::kill_lagging_particles()
 	{
 		if(log_push(level_assignments[i]) > max_log_push)
 			max_log_push = log_push(level_assignments[i]);
-        kill_probability = pow(1.0 - 1.0/(1.0 + exp(-log_push(level_assignments[i]) - 4.0)), 2);
+        kill_probability = pow(1.0 - 1.0/(1.0 + exp(-log_push(level_assignments[i]) - 4.0)), 3);
 
 		if(rngs[0].rand() <= kill_probability)
 		{
