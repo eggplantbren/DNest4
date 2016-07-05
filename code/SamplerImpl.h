@@ -555,8 +555,6 @@ void Sampler<ModelType>::kill_lagging_particles()
 			}
 		}
 	}
-	else
-		std::cerr<<"# Warning: all particles lagging! Very rare!"<<std::endl;
 }
 
 template<class ModelType>
