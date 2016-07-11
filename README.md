@@ -14,7 +14,7 @@ preprint [here](http://arxiv.org/abs/1606.03757).
 
 You might also want to read the paper describing the
 Diffusive Nested Sampling algorithm. If you find this software useful in your
-research, please cite this paper.
+research, please cite one or both of these papers.
 
 Diffusive Nested Sampling
 Brendon J. Brewer, Livia B. Pártay, and Gábor Csányi
@@ -29,7 +29,7 @@ Improvements over DNest3:
 
 *	There are far fewer dependencies --- all you need is a C++ compiler that
 	supports the C++11 standard, along with Python (and the
-    Python packages NumPy, scipy, matplotlib, pandas, and Cython)
+    Python packages NumPy, scipy, matplotlib, and Cython)
 	for the post-processing scripts. Because of this, it should be much easier
 	to compile (at least on a Unix-like operating system such as Ubuntu or
 	Mac OS X).
