@@ -20,8 +20,12 @@ void MyModel::from_prior(RNG& rng)
 
 double MyModel::perturb(RNG& rng)
 {
-	int which;
-	int reps = static_cast<int>(pow(10., 2.*rng.rand()));
+	int which, reps;
+	if(rng.rand() <= 0.5)
+		reps = 1;
+	else
+		reps = static_cast<int>(pow(10.0, 2*rng.rand()));
+
 	for(int i=0; i<reps; i++)
 	{
 		which = rng.rand_int(x.size());
