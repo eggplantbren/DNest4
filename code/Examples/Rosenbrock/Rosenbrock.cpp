@@ -5,7 +5,7 @@ using namespace std;
 using namespace DNest4;
 
 Rosenbrock::Rosenbrock()
-:params(1000)
+:params(50)
 {
 
 }
