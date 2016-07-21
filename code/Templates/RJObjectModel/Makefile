@@ -7,6 +7,6 @@ LIBS = -ldnest4 -lpthread
 
 default:
 	$(CC) -I$(DNEST4_PATH) $(CXXFLAGS) -c *.cpp
-	$(CC) -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
+	$(CC) -pthread -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
 	rm *.o
 

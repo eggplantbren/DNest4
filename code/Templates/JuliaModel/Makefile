@@ -7,6 +7,6 @@ LIBS = -ldnest4 -lpthread -ljulia
 
 default:
 	$(CC) -I$(DNEST4_PATH) -I$(JULIA_INCLUDE_PATH) $(CXXFLAGS) -c *.cpp
-	$(CC) -L$(JULIA_LIB_PATH) -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
+	$(CC) -pthread -L$(JULIA_LIB_PATH) -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
 	rm *.o
 
