@@ -1,8 +1,8 @@
 # File containing parameters for DNest4
 # Put comments at the top, or at the end of the line.
 5       # Number of particles
-10000   # new level interval
-10000   # save interval
+20000   # new level interval
+100000   # save interval
 100     # threadSteps - how many steps each thread should do independently before communication
 0       # maximum number of levels
 10      # Backtracking scale length (lambda in the paper)
