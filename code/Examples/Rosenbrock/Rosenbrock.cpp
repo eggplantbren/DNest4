@@ -34,6 +34,8 @@ double Rosenbrock::log_likelihood() const
         logL -= pow(1.0 - params[i], 2);
     }
 
+    logL *= 2;
+
     return logL;
 }
 
