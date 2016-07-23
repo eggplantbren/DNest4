@@ -50,6 +50,7 @@ class Sampler
 
 		// Number of saved particles
 		unsigned int count_saves;
+        unsigned int count_mcmc_steps_since_save;
 		unsigned long long int count_mcmc_steps;
 
 		// Storage for likelihoods above threshold

@@ -26,6 +26,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,all_above()
 ,rngs(num_threads)
 ,count_saves(0)
+,count_mcmc_steps_since_save(0)
 ,count_mcmc_steps(0)
 ,above(num_threads)
 {
@@ -285,6 +286,7 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 		{
 			// Count the MCMC steps done
 			count_mcmc_steps += num_threads*options.thread_steps;
+            count_mcmc_steps_since_save += num_threads*options.thread_steps;
 
 			// Go through copies of levels and apply diffs to levels
 			std::vector<Level> levels_orig = levels;
@@ -401,7 +403,7 @@ void Sampler<ModelType>::do_bookkeeping()
 	if(created_level)
 		save_levels();
 
-	if(count_mcmc_steps >= (count_saves+1)*options.save_interval)
+	if(count_mcmc_steps_since_save >= options.save_interval)
 	{
 		save_particle();
 
@@ -475,6 +477,7 @@ template<class ModelType>
 void Sampler<ModelType>::save_particle()
 {
 	++count_saves;
+    count_mcmc_steps_since_save = 0;
 
 	if(!save_to_disk)
 		return;
