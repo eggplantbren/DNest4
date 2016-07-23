@@ -7,7 +7,7 @@ using namespace std;
 using namespace DNest4;
 
 MyModel::MyModel()
-:objects(3, 10, false, MyConditionalPrior(-10., 10., 1E-3, 1E3))
+:objects(3, 100, false, MyConditionalPrior(), PriorType::log_uniform)
 ,mu(Data::get_instance().get_t().size())
 {
 
@@ -40,7 +40,7 @@ void MyModel::calculate_mu()
 	for(size_t j=0; j<components.size(); j++)
 	{
 		T = exp(components[j][0]);
-		A = components[j][1];
+		A = exp(components[j][1]);
 		phi = components[j][2];
 		for(size_t i=0; i<t.size(); i++)
 			mu[i] += A*sin(2.*M_PI*t[i]/T + phi);

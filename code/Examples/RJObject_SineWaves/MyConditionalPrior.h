@@ -9,18 +9,15 @@
 class MyConditionalPrior:public DNest4::ConditionalPrior
 {
 	private:
-		// Limits
-		double x_min, x_max;
-		double mu_min, mu_max;
+        static const DNest4::Cauchy cauchy;
 
-		// Mean of exponential ConditionalPrior for amplitudes
-		double mu;
+		double location_log_period, scale_log_period;
+        double location_log_amplitude, scale_log_amplitude;
 
 		double perturb_hyperparameters(DNest4::RNG& rng);
 
 	public:
-		MyConditionalPrior(double x_min, double x_max,
-					double mu_min, double mu_max);
+		MyConditionalPrior();
 
 		void from_prior(DNest4::RNG& rng);
 
