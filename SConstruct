@@ -31,7 +31,7 @@ cppfiles += Glob(os.path.join(rjobcpdir, '*.cpp'))
 
 # create libraries
 sharedlib = env.SharedLibrary('libdnest4', cppfiles)
-staticlib = env.StaticLibrary('libdenst4', cppfiles)
+staticlib = env.StaticLibrary('libdnest4', cppfiles)
 
 # install libraries
 installlibDir = os.path.join(env['PREFIX'], 'lib')
