@@ -24,10 +24,14 @@ else:
 codedir = 'code'
 rjobdir = os.path.join(codedir, 'RJObject')
 rjobcpdir = os.path.join(rjobdir, 'ConditionalPriors')
+distrdir = os.path.join(codedir, 'Distributions')
+
+env.Append(CPPFLAGS=codedir)
 
 cppfiles = Glob(os.path.join(codedir, '*.cpp'))
 cppfiles += Glob(os.path.join(rjobdir, '*.cpp'))
 cppfiles += Glob(os.path.join(rjobcpdir, '*.cpp'))
+cppfiles += Glob(os.path.join(distrdir, '*.cpp'))
 
 # create libraries
 sharedlib = env.SharedLibrary('libdnest4', cppfiles)
@@ -42,24 +46,29 @@ if not os.path.isdir(installlibDir):
 sharedinstall = env.Install(installlibDir, sharedlib)
 staticinstall = env.Install(installlibDir, staticlib)
 
+installlist = [sharedinstall, staticinstall]
+
+hinstpref = {codedir: os.path.join(env['PREFIX'], 'include/dnest4'),
+             rjobdir: os.path.join(env['PREFIX'], 'include/dnest4/RJObject'),
+             rjobcpdir: os.path.join(env['PREFIX'], 'include/dnest4/RJObject/ConditionalPriors'),
+             distrdir: os.path.join(env['PREFIX'], 'include/dnest4/Distributions')}
+
 # install headers
-hfiles = Glob(os.path.join(codedir, '*.h'))
-hfiles += Glob(os.path.join(rjobdir, '*.h'))
-hfiles += Glob(os.path.join(rjobcpdir, '*.h'))
+for d in hinstpref: 
+  hfiles = Glob(os.path.join(d, '*.h'))
 
-#print(env.Dictionary())
+  installhdir = hinstpref[d]
+  if not os.path.isdir(installhdir):
+    # try making directory
+    try:
+      os.makedirs(installhdir)
+    except:
+      print("Error... could not create '%s' directory" % installhdir)
+      sys.exit(1)
 
-installhdir = os.path.join(env['PREFIX'], 'include/dnest4')
-if not os.path.isdir(installhdir):
-  # try making directory
-  try:
-    os.mkdir(installhdir)
-  except:
-    print("Error... could not create '%s' directory" % installhdir)
-    sys.exit(1)
-
-hinstall = env.Install(installhdir, hfiles)
+  hinstall = env.Install(installhdir, hfiles)
+  installlist.append(hinstall)
 
 # create an 'install' target
-env.Alias('install', [sharedinstall, staticinstall, hinstall])
+env.Alias('install', installlist)
 
