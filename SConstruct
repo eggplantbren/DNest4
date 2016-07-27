@@ -14,24 +14,25 @@ env = Environment(PREFIX=GetOption('prefix'))
 # set the compiler
 env['CC'] = 'g++'
 
-# add required compiler flags
-if GetOption('debug'):
-  env['CCFLAGS'] = '-std=c++11 -O0 -Wall -Wextra -pedantic -g'
-else:
-  env['CCFLAGS'] = '-std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG'
-
 # code directory
 codedir = 'code'
 rjobdir = os.path.join(codedir, 'RJObject')
 rjobcpdir = os.path.join(rjobdir, 'ConditionalPriors')
 distrdir = os.path.join(codedir, 'Distributions')
 
-env.Append(CPPFLAGS=codedir)
-
 cppfiles = Glob(os.path.join(codedir, '*.cpp'))
 cppfiles += Glob(os.path.join(rjobdir, '*.cpp'))
 cppfiles += Glob(os.path.join(rjobcpdir, '*.cpp'))
 cppfiles += Glob(os.path.join(distrdir, '*.cpp'))
+
+# include path for headers
+env.Append(CPPPATH = [codedir])
+
+# add required compiler flags
+if GetOption('debug'):
+  env.Append(CCFLAGS = ['-std=c++11', '-O0', '-Wall', '-Wextra', '-pedantic', '-g'])
+else:
+  env.Append(CCFLAGS = ['-std=c++11', '-O3', '-Wall', '-Wextra', '-pedantic', '-DNDEBUG'])
 
 # create libraries
 sharedlib = env.SharedLibrary('libdnest4', cppfiles)
