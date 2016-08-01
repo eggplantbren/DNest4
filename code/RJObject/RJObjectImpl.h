@@ -132,8 +132,9 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 	// Work out how many components we will have after the change
 	double delta = max_num_components*rng.randh();
 	int difference = (int)delta;
-	// In case difference is zero, make it +1 or -1
-	if(difference == 0 || rng.rand() <= 0.5)
+	// In case difference is zero, make it +1 or -1. Also, just do this
+    // sometimes just because it's gentle
+	if(difference == 0 || rng.rand() <= 0.2)
 	{
 		if(rng.rand() <= 0.5)
 			difference = -1;
