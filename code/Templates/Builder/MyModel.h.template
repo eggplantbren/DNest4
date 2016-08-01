@@ -8,7 +8,7 @@
 class MyModel
 {
     private:
-        {DECLARATIONS}
+{DECLARATIONS}
 
     public:
         // Constructor only gives size of params

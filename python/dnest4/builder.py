@@ -1,526 +1,208 @@
-from collections import OrderedDict
-from enum import Enum
 import numpy as np
+from .distributions import *
 
-__all__ = ["Uniform", "LogUniform", "Normal", "Cauchy", "Poisson",\
-           "Exponential", "Binomial",\
-           "Deterministic", "NodeType", "Node", "Model"]
-
-class Uniform:
-    """
-    Uniform distributions.
-    """
-    def __init__(self, a, b):
-        self.a, self.b = a, b
-
-    def from_prior(self):
-        s = "{x} = {a} + ({b} - ({a}))*rng.rand();\n"
-        return self.insert_parameters(s)
-
-    def perturb(self):
-        s  = "{x} += ({b} - ({a}))*rng.randh();\n"
-        s += "wrap({x}, {a}, {b});\n"
-        return self.insert_parameters(s)
-
-    def log_prob(self):
-        s  = "if({x} < ({a}) || {x} > ({b}))\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({b} - ({a}));\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{a}", str(self.a))
-        s = s.replace("{b}", str(self.b))
-        return s
-
-class LogUniform:
-    """
-    Log-uniform distributions.
-    """
-    def __init__(self, a, b):
-        self.a, self.b = a, b
-
-    def from_prior(self):
-        s = "{x} = exp(log({a}) + log(({b})/({a}))*rng.rand());\n"
-        return self.insert_parameters(s)
-
-    def perturb(self):
-        s  = "{x} = log({x});\n"
-        s += "{x} += log(({b})/({a}))*rng.randh();\n"
-        s += "wrap({x}, log({a}), log({b}));\n"
-        s += "{x} = exp({x});\n"
-        return self.insert_parameters(s)
-
-    def log_prob(self):
-        s  = "if({x} < ({a}) || {x} > ({b}))\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({x}) - log(({b})/({a}));\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{a}", str(self.a))
-        s = s.replace("{b}", str(self.b))
-        return s
-
-class Normal:
-    """
-    Normal distributions.
-    """
-    def __init__(self, mu, sigma):
-        self.mu, self.sigma = mu, sigma
-
-    def from_prior(self):
-        s = "{x} = {mu} + ({sigma})*rng.randn();\n"
-        return self.insert_parameters(s)
-
-    def perturb(self):
-        s  = "log_H -= -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
-        s += "{x} += ({sigma})*rng.randh();\n"
-        s += "log_H += -0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
-        return self.insert_parameters(s)
-
-    def log_prob(self):
-        s  = "logp += -0.5*log(2*M_PI) - log({sigma}) "
-        s += "- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{mu}", str(self.mu))
-        s = s.replace("{sigma}", str(self.sigma))
-        return s
-
-
-class Cauchy:
-    """
-    Cauchy distributions.
-    """
-    def __init__(self, mu, sigma):
-        self.mu, self.sigma = mu, sigma
-
-    def from_prior(self):
-        s = "{x} = {mu} + ({sigma})*tan(M_PI*(rng.rand() - 0.5));\n"
-        return self.insert_parameters(s)
-
-    def perturb(self):
-        s  = "{x} = 0.5 + atan(({x} - ({mu}))/({sigma}))/M_PI;\n"
-        s += "{x} += rng.randh();\n"
-        s += "wrap({x}, 0.0, 1.0);\n"
-        s += "{x} = {mu} + ({sigma})*tan(M_PI*({x} - 0.5));\n"
-        return self.insert_parameters(s)
-
-    def log_prob(self):
-        s  = "logp += -log(M_PI) - log({sigma}) "
-        s += "- log(1.0 + pow(({x} - ({mu}))/({sigma}), 2));\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{mu}", str(self.mu))
-        s = s.replace("{sigma}", str(self.sigma))
-        return s
-
-class Exponential:
-    """
-    Exponential distributions.
-    """
-    def __init__(self, mu):
-        self.mu = mu
-
-    def from_prior(self):
-        s = "{x} = -({mu})*log(1.0 - rng.rand());\n"
-        return self.insert_parameters(s)
-
-    def perturb(self):
-        s  = "{x} = 1.0 - exp(-{x}/({mu}));\n"
-        s += "{x} += rng.randh();\n"
-        s += "wrap({x}, 0.0, 1.0);\n"
-        s += "{x} = -({mu})*log(1.0 - {x}));\n"
-        return self.insert_parameters(s)
-
-    def log_prob(self):
-        s  = "if({x} < 0.0)\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({mu}) - {x}/({mu});\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{mu}", str(self.mu))
-        return s
-
-class Poisson:
-    """
-    Poisson distributions.
-    SO FAR ONLY THE log_prob HAS BEEN IMPLEMENTED.
-    """
-    def __init__(self, mu):
-        self.mu = mu
-
-    def log_prob(self):
-        s  = "if({x} < 0)\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "else\n"
-        s += "    logp += {x}*log({mu}) - ({mu}) - lgamma({x} + 1);\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{mu}", str(self.mu))
-        return s
-
-
-class Binomial:
-    """
-    Binomial distributions.
-    So far only the log_prob has been implemented.
-    """
-    def __init__(self, N, theta):
-        self.N = N
-        self.theta = theta
-
-    def from_prior(self):
-        pass
-
-    def perturb(self):
-        pass
-
-    def log_prob(self):
-        s  = "if({x} < 0 || {x} > ({N}))\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "else\n"
-        s += "{\n"
-        s += "    logp += lgamma({N} + 1) - lgamma({x} + 1) - lgamma({N} - ({x}) + 1)"
-        s += "- lgamma({x} + 1);\n"
-        s += "    logp += {x}*log({theta}) + ({N} - {x})*log(1.0 - ({theta}));\n"
-        s += "}\n"
-        return self.insert_parameters(s)
-
-    def insert_parameters(self, s):
-        s = s.replace("{N}", str(self.N))
-        s = s.replace("{theta}", str(self.theta))
-        return s
-
-class Deterministic:
-    """
-    For deterministic nodes --- a delta-function distribution :)
-    """
-    def __init__(self, formula):
-        self.formula = formula
-
-    def from_prior(self):
-        s = "{x} = {formula};\n"
-        s = s.replace("{formula}", self.formula)
-        return s
-
-    def perturb(self):
-        return self.from_prior()
-
-class NodeType(Enum):
-    """
-    To distinguish between different kinds of Nodes
-    """
-    coordinate = 1
-    derived = 2
-    data = 3
-    prior_info = 4
-
-class Node:
-    """
-    A single parameter or data value.
-    """
-    def __init__(self, dtype, name, prior, node_type, index=None):
-        self.dtype = dtype
-        self.name  = name
-        if index is not None:
-            self.name += "[" + str(index) + "]"
-        self.index = index
-        self.prior = prior
-        self.node_type = node_type
-        if node_type == NodeType.prior_info:
-            assert self.prior == None
-
-    def from_prior(self):
-        return self.prior.from_prior().replace("{x}", self.name)
-
-    def perturb(self):
-        return self.prior.perturb().replace("{x}", self.name)
-
-    def log_prob(self):
-        return self.prior.log_prob().replace("{x}", self.name)
-
-    def __str__(self):
-        return self.name
+__all__ = ["Model", "Node", "data_declaration", "data_definition",\
+            "generate_h", "generate_cpp"]
 
 class Model:
     def __init__(self):
-        self.nodes = OrderedDict()
+        self.nodes = []
+        self.indices = {}
+        self.num_params = 0
+
+    def __getitem__(self, item):
+        return self.nodes[self.indices[item]]
 
     def add_node(self, node):
-        self.nodes[node.name] = node
+        self.nodes.append(node)
+        self.indices[node.name] = len(self.nodes)-1
+
+        if node.observed == False and type(node.distribution) != Delta:
+            self.num_params += 1
+
+    def declaration(self):
+        s = ""
+        for node in self.nodes:
+            if not node.observed:
+                if type(node.distribution) is Delta:
+                    s += node.cpp_type +\
+                                " {x};\n".format(x=node.name)
+                else:
+                    s += node.cpp_type +\
+                                " _{x}, {x};\n".format(x=node.name)
+
+        return s
 
     def from_prior(self):
-        """
-        Generate the from_prior code for the whole model.
-        """
         s = ""
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.coordinate:
-                s += node.from_prior()
-
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.derived:
-                s += node.from_prior()
+        for node in self.nodes:
+            if node.observed == False and type(node.distribution) is not Delta:
+                s += "_{x} = rng.rand();\n".format(x=node.name)
+        s += "\n"
+        for node in self.nodes:
+            if node.observed == False:
+                s += "" + node.distribution.from_uniform().format(x=node.name)
         return s
 
     def perturb(self):
-        """
-        Generate perturb code for the whole model.
-        """
-        # Count the number of coordinates
-        num_coords = 0
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.coordinate:
-                num_coords += 1
+        s = ""
+        s += "double logH = 0.0;\n\n"
+        s += "int reps = 1;\n"
+        s += "if(rng.rand() <= 0.5)\n"
+        s += "reps = (int)(pow(10.0, 2*rng.rand()));\n\n"
+        s += "int which;\n"
+        s += "for(int i=0; i<reps; ++i)\n"
+        s += "{\n"
+        s += "which = rng.rand_int(" + str(self.num_params) + ");\n"
 
-        # Choose which one to perturb
-        s =  "double log_H = 0.0;\n"
-        s += "int which = rng.rand_int({n});\n".replace("{n}", str(num_coords))
-
-        # The if-statements
         k = 0
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.coordinate:
-                s += "if(which == {k})\n{\n".replace("{k}", str(k))
-                s += "\n".join(["    " + x for x in node.perturb().splitlines()])
-                s += "\n}\n"
+        for node in self.nodes:
+            if node.observed == False and type(node.distribution) != Delta:
+                s += "if(which == {k})\n{{\n".format(k=k)
+                s += "_{x}".format(x=node.name) + " += rng.randh();\n"
+                s += "DNest4::wrap(_{x}, 0.0, 1.0);\n}}\n"\
+                                .format(x=node.name);
                 k += 1
 
-        # Recompute derived nodes
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.derived:
-                s += node.from_prior()
+        s += "}\n\n"
+        for node in self.nodes:
+            if node.observed == False:
+                s += "" + node.distribution.from_uniform()\
+                                        .format(x=node.name)
 
-        s += "return log_H;\n"
-        return s
-
-    def print_code(self):
-        """
-        Generate print code for the whole model.
-        """
-        s = ""
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.coordinate:
-                s += "out<<" + str(node) + "<<\" \";\n"
-        return s
-
-    def description(self):
-        """
-        Generate description code for the whole model.
-        """
-        s = "string s;\n"
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.coordinate:
-                s += "s += \"" + str(node) + ", \";\n"
-        s = s[0:-5]
-        s += "\";"
-        s += "\nreturn s;"
+        s += "\nreturn logH;\n\n"
         return s
 
     def log_likelihood(self):
-        """
-        Generate the log_likelihood code for the whole model.
-        """
-        s = "double logp = 0.0;\n\n"
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == NodeType.data:
-                s += node.log_prob()
-        s += "\nreturn logp;"
+        s = ""
+        s += "double logp = 0.0;\n\n"
+        for node in self.nodes:
+            if node.observed and type(node.distribution) != Delta:
+                
+                s += node.distribution.log_prob().format(x=node.name)
+        s += "\nreturn logp;\n"
         return s
 
-    def get_vector_names(self, node_type):
-        """
-        Return a set of names of vectors of a certain NodeType.
-        """
-        vecs = set()
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == node_type and\
-               node.index is not None:
-                vecs.add(name.split("[")[0])
-        return vecs
+    def print(self):
+        s = ""
+        for node in self.nodes:
+            if not node.observed:
+                s += "out<<" + node.name + "<<\' \';\n"
+        return s
 
-    def get_scalar_names(self, node_type):
-        vecs = self.get_vector_names(node_type)
-        scalars = set()
-        for name in self.nodes:
-            node = self.nodes[name]
-            if node.node_type == node_type and\
-               node.name.split("[")[0] not in vecs:
-                scalars.add(node.name)
-        return scalars
-
-    def get_vector_size(self, vector_name):
-        count = 0
-        for name in self.nodes:
-            if name.split("[")[0] == vector_name:
-                count += 1
-        return count
-
-    def generate_h(self):
-        """
-        Load MyModel.h.template
-        and fill in the required declarations.
-        """
-        # Vector knowns
-        vecs = self.get_vector_names(NodeType.data)
-        vecs = vecs.union(self.get_vector_names(NodeType.prior_info))
-        declarations = "        // Data and prior information\n"
-        for vec in vecs:
-            declarations += "        static const std::vector"
-            if self.nodes[vec + "[0]"].dtype == int:
-                declarations += "<int>"
-            else:
-                declarations += "<double>"
-            declarations += " {x};\n".format(x=vec)
-
-        # Scalar knowns
-        scalars = self.get_scalar_names(NodeType.data)
-        scalars = scalars.union(self.get_scalar_names(NodeType.prior_info))
-        for scalar in scalars:
-            declarations += "        static const "
-            if self.nodes[scalar].dtype == int:
-                declarations += "int"
-            else:
-                declarations += "double"
-            declarations += " {x};\n".format(x=scalar)
-
-        declarations += \
-                "\n        // Unknown parameters and derived quantities\n"
-
-        # Vector unknowns
-        vecs = self.get_vector_names(NodeType.coordinate)
-        vecs = vecs.union(self.get_vector_names(NodeType.derived))
-        for vec in vecs:
-            declarations += "        std::vector"
-            if self.nodes[vec + "[0]"].dtype == int:
-                declarations += "<int>"
-            else:
-                declarations += "<double>"
-            declarations += " {x};\n".format(x=vec)
-
-        # Scalar unknowns
-        scalars = self.get_scalar_names(NodeType.coordinate)
-        scalars = scalars.union(self.get_scalar_names(NodeType.derived))
-        for scalar in scalars:
-            declarations += "        "
-            if self.nodes[scalar].dtype == int:
-                declarations += "int"
-            else:
-                declarations += "double"
-            declarations += " {x};\n".format(x=scalar)
-
-         # Open the template .h file
-        f = open("MyModel.h.template")
-        s = f.read()
-        s = s.replace("        {DECLARATIONS}", declarations)
-        f.close()
-
-        # Write the new .h file
-        f = open("MyModel.h", "w")
-        f.write(s)
-        f.close()
-
+    def description(self):
+        s = ""
+        s += "return string(\""
+        for node in self.nodes:
+            if not node.observed:
+                s += node.name + ", "
+        s = s[0:-2]
+        s += "\");"
         return s
 
 
-    def generate_cpp(self, data):
-        """
-        Load MyModel.cpp.template
-        and fill in the required stuff.
-        """
-        # Prepare the from_prior code
-        from_prior = self.from_prior()
-        from_prior = ["    " + x for x in from_prior.splitlines()]
-        from_prior = "\n".join(from_prior)
+class Node:
+    """
+    Represents a node in the graph.
+    """
+    def __init__(self, name, distribution, observed=False):
+        self.cpp_type = distribution.cpp_type
+        self.name = name
+        self.distribution = distribution
+        self.observed = observed
 
-        # Prepare the perturb code
-        perturb = self.perturb()
-        perturb = ["    " + x for x in perturb.splitlines()]
-        perturb = "\n".join(perturb)
+def data_declaration(data):
+    # Static variables for anything which is data or prior info
+    s = ""
 
-        # Prepare the log_likelihood code
-        log_likelihood = self.log_likelihood()
-        log_likelihood = ["    " + x for x in log_likelihood.splitlines()]
-        log_likelihood = "\n".join(log_likelihood)
+    for name in data:
+        if type(data[name]) == int:
+            s += "static const int " + name + ";\n"
+        elif type(data[name]) == float:
+            s += "static const double " + name + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'int64':
+            for i in range(0, len(data[name])):
+                s += "static const int " + name + str(i) + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'float64':
+            for i in range(0, len(data[name])):
+                s += "static const double " + name + str(i) + ";\n"
 
-        # Prepare the print code
-        print_code = self.print_code()
-        print_code = ["    " + x for x in print_code.splitlines()]
-        print_code = "\n".join(print_code)
+    return s
 
-        # Prepare the description code
-        description = self.description()
-        description = ["    " + x for x in description.splitlines()]
-        description = "\n".join(description)
+def data_declaration(data):
+    # Static variables for anything which is data or prior info
+    s = ""
 
-        # Prepare the data
-        the_data = ""
-        for d in data:
-            the_data += "const "
-            if type(data[d]) == np.ndarray:
-                if data[d].dtype == np.dtype('float64'):
-                    the_data += "std::vector<double> MyModel::"
-                elif data[d].dtype == np.dtype('int64'):
-                    the_data += "std::vector<int> MyModel::"
-                else:
-                    print("Unsupported dtype.")
-            if type(data[d]) == float:
-                the_data += "double MyModel::"
-            if type(data[d]) == int:
-                the_data += "int MyModel::"
+    for name in data:
+        if type(data[name]) == int:
+            s += "static const int " + name + ";\n"
+        elif type(data[name]) == float:
+            s += "static const double " + name + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'int64':
+            for i in range(0, len(data[name])):
+                s += "static const int " + name + str(i) + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'float64':
+            for i in range(0, len(data[name])):
+                s += "static const double " + name + str(i) + ";\n"
 
-            the_data += str(d) + "{"
-            if type(data[d]) == np.ndarray:
-                for value in data[d]:
-                    the_data += str(value) + ", "
-            else:
-                the_data += str(data[d]) + ", "
-            the_data = the_data[0:-2]
-            the_data += "};\n"
+    return s
 
-        # Prepare the initialiser list, which just needs
-        # vector unknowns to have the right size.
-        initialiser_list = ":"
-        vecs = self.get_vector_names(NodeType.coordinate)
-        vecs = vecs.union(self.get_vector_names(NodeType.derived))
-        for vec in vecs:
-            initialiser_list += vec + "("
-            initialiser_list += str(self.get_vector_size(vec)) + "), "
-        initialiser_list = initialiser_list[0:-2]
+def data_definition(data):
+    s = ""
+    # Static variables for anything which is data or prior info
+    for name in data:
+        if type(data[name]) == int:
+            s += "const int MyModel::" + name + " = "\
+                                       + str(data[name]) + ";\n"
+        elif type(data[name]) == float:
+            s += "const double MyModel::" + name + " = "\
+                                       + str(data[name]) + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'int64':
+            for i in range(0, len(data[name])):
+                s += "const int MyModel::" + name + str(i)\
+                                       + " = " + str(data[name][i]) + ";\n"
+        elif type(data[name] == np.array) and\
+            data[name].dtype.name == 'float64':
+            for i in range(0, len(data[name])):
+                s += "const double MyModel::" + name + str(i)\
+                                       + " = " + str(data[name][i]) + ";\n"
+    return s
 
-        # Open the template .cpp file
-        f = open("MyModel.cpp.template")
-        s = f.read()
+def generate_h(model, data):
+    f = open("MyModel.h.template")
+    s = "".join(f.readlines())
+    f.close()
+    s = s.replace("{DECLARATIONS}",
+                        model.declaration() + data_declaration(data))
+    f = open("MyModel.h", "w")
+    f.write(s)
+    f.close()
 
-        # Do the replacements
-        s = s.replace("{FROM_PRIOR}", from_prior)
-        s = s.replace("{PERTURB}", perturb)
-        s = s.replace("{LOG_LIKELIHOOD}", log_likelihood)
-        s = s.replace("{PRINT}", print_code)
-        s = s.replace("{DESCRIPTION}", description)
-        s = s.replace("{STATIC_DECLARATIONS}", the_data)
-        s = s.replace("{INITIALIZER_LIST}", initialiser_list)
-        f.close()
+def generate_cpp(model, data):
+    f = open("MyModel.cpp.template")
+    s = "".join(f.readlines())
+    f.close()
+    s = s.replace("{STATICS}",
+                        data_definition(data))
+    s = s.replace("{FROM_PRIOR}",
+                        model.from_prior())
+    s = s.replace("{PERTURB}",
+                        model.perturb())
+    s = s.replace("{LOG_LIKELIHOOD}",
+                        model.log_likelihood())
+    s = s.replace("{PRINT}",
+                        model.print())
+    s = s.replace("{DESCRIPTION}",
+                        model.description())
+    f = open("MyModel.cpp", "w")
+    f.write(s)
+    f.close()
 
-        # Write the new .h file
-        f = open("MyModel.cpp", "w")
-        f.write(s)
-        f.close()
 
-        return s
+
 
