@@ -11,8 +11,9 @@ y = 7*sin(2.*pi*t/30.) + 0.155*sin(2.*pi*t/2. + 1.)
 sig = 0.5
 Y = y + sig*randn(y.size)
 
-data = empty((t.size, 2))
+data = empty((t.size, 3))
 data[:,0], data[:,1] = t, Y
+data[:,2] = 0.0
 
 savetxt('fake_data.txt', data)
 

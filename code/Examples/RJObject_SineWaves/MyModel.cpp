@@ -6,6 +6,8 @@
 using namespace std;
 using namespace DNest4;
 
+const Cauchy MyModel::cauchy(0.0, 5.0);
+
 MyModel::MyModel()
 :objects(3, 100, false, MyConditionalPrior(), PriorType::log_uniform)
 ,mu(Data::get_instance().get_t().size())
@@ -16,7 +18,8 @@ MyModel::MyModel()
 void MyModel::from_prior(RNG& rng)
 {
 	objects.from_prior(rng);
-	sigma = exp(log(1E-3) + log(1E6)*rng.rand());
+	log_sigma = cauchy.generate(rng);
+    sigma = exp(log_sigma);
 	calculate_mu();
 }
 
@@ -58,10 +61,8 @@ double MyModel::perturb(RNG& rng)
 	}
 	else
 	{
-		sigma = log(sigma);
-		sigma += log(1E6)*rng.randh();
-		sigma = mod(sigma - log(1E-3), log(1E6)) + log(1E-3);
-		sigma = exp(sigma);
+		logH += cauchy.perturb(log_sigma, rng);
+        sigma = exp(log_sigma);
 	}
 
 	return logH;
@@ -71,11 +72,15 @@ double MyModel::log_likelihood() const
 {
 	// Get the data
 	const vector<double>& y = Data::get_instance().get_y();
+    const vector<double>& sig = Data::get_instance().get_sig();
 
 	double logL = 0.;
-	double var = sigma*sigma;
+	double var;
 	for(size_t i=0; i<y.size(); i++)
+    {
+        var = sig[i]*sig[i] + sigma*sigma;
 		logL += -0.5*log(2.*M_PI*var) - 0.5*pow(y[i] - mu[i], 2)/var;
+    }
 
 	return logL;
 }
