@@ -134,7 +134,7 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 	int difference = (int)delta;
 	// In case difference is zero, make it +1 or -1. Also, just do this
     // sometimes just because it's gentle
-	if(difference == 0 || rng.rand() <= 0.2)
+	if(difference == 0 || rng.rand() <= 0.1)
 	{
 		if(rng.rand() <= 0.5)
 			difference = -1;
