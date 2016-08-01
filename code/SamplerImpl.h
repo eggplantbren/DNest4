@@ -173,23 +173,28 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	// Do the proposal for the particle
 	ModelType proposal = particle;
 	double log_H = proposal.perturb(rng);
-	LikelihoodType logl_proposal(proposal.log_likelihood(),
-												logl.get_tiebreaker());
-
-	// Do the proposal for the tiebreaker
-	log_H += logl_proposal.perturb(rng);
 
 	// Prevent unnecessary exponentiation of a large number
-	if(log_H > 0.)
-		log_H = 0.;
+	if(log_H > 0.0)
+		log_H = 0.0;
 
-	// Accept?
-	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
-	{
-		particle = proposal;
-		logl = logl_proposal;
-		level.increment_accepts(1);
-	}
+    if(rng.rand() <= exp(log_H))
+    {
+    	LikelihoodType logl_proposal(proposal.log_likelihood(),
+												logl.get_tiebreaker());
+
+    	// Do the proposal for the tiebreaker
+    	log_H += logl_proposal.perturb(rng);
+
+	    // Accept?
+	    if(level.get_log_likelihood() < logl_proposal)
+	    {
+		    particle = proposal;
+		    logl = logl_proposal;
+		    level.increment_accepts(1);
+	    }
+    }
+
 	level.increment_tries(1);
 
 	// Count visits and exceeds
