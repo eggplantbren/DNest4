@@ -19,7 +19,8 @@ def logdiffexp(x1, x2):
 
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
+			compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
@@ -175,9 +176,11 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if numResampleLogX > 1:
 		errorbar1 += " +- " + str(logz_error)
 		errorbar2 += " +- " + str(H_error)
-	print("log(Z) = " + str(logz_estimate) + errorbar1)
-	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
-	print("Effective sample size = " + str(ESS))
+
+	if verbose:
+		print("log(Z) = " + str(logz_estimate) + errorbar1)
+		print("Information = " + str(H_estimate) + errorbar2 + " nats.")
+		print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
@@ -215,7 +218,8 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	return [logz_estimate, H_estimate, logx_samples]
 
 def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
+compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
@@ -379,9 +383,11 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if numResampleLogX > 1:
 		errorbar1 += " +- " + str(logz_error)
 		errorbar2 += " +- " + str(H_error)
-	print("log(Z) = " + str(logz_estimate) + errorbar1)
-	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
-	print("Effective sample size = " + str(ESS))
+
+	if verbose:
+		print("log(Z) = " + str(logz_estimate) + errorbar1)
+		print("Information = " + str(H_estimate) + errorbar2 + " nats.")
+		print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
