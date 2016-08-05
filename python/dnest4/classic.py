@@ -31,7 +31,8 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
+	cut = int(cut*sample_info.shape[0])
+	sample_info = sample_info[cut:, :]
 
 	if plot:
 		plt.figure(1)
@@ -192,7 +193,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		rows[i] = which
+		rows[i] = which + cut
 
 	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
 	posterior_sample = None
@@ -230,7 +231,8 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
+	cut = int(cut*sample_info.shape[0])
+	sample_info = sample_info[cut:, :]
 
 	if plot:
 		plt.figure(1)
@@ -257,7 +259,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 		plt.ylabel("MH Acceptance")
 
 	# Convert to lists of tuples
-	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
+	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreakercut
 	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample_info.shape[0])] # logl, tiebreaker, id
 	logx_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logp_samples = np.zeros((sample_info.shape[0], numResampleLogX))
@@ -399,7 +401,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		rows[i] = which
+		rows[i] = which + cut
 
 	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
 	posterior_sample = None
