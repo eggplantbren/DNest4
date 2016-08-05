@@ -1,6 +1,9 @@
 class Double:
     cpp_type = "double"
 
+class Int:
+    cpp_type = "int"
+
 class Uniform(Double):
     def __init__(self, a, b):
         self.a, self.b = a, b
@@ -43,6 +46,28 @@ class LogUniform(Double):
     def insert_parameters(self, s):
         s = s.replace("{a}", str(self.a))
         s = s.replace("{b}", str(self.b))
+        return s
+
+class Exponential(Double):
+    """
+    Exponential distributions.
+    """
+    def __init__(self, mu):
+        self.mu = mu
+
+    def from_uniform(self):
+        s = ""
+        s += "{x} = -({mu})*log(1.0 - _{x});\n"
+        return self.insert_parameters(s)
+
+    def log_prob(self):
+        s  = "if({x} < 0.0)\n"
+        s += "    logp = -numeric_limits<double>::max();\n"
+        s += "logp += -log({mu}) - {x}/({mu});\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{mu}", str(self.mu))
         return s
 
 class Normal(Double):
