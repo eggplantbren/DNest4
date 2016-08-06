@@ -93,6 +93,33 @@ class Normal(Double):
         s = s.replace("{sigma}", str(self.sigma))
         return s
 
+class Gamma(Double):
+    """
+    Gamma distributions (parameterised by shape and scale)
+    """
+    def __init__(self, alpha, theta):
+        self.alpha, self.theta = alpha, theta
+
+    def from_uniform(self):
+        s = ""
+        s += "boost::math::gamma_distribution<double> "
+        s += "my_gamma({alpha}, {theta});\n" 
+        s += "{x} = quantile(my_gamma, _{x});\n"
+        return self.insert_parameters(s)
+
+    def log_prob(self):
+        s = ""
+        s += "logp += -({alpha})*log({theta}) "
+        s += "- boost::math::lgamma<double>({alpha}) "
+        s += "+ ({alpha} - 1.0)*{x} - {x}/({theta});\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{alpha}", str(self.alpha))
+        s = s.replace("{theta}", str(self.theta))
+        return s
+
+
 class Delta(Double):
     def __init__(self, formula):
         self.formula = formula
