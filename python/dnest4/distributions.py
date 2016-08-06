@@ -103,8 +103,8 @@ class Gamma(Double):
     def from_uniform(self):
         s = ""
         s += "boost::math::gamma_distribution<double> "
-        s += "my_gamma({alpha}, {theta});\n" 
-        s += "{x} = quantile(my_gamma, _{x});\n"
+        s += "my_gamma_{x}({alpha}, {theta});\n" 
+        s += "{x} = quantile(my_gamma_{x}, _{x});\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
