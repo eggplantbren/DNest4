@@ -75,6 +75,8 @@ class Model:
             if node.observed and type(node.distribution) != Delta:
                 
                 s += node.distribution.log_prob().format(x=node.name)
+        s += "if(std::isnan(logp) || std::isinf(logp))\n"
+        s += "    logp = -1E300;\n"
         s += "\nreturn logp;\n"
         return s
 
