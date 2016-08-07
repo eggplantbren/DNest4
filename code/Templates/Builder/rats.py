@@ -55,17 +55,6 @@ for i in range(0, data["N"]):
         model.add_node(bd.Node(name, bd.Normal(mean, "sigma_c"),\
                                                     observed=True))
 
-"""   
-for (i in 1:N) {
-        for (j in 1:T) {
-            mu[i, j] <- alpha[i] + beta[i] * (x[j] - x.bar);
-            Y[i,j] ~ dnorm(mu[i,j], tau.c)
-        }
-        alpha[i] ~ dnorm(alpha.mu, alpha.tau);
-        beta[i]  ~ dnorm(beta.mu, beta.tau);
-    }
-"""
-
 # Create the C++ code
 bd.generate_h(model, data)
 bd.generate_cpp(model, data)
