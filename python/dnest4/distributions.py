@@ -10,7 +10,7 @@ class Uniform(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = a + (b - a)*_{x};\n"
+        s += "{x} = {a} + ({b} - ({a}))*_{x};\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
