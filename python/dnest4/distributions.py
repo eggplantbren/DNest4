@@ -93,6 +93,29 @@ class Normal(Double):
         s = s.replace("{sigma}", str(self.sigma))
         return s
 
+class Cauchy(Double):
+    """
+    Cauchy distributions.
+    """
+    def __init__(self, mu, sigma):
+        self.mu, self.sigma = mu, sigma
+
+    def from_uniform(self):
+        s = ""
+        s += "{x} = {mu} + {sigma}*tan(M_PI*(_{x} - 0.5));\n"
+        return self.insert_parameters(s)
+
+    def log_prob(self):
+        s = ""
+        s += "logp += -log(M_PI) - log({sigma}) "
+        s += "-log(1.0 + pow(({x} - {mu})/({_sigma}), 2));\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{mu}", str(self.mu))
+        s = s.replace("{sigma}", str(self.sigma))
+        return s
+
 class Gamma(Double):
     """
     Gamma distributions (parameterised by shape and scale)
