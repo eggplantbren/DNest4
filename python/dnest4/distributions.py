@@ -108,12 +108,32 @@ class Cauchy(Double):
     def log_prob(self):
         s = ""
         s += "logp += -log(M_PI) - log({sigma}) "
-        s += "-log(1.0 + pow(({x} - {mu})/({_sigma}), 2));\n"
+        s += "-log(1.0 + pow(({x} - {mu})/({sigma}), 2));\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
         s = s.replace("{mu}", str(self.mu))
         s = s.replace("{sigma}", str(self.sigma))
+        return s
+
+class Binomial(Int):
+    """
+    Binomial distributions.
+    """
+    def __init__(self, N, p):
+        self.N, self.p = N, p
+
+    def log_prob(self):
+        s = ""
+        s += "logp += boost::math::lgamma<double>({N} + 1);\n"
+        s += "logp -= boost::math::lgamma<double>({x} + 1);\n"
+        s += "logp -= boost::math::lgamma<double>({N} - ({x}) + 1);\n"
+        s += "logp += ({x})*log({p}) + ({N} - ({x}))*log(1.0 - ({p}));\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{N}", str(self.N))
+        s = s.replace("{p}", str(self.p))
         return s
 
 class Gamma(Double):
