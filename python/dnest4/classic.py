@@ -195,6 +195,15 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 				break
 		rows[i] = which + cut
 
+    # Get header row
+	f = open("sample.txt", "r")
+	line = f.readline()
+	if line[0] == "#":
+		header = line[1:]
+	else:
+		header = ""
+	f.close()
+
 	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
 	posterior_sample = None
 	if single_precision:
@@ -209,9 +218,11 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if save:
 		np.savetxt('weights.txt', w)
 		if single_precision:
-			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e")
+			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e",\
+													header=header)
 		else:
-			np.savetxt("posterior_sample.txt", posterior_sample)
+			np.savetxt("posterior_sample.txt", posterior_sample,\
+													header=header)
 
 	if plot:
 		plt.show()
