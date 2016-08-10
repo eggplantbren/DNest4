@@ -245,7 +245,7 @@ to specify a model class in \proglang{Python}, and run \pkg{DNest4} entirely
 in the \proglang{Python} interpreter without having to invoke the \proglang{C++}
 compiler.
 
-\section{Relation to Other Algorithms}\label{sec:relation}
+\section{Relation to other algorithms}\label{sec:relation}
 The Diffusive Nested Sampling algorithm, and its implementation in
 \pkg{DNest4}, has advantages and disadvantages compared to other Bayesian
 computation algorithms and software.
@@ -332,7 +332,7 @@ Bayesian computation software packages.\label{tab:packages}}
 \end{center}
 \end{table}
 
-\section{Markov Chain Monte Carlo}\label{sec:mcmc}
+\section{Markov chain monte carlo}\label{sec:mcmc}
 DNS is build upon the Metropolis-Hastings algorithm.
 In this algorithm, the acceptance probability $\alpha$
 is given by
@@ -985,7 +985,7 @@ for testing this is to sample the prior for a long time
 {\tt sample.txt} to ensure that each parameter is exploring
 the prior correctly.
 
-\subsection{Log-likelihood}
+\subsection{Likelihood}
 The log-likelihood for the model is evaluated and returned by the
 \code{log\_likelihood} member function. For the straight line
 fitting example, the log likelihood is based on the
@@ -1093,7 +1093,7 @@ The first line of {\tt main()} loads the data into its global instance
 and the second line uses a \code{start} template function to construct
 and run the sampler.
 
-\section{Finite Mixture Models with RJObject}
+\section{Finite mixture models with the RJObject class}
 Mixture models are a useful way of representing realistic prior information
 in Bayesian data analysis. To reduce the amount of effort needed to
 implement mixture models in DNS, \citet{brewer2014inference} implemented
@@ -1432,7 +1432,7 @@ solution.
 \end{figure}
 
 
-\section{Approximate Bayesian Computation}
+\section{Approximate Bayesian computation}
 \subsection{Background}
 Nested Sampling can be used to solve Approximate Bayesian Computation (ABC)
 problems elegantly and efficiently.
@@ -1556,7 +1556,7 @@ given the model, although caution should be applied if
 using this for model selection \citep{robert2011lack}.
 
 
-\subsection{ABC Example}
+\subsection{ABC example}
 A simple ABC example is included in the directory
 {\tt code/Examples/ABC}. The example tries to infer the mean
 $\mu$ and standard deviation $\sigma$ of a normal distribution
@@ -1671,7 +1671,7 @@ double MyModel::log_likelihood() const
 \end{CodeInput}
 \end{CodeChunk}
 
-\subsection{ABC Example Results}
+\subsection{ABC example results}
 For ABC applications, there is an alternate \code{postprocess} function
 called \code{postprocess_abc}.
 This generates posterior samples using the $\epsilon$ value that
@@ -1701,7 +1701,7 @@ We show posterior samples in Figure~\ref{fig:abc_results}.
 ABC demonstration.\label{fig:abc_results}}
 \end{figure}
 
-\section{Python Bindings}\label{sec:python_bindings}
+\section{Python bindings}\label{sec:python_bindings}
 In \pkg{DNest4}, it is also possible to specify and run models in
 \proglang{Python}. Currently, the only models supported
 are ones where the parameters
@@ -1812,7 +1812,7 @@ from the Royal Society of New Zealand.
 \bibliography{references}
 
 \appendix
-\section{Command Line Options}\label{sec:command_line_options}
+\section{Command line options}\label{sec:command_line_options}
 The following command line options are available.\\
 
 \code{-o <filename>}\\
