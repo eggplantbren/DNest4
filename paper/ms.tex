@@ -178,7 +178,7 @@ parameter space is a defining feature of NS.
 Sampling from the constrained priors (Equation~\ref{eqn:constrained_prior})
 is required, and Markov Chain Monte Carlo (MCMC) is a popular method of doing
 this, although alternatives exist
-\citep[e.g.][]{feroz2009multinest, handley2015polychord}.
+\citep[e.g.,][]{feroz2009multinest, handley2015polychord}.
 Diffusive Nested Sampling \citep[DNS;][]{brewer2011diffusive}
 is an alternative to NS for
 problems where MCMC is the only viable sampling method. DNS is based on the
@@ -225,7 +225,7 @@ MCMC chain to mix between different modes in some circumstances. The marginal
 likelihood estimate can also be more accurate than standard MCMC-based NS
 \citep{brewer2011diffusive}, as less information is discarded.
 DNS has been applied several times in astrophysics
-\citep[e.g.][]{pancoast2014modelling, huppenkothen2015dissecting,
+\citep[e.g.,][]{pancoast2014modelling, huppenkothen2015dissecting,
 brewer2015fast}
 and was recently used in a biological application
 \citep{dybowski2015single}.
@@ -350,7 +350,7 @@ In DNS, the target distribution is not the posterior but rather
 the joint distribution in Equation~\ref{eqn:target_distribution}.
 Moves of $\theta$ are done keeping $j$ fixed, so we only need
 to consider the Metropolis acceptance probability for fixed $j$,
-i.e. with respect to a single constrained prior like
+i.e., with respect to a single constrained prior like
 Equation~\ref{eqn:constrained_prior}.
 Hence, the appropriate acceptance probability
 for a proposed move from $\theta$ to $\theta'$ is
@@ -428,13 +428,13 @@ To download and compile \pkg{DNest4}
 the following steps are sufficient:
 \begin{CodeChunk}
 \begin{CodeInput}
-wget https://github.com/eggplantbren/DNest4/archive/0.1.2.tar.gz
-tar xvzf 0.1.2.tar.gz
-mv DNest4-0.1.2 DNest4
-cd DNest4/code
-make
-cd ../python
-python setup.py install
+> wget https://github.com/eggplantbren/DNest4/archive/0.1.2.tar.gz
+> tar xvzf 0.1.2.tar.gz
+> mv DNest4-0.1.2 DNest4
+> cd DNest4/code
+> make
+> cd ../python
+> python setup.py install
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -469,7 +469,7 @@ After 5000 particles have been saved to the disk, the run will terminate.
 
 \section{Output files}
 The executable {\tt main} is responsible for the exploration part of the
-DNS algorithm (i.e. running the MCMC chain, building
+DNS algorithm (i.e., running the MCMC chain, building
 levels, and then exploring all the levels). It creates three text output files,
 {\tt sample.txt}, {\tt sample\_info.txt}, and {\tt levels.txt}.
 
@@ -500,7 +500,7 @@ is responsible for evolving one or more particles.
 
 The third output file, {\tt levels.txt}, contains information about the levels
 that were built during the run. The first column has estimates of the $\log(X)$
-values of the levels, i.e. how compressed they are relative to the prior, in
+values of the levels, i.e., how compressed they are relative to the prior, in
 units of nats. For example, if a level has $\log(X) = -1.02$, its likelihood
 value encloses $\exp(-1.02) \approx 36.1\%$ of the prior mass.
 
@@ -654,7 +654,7 @@ default. Higher values are slower, but more fail-safe.
 \subsection{Save interval}
 The save interval controls how often \dnest~writes a model to the output
 files; what is usually called ``thinning''. Saving more frequently
-(i.e. a smaller save interval) is usually better. However, this can result
+(i.e., a smaller save interval) is usually better. However, this can result
 in
 big output files if your model prints a lot of parameters to {\tt sample.txt}.
 causing the postprocessing to take a long time and/or a lot of RAM.
@@ -692,7 +692,7 @@ As described by \citet{skilling2006nested}, there is no guarantee in principle t
 another peak might have appeared had a run continued for longer. These
 {\em phase changes} are more common in statistical mechanics problems than
 in data analysis problems, but can appear in the latter
-\citep[e.g.][]{brewer2014inference, brewer2015fast}.
+\citep[e.g.,][]{brewer2014inference, brewer2015fast}.
 
 Alternatively, \pkg{DNest4} can try to determine the maximum number of levels
 automatically, if you set the maximum number of levels to 0. This works well
@@ -837,7 +837,7 @@ double StraightLine::perturb(DNest4::RNG& rng)
     if(which == 0)
     {
         // log_H takes care of the prior ratio
-        // i.e. log_H = log(pi(theta')/pi(theta))
+        // i.e., log_H = log(pi(theta')/pi(theta))
         log_H -= -0.5*pow(m/1E3, 2);
 
         // Take a step
@@ -1306,7 +1306,7 @@ gaussians.get_components()[0][2]
 \end{CodeInput}
 \end{CodeChunk}
 The order of $\{(\mu_j, \sigma_j, w_j)\}$
-(i.e. which one is parameter 0, 1, and 2)
+(i.e., which one is parameter 0, 1, and 2)
 is determined by the conditional prior class, and is
 explained in the following subsection.
 
@@ -1317,7 +1317,7 @@ parameter one for each component, and so on.
 
 \subsection{Conditional priors}
 The \code{RJObject} class is used to manage the components. An additional
-class is needed to define and manage the hyperparameters $\alpha$ (i.e.
+class is needed to define and manage the hyperparameters $\alpha$ (i.e.,
 define how they are generated from the prior, how they are proposed, and
 so on). The iid
 conditional prior $p(x_i | \alpha)$ is also defined by this extra class.
@@ -1357,7 +1357,7 @@ double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
 
 The functions \code{to\_uniform} and \code{from\_uniform} must implement
 the cumulative distribution function (CDF) of the conditional
-prior and its inverse. i.e. \code{from\_uniform}, if the input vector contains
+prior and its inverse. i.e., \code{from\_uniform}, if the input vector contains
 iid draws from Uniform(0, 1), these should be modified to become draws from
 $p(x|\alpha)$, and \code{to\_uniform} should be the inverse of
 \code{from\_uniform}.
@@ -1484,7 +1484,7 @@ This approach is rarely usable in practice because the probability of
 generating a dataset that matches the observed one is extremely low.
 To work around this, we replace the proposition
 $D = D_{\rm observed}$ with a logically
-weaker one (i.e. one that is implied by $D = D_{\rm observed}$ but does not
+weaker one (i.e., one that is implied by $D = D_{\rm observed}$ but does not
 imply it).
 The weaker proposition is defined using
 a discrepancy function
@@ -1522,7 +1522,7 @@ may involve a choice of summary statistics,
 progresses,
 \item How to make algorithms more efficient than rejection sampling.
 \end{enumerate}
-Challenge (i) is Bayesian in nature, i.e. it relates to the very
+Challenge (i) is Bayesian in nature, i.e., it relates to the very
 definition of the posterior distribution itself.
 On the other hand, challenges (ii) and (iii) are about the computational
 implementation. Most ABC analyses are done using Sequential Monte Carlo
