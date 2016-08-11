@@ -2,7 +2,7 @@
 
 import numpy as np
 
-__all__ = ["my_loadtxt", "loadtxt_rows"]
+__all__ = ["my_loadtxt", "loadtxt_rows", "load_column_names"]
 
 def my_loadtxt(filename, single_precision=False):
     """
@@ -86,4 +86,22 @@ def loadtxt_rows(filename, rows, single_precision=False):
 
     results["ncol"] = ncol
     return results
+
+def load_column_names(filename):
+    """
+    Read the first line of the file and extract column names from it.
+    Returns a dictionary with two elements:
+        colnames        A list of column names
+        indices         A dictionary of column indices, indexed by name
+    """
+    f = open(filename, "r")
+    line = f.readline()
+    f.close()
+
+    names = line.replace("#", "").replace(" ", "").split(",")
+    indices = {}
+    for i in range(0, len(names)):
+        indices[names[i]] = i
+
+    return {"colnames": names, "indices": indices}
 
