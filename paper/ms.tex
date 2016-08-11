@@ -985,7 +985,7 @@ for testing this is to sample the prior for a long time
 {\tt sample.txt} to ensure that each parameter is exploring
 the prior correctly.
 
-\subsection{Likelihood}
+\subsection{Log likelihood}
 The log-likelihood for the model is evaluated and returned by the
 \code{log\_likelihood} member function. For the straight line
 fitting example, the log likelihood is based on the
@@ -1530,7 +1530,7 @@ implementation. Most ABC analyses are done using Sequential Monte Carlo
 to Nested Sampling and annealing in the sense that they work with
 sequences of probability distributions.
 
-\subsection{ABC with Nested Sampling}
+\subsection{ABC with nested sampling}
 NS can be used for ABC by noting that Equation~\ref{eqn:abc_posterior}
 is of the same form as a constrained prior, only instead of being the prior
 for the parameters $p(\theta | M)$ defined on the parameter space, it is
