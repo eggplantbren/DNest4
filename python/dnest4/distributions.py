@@ -136,6 +136,23 @@ class Binomial(Int):
         s = s.replace("{p}", str(self.p))
         return s
 
+class Poisson(Int):
+    """
+    Poisson distributions.
+    """
+    def __init__(self, lamb):
+        self.lamb = lamb
+
+    def log_prob(self):
+        s = ""
+        s += "logp += {x}*log({lamb}) - ({lamb});\n"
+        s += "logp -= boost::math::lgamma<double>({x} + 1);\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{lamb}", str(self.lamb))
+        return s
+
 class Gamma(Double):
     """
     Gamma distributions (parameterised by shape and scale)
