@@ -444,7 +444,7 @@ if the model templates from the \pkg{DNest4} repository are copied
 to any other location on your system and used as the basis for
 new work, their Makefiles will continue to function.
 
-\section{Running DNest4}\label{sec:running}
+\section[Running DNest4]{Running \pkg{DNest4}}\label{sec:running}
 To demonstrate \pkg{DNest4},
 we will use a simple linear regression example where the
 sampling distribution is
@@ -777,7 +777,7 @@ The class must also define and implement the following member functions:
         the output file.
 \end{enumerate}
 These are all described (using the linear regression example) in the
-following subsections.
+following sections.
 
 %%\subsection{generate}
 
@@ -1093,7 +1093,7 @@ The first line of {\tt main()} loads the data into its global instance
 and the second line uses a \code{start} template function to construct
 and run the sampler.
 
-\section{Finite mixture models with the RJObject class}
+\section[Finite mixture models with the RJObject class]{Finite mixture models with the \code{RJObject} class}
 Mixture models are a useful way of representing realistic prior information
 in Bayesian data analysis. To reduce the amount of effort needed to
 implement mixture models in DNS, \citet{brewer2014inference} implemented
@@ -1308,7 +1308,7 @@ gaussians.get_components()[0][2]
 The order of $\{(\mu_j, \sigma_j, w_j)\}$
 (i.e., which one is parameter 0, 1, and 2)
 is determined by the conditional prior class, and is
-explained in the following subsection.
+explained in the following section.
 
 \code{RJObject}'s \code{print} function prints the dimensionality of each
 component and the maximum value of $N$, followed by the hyperparameters,
@@ -1701,7 +1701,7 @@ We show posterior samples in Figure~\ref{fig:abc_results}.
 ABC demonstration.\label{fig:abc_results}}
 \end{figure}
 
-\section{Python bindings}\label{sec:python_bindings}
+\section[Python bindings]{\proglang{Python} bindings}\label{sec:python_bindings}
 In \pkg{DNest4}, it is also possible to specify and run models in
 \proglang{Python}. Currently, the only models supported
 are ones where the parameters
@@ -1846,7 +1846,7 @@ per thread to 1, so the number of particles equals the number of threads.
 %\section{Specifying models in Python with dnest4.builder}
 
 
-\section{Specifying models in Julia}
+\section[Specifying models in Julia]{Specifying models in \proglang{Julia}}
 Experimental support for model specification in the
 \proglang{Julia} language \citep{julia}
 is provided, with an example given in the
