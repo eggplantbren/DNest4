@@ -98,7 +98,8 @@ def load_column_names(filename):
     line = f.readline()
     f.close()
 
-    names = line.replace("#", "").replace(" ", "").split(",")
+    names = line.replace("#", "").replace(" ", "").replace("\n", "")\
+                .split(",")
     indices = {}
     for i in range(0, len(names)):
         indices[names[i]] = i
