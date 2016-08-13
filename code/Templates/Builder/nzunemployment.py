@@ -49,14 +49,24 @@ for i in range(1, data["N"]):
 
 # Parameters relating to youth data
 model.add_node(bd.Node("offset", bd.Normal(0.0, 1.0)))
-model.add_node(bd.Node("sigma_youth", bd.LogUniform(1E-3, 1E3)))
-model.add_node(bd.Node("policy_effect", bd.Cauchy(0.0, 0.01)))
+model.add_node(bd.Node("policy_effect", bd.Cauchy(0.0, 0.1)))
+model.add_node(bd.Node("L2", bd.LogUniform(1E-2, 1E2)))
+model.add_node(bd.Node("beta2", bd.LogUniform(1E-3, 1E3)))
+model.add_node(bd.Node("alpha2", bd.Delta("exp(-1.0/L2)")))
+model.add_node(bd.Node("sigma2", bd.Delta("beta2/sqrt(1.0 - alpha2*alpha2)")))
 
 for i in range(0, data["N"]):
     name = "youth{i}".format(i=i)
     mean = "adult{i} + offset + ((t{i} >= 90.0)?(policy_effect):(0.0))"\
                                                                 .format(i=i)
-    dist = bd.Normal(mean, "sigma_youth")
+    sd = "sigma2"
+    if i > 0:
+        ar1_mean = "{mean} + alpha2*(youth{k} - ({mean}))".format(mean=mean,\
+                                    k=(i-1))
+        mean = ar1_mean
+        sd = "beta2"
+
+    dist = bd.Normal(mean, sd)
     model.add_node(bd.Node(name, dist, observed=True))
 
 # Create the C++ code
