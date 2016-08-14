@@ -33,8 +33,11 @@ data["y"] = np.array([4, 5, 4, 1, 0, 4, 3, 4, 0, 6, 3, 3, 4, 0,
 data["N"] = int(len(data["t"]))
 
 model = bd.Model()
-model.add_node(bd.Node("mu1", bd.Uniform(0.0, 10.0)))
-model.add_node(bd.Node("mu2", bd.Uniform(0.0, 10.0)))
+model.add_node(bd.Node("log_mu1", bd.Cauchy(0.0, 5.0)))
+model.add_node(bd.Node("diff", bd.Cauchy(0.0, 1.0)))
+model.add_node(bd.Node("log_mu2", bd.Delta("log_mu1 + diff")))
+model.add_node(bd.Node("mu1", bd.Delta("exp(log_mu1)")))
+model.add_node(bd.Node("mu2", bd.Delta("exp(log_mu2)")))
 model.add_node(bd.Node("change_year", bd.Uniform(1851.0, 1962.0)))
 
 # Data nodes
