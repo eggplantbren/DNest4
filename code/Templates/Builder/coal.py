@@ -39,11 +39,13 @@ model.add_node(bd.Node("log_mu2", bd.Delta("log_mu1 + diff")))
 model.add_node(bd.Node("mu1", bd.Delta("exp(log_mu1)")))
 model.add_node(bd.Node("mu2", bd.Delta("exp(log_mu2)")))
 model.add_node(bd.Node("change_year", bd.Uniform(1851.0, 1962.0)))
+model.add_node(bd.Node("L", bd.LogUniform(1E-2, 1E2)))
 
 # Data nodes
 for i in range(0, data["N"]):
     name = "y{i}".format(i=i)
-    mean = "((t{i} < change_year)?(mu1):(mu2))".format(i=i)
+    mean = "mu1 + (mu2 - mu1)/(1.0 + exp(-(t{i} - change_year)/L))"\
+                                        .format(i=i)
     model.add_node(bd.Node(name, bd.Poisson(mean), observed=True))
 
 # Create the C++ code
