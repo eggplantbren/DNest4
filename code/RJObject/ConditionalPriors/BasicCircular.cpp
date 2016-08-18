@@ -34,9 +34,8 @@ double BasicCircular::perturb_hyperparameters(RNG& rng)
 
 	if(which == 0)
 	{
-		double scale = size*pow(10., 1.5 - 6.*rng.rand());
-		xc += scale*rng.randn();
-		yc += scale*rng.randn();
+		xc += size*rng.randh();
+        yc += size*rng.randh();
 		xc = DNest4::mod(xc - x_min, x_max - x_min) + x_min;
 		yc = DNest4::mod(yc - y_min, y_max - y_min) + y_min;
 	}
