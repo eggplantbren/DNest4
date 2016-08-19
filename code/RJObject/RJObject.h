@@ -43,6 +43,9 @@ class RJObject
 		// for the components
 		ConditionalPrior conditional_prior;
 
+        // Flag to indicate whether components changed during a perturb
+        bool components_changed_flag;
+
 		// The components
 		int num_components;
 		std::vector< std::vector<double> > components;
@@ -104,6 +107,9 @@ class RJObject
 		// Getter for hyperparameters
 		const ConditionalPrior& get_conditional_prior() const
 		{ return conditional_prior; }
+
+        bool components_changed() const
+        { return components_changed_flag; }
 };
 
 #include "RJObjectImpl.h"

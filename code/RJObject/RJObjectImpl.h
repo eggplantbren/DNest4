@@ -47,6 +47,8 @@ void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 	num_components = 0;
 	for(int i=0; i<num; i++)
 		add_component(rng);
+
+    components_changed_flag = true;
 }
 
 template<class ConditionalPrior>
@@ -171,6 +173,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng, bool hyperparameters)
 
 	added.resize(0);
 	removed.resize(0);
+    components_changed_flag = true;
 
 	double logH = 0.;
 
@@ -191,6 +194,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng, bool hyperparameters)
 		if(rng.rand() <= 0.5)
 		{
 			logH += conditional_prior.perturb1(rng, components, u_components);
+            components_changed_flag = false;
 		}
 		else
 		{
