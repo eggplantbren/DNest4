@@ -13,9 +13,9 @@ NOTE: the RJObject_1DMixture example is fairly time-consuming.\n\n\
 Press ENTER to begin.")
 junk = input()
 
-os.system("wget https://github.com/eggplantbren/DNest4/archive/0.1.1.tar.gz")
-os.system("tar xvzf 0.1.1.tar.gz")
-os.system("mv DNest4-0.1.1 DNest4")
+os.system("wget https://github.com/eggplantbren/DNest4/archive/0.1.3.tar.gz")
+os.system("tar xvzf 0.1.3.tar.gz")
+os.system("mv DNest4-0.1.3 DNest4")
 os.chdir("DNest4/code")
 os.system("make")
 os.chdir("../python")
