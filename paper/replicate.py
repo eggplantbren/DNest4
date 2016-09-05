@@ -1,7 +1,7 @@
 import os
 
-# Python command on your system
-my_python = "/home/brendon/local/anaconda3/bin/python"
+# Best Python command on your system
+my_python = "python"
 
 print("This script should download and install DNest4 and \
 replicate all the runs presented in the paper.\nNote:\
