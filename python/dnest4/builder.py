@@ -48,6 +48,11 @@ class Model:
         s = ""
         s += "double logH = 0.0;\n\n"
         s += "int which;\n"
+        s += "int reps = 1;\n"
+        s += "if(rng.rand() <= 0.5)\n"
+        s += "    reps = (int)pow(10.0, 2*rng.rand());\n"
+        s += "for(int i=0; i<reps; ++i)\n"
+        s += "{\n"
         s += "which = rng.rand_int(" + str(self.num_params) + ");\n"
 
         k = 0
@@ -59,7 +64,7 @@ class Model:
                                 .format(x=node.name);
                 k += 1
 
-        s += "\n\n"
+        s += "}\n\n"
         for node in self.nodes:
             if node.observed == False:
                 s += "" + node.distribution.from_uniform()\
