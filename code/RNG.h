@@ -25,6 +25,9 @@ class RNG
 		// Constructor
 		RNG();
 
+		// Constructor that also sets seed
+		RNG(unsigned int seed);
+
 		// Set the seed (obviously)
 		void set_seed(unsigned int seed);
 

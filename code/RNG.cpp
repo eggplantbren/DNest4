@@ -12,6 +12,13 @@ RNG::RNG()
 
 }
 
+RNG::RNG(unsigned int seed)
+:uniform(0., 1.)
+,normal(0., 1.)
+{
+	set_seed(seed);
+}
+
 void RNG::set_seed(unsigned int seed)
 {
 	twister.seed(seed);
