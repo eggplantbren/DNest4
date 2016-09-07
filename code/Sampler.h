@@ -71,7 +71,7 @@ class Sampler
 		void mcmc_thread(unsigned int thread);
 
 		// Add new levels, save output files, etc
-		void do_bookkeeping();
+		virtual void do_bookkeeping();
 
 		// Kill lagging particles
 		void kill_lagging_particles();
