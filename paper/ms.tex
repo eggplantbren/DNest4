@@ -438,6 +438,15 @@ the following steps are sufficient:
 \end{CodeInput}
 \end{CodeChunk}
 
+In Mac OS X, the final line might need to provide information about
+your OS version, like so:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+> MACOSX_DEPLOYMENT_TARGET=10.9 python setup.py install
+\end{CodeInput}
+\end{CodeChunk}
+
 We recommend you create an environment variable called \code{DNEST4\_PATH}
 and set it to the directory {\em above} the \pkg{DNest4} directory. Then,
 if the model templates from the \pkg{DNest4} repository are copied
