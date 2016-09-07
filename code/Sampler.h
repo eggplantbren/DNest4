@@ -17,7 +17,7 @@ namespace DNest4
 template<class ModelType>
 class Sampler
 {
-	private:
+	protected:
 		// Whether to save anything to disk or not
 		// Use 'true' for standard mode
 		bool save_to_disk;
