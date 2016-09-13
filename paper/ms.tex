@@ -1683,8 +1683,8 @@ double MyModel::log_likelihood() const
 \subsection{ABC example results}
 For ABC applications, there is an alternate \code{postprocess} function
 called \code{postprocess_abc}.
-This generates posterior samples using the $\epsilon$ value that
-compresses the joint prior by 80\% as much as the final level.
+This generates posterior samples using the $\epsilon$ value corresponding
+to level $\approx$ 3/4$\times$ (maximum number of levels).
 \begin{CodeChunk}
 \begin{CodeInput}
 dnest4.postprocess_abc()
