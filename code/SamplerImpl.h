@@ -173,23 +173,28 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	// Do the proposal for the particle
 	ModelType proposal = particle;
 	double log_H = proposal.perturb(rng);
-	LikelihoodType logl_proposal(proposal.log_likelihood(),
-												logl.get_tiebreaker());
-
-	// Do the proposal for the tiebreaker
-	log_H += logl_proposal.perturb(rng);
 
 	// Prevent unnecessary exponentiation of a large number
-	if(log_H > 0.)
-		log_H = 0.;
+	if(log_H > 0.0)
+		log_H = 0.0;
 
-	// Accept?
-	if(rng.rand() <= exp(log_H) && level.get_log_likelihood() < logl_proposal)
-	{
-		particle = proposal;
-		logl = logl_proposal;
-		level.increment_accepts(1);
-	}
+    if(rng.rand() <= exp(log_H))
+    {
+    	LikelihoodType logl_proposal(proposal.log_likelihood(),
+												logl.get_tiebreaker());
+
+    	// Do the proposal for the tiebreaker
+    	log_H += logl_proposal.perturb(rng);
+
+	    // Accept?
+	    if(level.get_log_likelihood() < logl_proposal)
+	    {
+		    particle = proposal;
+		    logl = logl_proposal;
+		    level.increment_accepts(1);
+	    }
+    }
+
 	level.increment_tries(1);
 
 	// Count visits and exceeds
@@ -336,11 +341,10 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
             return false;
 
         // Check level spacing (in terms of log likelihood)
-        // over last n levels, where n={ 20 iff l.size() < 80,
-        // geometric mean of {20, l.size()} otherwise}
-        int num_levels_to_check = 20;
-        if(l.size() > 80)
-            num_levels_to_check = static_cast<int>(sqrt(20)*sqrt(0.25*l.size()));
+        // over last n levels
+        int num_levels_to_check = static_cast<int>(20*sqrt(0.02*l.size()));
+        if(num_levels_to_check < 20)
+            num_levels_to_check = 20;
 
         int k = levels.size() - 1;
         for(int i=0; i<num_levels_to_check; ++i)

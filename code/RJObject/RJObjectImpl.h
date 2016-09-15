@@ -47,6 +47,8 @@ void RJObject<ConditionalPrior>::from_prior(RNG& rng)
 	num_components = 0;
 	for(int i=0; i<num; i++)
 		add_component(rng);
+
+    components_changed_flag = true;
 }
 
 template<class ConditionalPrior>
@@ -132,7 +134,8 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 	// Work out how many components we will have after the change
 	double delta = max_num_components*rng.randh();
 	int difference = (int)delta;
-	// In case difference is zero, make it +1 or -1
+	// In case difference is zero, make it +1 or -1. Also, just do this
+    // sometimes just because it's gentle
 	if(difference == 0)
 	{
 		if(rng.rand() <= 0.5)
@@ -170,6 +173,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng, bool hyperparameters)
 
 	added.resize(0);
 	removed.resize(0);
+    components_changed_flag = true;
 
 	double logH = 0.;
 
@@ -190,6 +194,7 @@ double RJObject<ConditionalPrior>::perturb(RNG& rng, bool hyperparameters)
 		if(rng.rand() <= 0.5)
 		{
 			logH += conditional_prior.perturb1(rng, components, u_components);
+            components_changed_flag = false;
 		}
 		else
 		{

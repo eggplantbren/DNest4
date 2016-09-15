@@ -1,8 +1,9 @@
 from pylab import *
 import os
+import dnest4.classic as dn4
 
 data = loadtxt('fake_data.txt')
-posterior_sample = atleast_2d(loadtxt('posterior_sample.txt'))
+posterior_sample = atleast_2d(dn4.my_loadtxt('posterior_sample.txt'))
 
 saveFrames = False # For making movies
 if saveFrames:

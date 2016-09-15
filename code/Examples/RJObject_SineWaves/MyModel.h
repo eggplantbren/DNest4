@@ -9,11 +9,13 @@ class MyModel
 {
 	private:
 		DNest4::RJObject<MyConditionalPrior> objects;
-		double sigma; // Noise standard deviation
+		double log_sigma, sigma; // Noise standard deviation
 
 		// The signal
 		std::vector<long double> mu;
 		void calculate_mu();
+
+        static const DNest4::Cauchy cauchy;
 
 	public:
 		MyModel();

@@ -1,6 +1,5 @@
 import copy
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from .loading import *
 
@@ -19,7 +18,8 @@ def logdiffexp(x1, x2):
 
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
+			compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
@@ -30,7 +30,8 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
+	cut = int(cut*sample_info.shape[0])
+	sample_info = sample_info[cut:, :]
 
 	if plot:
 		plt.figure(1)
@@ -175,9 +176,11 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if numResampleLogX > 1:
 		errorbar1 += " +- " + str(logz_error)
 		errorbar2 += " +- " + str(H_error)
-	print("log(Z) = " + str(logz_estimate) + errorbar1)
-	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
-	print("Effective sample size = " + str(ESS))
+
+	if verbose:
+		print("log(Z) = " + str(logz_estimate) + errorbar1)
+		print("Information = " + str(H_estimate) + errorbar2 + " nats.")
+		print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
@@ -189,7 +192,16 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		rows[i] = which
+		rows[i] = which + cut
+
+    # Get header row
+	f = open("sample.txt", "r")
+	line = f.readline()
+	if line[0] == "#":
+		header = line[1:]
+	else:
+		header = ""
+	f.close()
 
 	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
 	posterior_sample = None
@@ -205,9 +217,11 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if save:
 		np.savetxt('weights.txt', w)
 		if single_precision:
-			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e")
+			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e",\
+													header=header)
 		else:
-			np.savetxt("posterior_sample.txt", posterior_sample)
+			np.savetxt("posterior_sample.txt", posterior_sample,\
+													header=header)
 
 	if plot:
 		plt.show()
@@ -215,7 +229,8 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	return [logz_estimate, H_estimate, logx_samples]
 
 def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
-			cut=0., save=True, zoom_in=True, compression_bias_min=1., compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
+			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
+compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
@@ -226,7 +241,8 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if compression_assert is not None:
 		levels_orig[1:,0] = -np.cumsum(compression_assert*np.ones(levels_orig.shape[0] - 1))
 
-	sample_info = sample_info[int(cut*sample_info.shape[0]):, :]
+	cut = int(cut*sample_info.shape[0])
+	sample_info = sample_info[cut:, :]
 
 	if plot:
 		plt.figure(1)
@@ -253,7 +269,7 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		plt.ylabel("MH Acceptance")
 
 	# Convert to lists of tuples
-	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
+	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreakercut
 	logl_samples = [(sample_info[i, 1], sample_info[i, 2], i) for i in range(0, sample_info.shape[0])] # logl, tiebreaker, id
 	logx_samples = np.zeros((sample_info.shape[0], numResampleLogX))
 	logp_samples = np.zeros((sample_info.shape[0], numResampleLogX))
@@ -379,9 +395,11 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	if numResampleLogX > 1:
 		errorbar1 += " +- " + str(logz_error)
 		errorbar2 += " +- " + str(H_error)
-	print("log(Z) = " + str(logz_estimate) + errorbar1)
-	print("Information = " + str(H_estimate) + errorbar2 + " nats.")
-	print("Effective sample size = " + str(ESS))
+
+	if verbose:
+		print("log(Z) = " + str(logz_estimate) + errorbar1)
+		print("Information = " + str(H_estimate) + errorbar2 + " nats.")
+		print("Effective sample size = " + str(ESS))
 
 	# Resample to uniform weight
 	N = int(moreSamples*ESS)
@@ -393,7 +411,7 @@ def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			which = np.random.randint(sample_info.shape[0])
 			if np.random.rand() <= w[which]:
 				break
-		rows[i] = which
+		rows[i] = which + cut
 
 	sample = loadtxt_rows("sample.txt", set(rows), single_precision)
 	posterior_sample = None

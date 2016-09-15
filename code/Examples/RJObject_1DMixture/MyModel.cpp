@@ -36,21 +36,20 @@ double MyModel::log_likelihood() const
 	double logL = 0.0;
 
     // Extract parameters
-    vector<double> mu, sigma, weight;
+    vector<double> mu, sigma, log_weight, C;
     const auto& components = gaussians.get_components();
     for(const auto& c: components)
     {
         mu.push_back(c[0]);
         sigma.push_back(exp(c[1]));
-        weight.push_back(exp(c[2]));
+        log_weight.push_back(c[2]);
+        C.push_back(0.5*log(2*M_PI*pow(sigma.back(), 2)));
     }
 
     // Normalise weights
-    double tot = 0.0;
-    for(double w: weight)
-        tot += w;
-    for(double& w: weight)
-        w /= tot;
+    double tot = logsumexp(log_weight);
+    for(double& lw: log_weight)
+        lw -= tot;
 
     // Get data
     const vector<double>& data = Data::get_instance().get_x();
@@ -65,7 +64,7 @@ double MyModel::log_likelihood() const
         for(size_t j=0; j<mu.size(); ++j)
         {
             _logL = logsumexp(_logL,
-                            log(weight[j]) - 0.5*log(2*M_PI*sigma[j]*sigma[j])
+                            log_weight[j] - C[j]
                             -0.5*pow((x - mu[j])/sigma[j], 2));
         }
 

@@ -6,7 +6,7 @@
 class Data
 {
 	private:
-		std::vector<double> t, y;
+		std::vector<double> t, y, sig;
 
 	public:
 		Data();
@@ -15,6 +15,7 @@ class Data
 		// Getters
 		const std::vector<double>& get_t() const { return t; }
 		const std::vector<double>& get_y() const { return y; }
+        const std::vector<double>& get_sig() const { return sig; }
 
 	// Singleton
 	private:
