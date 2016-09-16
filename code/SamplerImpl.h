@@ -438,11 +438,11 @@ void Sampler<ModelType>::initialise_output_files() const
 	std::fstream fout;
 
 	// Output headers
-	fout.open("sample_info.txt", std::ios::out);
+	fout.open(options.sample_info_file, std::ios::out);
 	fout<<"# level assignment, log likelihood, tiebreaker, ID."<<std::endl;
 	fout.close();
 
-	fout.open("sample.txt", std::ios::out);
+	fout.open(options.sample_file, std::ios::out);
 	fout<<"# "<<particles[0].description().c_str()<<std::endl;
 	fout.close();
 
@@ -458,7 +458,7 @@ void Sampler<ModelType>::save_levels() const
 
 	// Output file
 	std::fstream fout;
-	fout.open("levels.txt", std::ios::out);
+	fout.open(options.levels_file, std::ios::out);
 	fout<<"# log_X, log_likelihood, tiebreaker, accepts, tries, exceeds, visits";
 	fout<<std::endl;
     fout<<std::setprecision(12);
@@ -486,19 +486,25 @@ void Sampler<ModelType>::save_particle()
 	if(!save_to_disk)
 		return;
 
-	std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
-	std::cout<<std::endl;
+	//std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
+	//std::cout<<std::endl;
+
+	if((count_saves) % 10 == 0)
+	{
+		std::cout<<"# Saving particle to disk. N = "<< count_saves <<".";
+		std::cout<<std::endl;
+	}
 
 	// Output file
 	std::fstream fout;
 
 	int which = rngs[0].rand_int(particles.size());
-	fout.open("sample.txt", std::ios::out|std::ios::app);
+	fout.open(options.sample_file, std::ios::out|std::ios::app);
 	particles[which].print(fout);
 	fout<<std::endl;
 	fout.close();
 
-	fout.open("sample_info.txt", std::ios::out|std::ios::app);
+	fout.open(options.sample_info_file, std::ios::out|std::ios::app);
 	fout<<std::setprecision(12);
 
 	fout<<level_assignments[which]<<' ';
