@@ -60,7 +60,14 @@ void Options::load(const char* filename)
 	fin>>max_num_levels;	fin.ignore(1000000, '\n');
 	fin>>lambda;		fin.ignore(1000000, '\n');
 	fin>>beta;		fin.ignore(1000000, '\n');
-	fin>>max_num_saves;
+	fin>>max_num_saves;		fin.ignore(1000000, '\n');
+	fin>>sample_file;		fin.ignore(1000000, '\n');
+	fin>>sample_info_file;	fin.ignore(1000000, '\n');
+	fin>>levels_file;
+
+	if (sample_file.compare("#") == 0) sample_file = "sample.txt";
+	if (sample_info_file.compare("#") == 0) sample_info_file = "sample_info.txt";
+	if (levels_file.compare("#") == 0) levels_file = "levels.txt";
 
 	fin.close();
 
