@@ -486,14 +486,8 @@ void Sampler<ModelType>::save_particle()
 	if(!save_to_disk)
 		return;
 
-	//std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
-	//std::cout<<std::endl;
-
-	if((count_saves) % 10 == 0)
-	{
-		std::cout<<"# Saving particle to disk. N = "<< count_saves <<".";
-		std::cout<<std::endl;
-	}
+	std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
+	std::cout<<std::endl;
 
 	// Output file
 	std::fstream fout;
