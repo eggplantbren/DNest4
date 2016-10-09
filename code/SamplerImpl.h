@@ -346,7 +346,7 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
         if(num_levels_to_check < 20)
             num_levels_to_check = 20;
 
-        int k = levels.size() - 1;
+        int k = l.size() - 1;
         for(int i=0; i<num_levels_to_check; ++i)
         {
             if(l[k].get_log_likelihood().get_value()
