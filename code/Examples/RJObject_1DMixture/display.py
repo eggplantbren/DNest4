@@ -17,7 +17,10 @@ def mixture(x, params):
 
     y = zeros(x.shape)
     for i in range(0, N):
-        y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
+        # Don't plot flukey narrow things (which ought to eventually average
+        # out, but won't in a finite sample)
+        if widths[i] >= 0.1:
+            y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
 
     return y
 

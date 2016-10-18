@@ -2,7 +2,8 @@ import os
 import matplotlib.pyplot
 
 # Best Python command on your system
-my_python = "/home/brendon/local/anaconda3/bin/python"
+# (should also be the one you installed the dnest4 package for)
+my_python = "python"
 
 print("This script should\
 replicate all the runs presented in the paper.\nNote:\
@@ -17,7 +18,7 @@ junk = input()
 def run_example(directory):
     os.chdir(directory)
     os.system("./main -s 0")
-    if directory == "StraigtLine":
+    if directory == "StraightLine":
         print("Figure 1 in the paper has been zoomed in.")
     os.system(my_python + " showresults.py")
     os.chdir("..")
