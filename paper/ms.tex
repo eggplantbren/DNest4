@@ -920,10 +920,10 @@ implement. The following procedure generates
 $x$ from a heavy-tailed distribution:
 
 \begin{enumerate}
-\item Generate $a \sim$ Normal$(0, 1)$
-\item Generate $b \sim$ Uniform$(0, 1)$
-\item Define $t := a/\sqrt{-\ln(b)}$
-\item Generate $n \sim$ Normal$(0, 1)$
+\item Generate $a \sim$ Normal$(0, 1)$;
+\item Generate $b \sim$ Uniform$(0, 1)$;
+\item Define $t := a/\sqrt{-\ln(b)}$;
+\item Generate $n \sim$ Normal$(0, 1)$;
 \item Set $x := 10^{1.5 - 3|t|}n$
 \end{enumerate}
 The variable $t$ has a student-$t$ distribution with 2 degrees of freedom.
@@ -1528,9 +1528,9 @@ That is,
 The main challenges associated with ABC are:
 \begin{enumerate}[(i)]
 \item The choice of discrepancy function $\rho(D; D_{\rm observed})$, which
-may involve a choice of summary statistics,
+may involve a choice of summary statistics;
 \item How to choose the value of $\epsilon$, or how to change it as a run
-progresses,
+progresses; and
 \item How to make algorithms more efficient than rejection sampling.
 \end{enumerate}
 Challenge (i) is Bayesian in nature, i.e., it relates to the very
