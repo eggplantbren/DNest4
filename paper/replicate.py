@@ -14,17 +14,11 @@ NOTE: the RJObject_1DMixture example is fairly time-consuming.\n\n\
 Press ENTER to begin.")
 junk = input()
 
-#os.system("wget https://github.com/eggplantbren/DNest4/archive/0.1.3.tar.gz")
-#os.system("tar xvzf 0.1.3.tar.gz")
-#os.system("mv DNest4-0.1.3 DNest4")
-#os.chdir("DNest4/code")
-#os.system("make")
-#os.chdir("../python")
-#os.system("python setup.py install")
-
 def run_example(directory):
     os.chdir(directory)
     os.system("./main -s 0")
+    if directory == "StraigtLine":
+        print("Figure 1 in the paper has been zoomed in.")
     os.system(my_python + " showresults.py")
     os.chdir("..")
 
