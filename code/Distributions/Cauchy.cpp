@@ -28,7 +28,7 @@ double Cauchy::cdf_inverse(double x) const
 
 double Cauchy::log_pdf(double x) const
 {
-    return -log(M_PI) - log(width) - log(1.0 + pow((x - center)/width, 2));
+    return -log(M_PI*width) - log(1.0 + pow((x - center)/width, 2));
 }
 
 } // namespace DNest4
