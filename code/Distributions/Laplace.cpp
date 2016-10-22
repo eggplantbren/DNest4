@@ -28,7 +28,7 @@ double Laplace::cdf_inverse(double x) const
 
 double Laplace::log_pdf(double x) const
 {
-    return -log(2.0) - std::abs(x - center)/width;
+    return -log(2.0*width) - std::abs(x - center)/width;
 }
 
 int Laplace::sign(double x)
