@@ -23,13 +23,10 @@ void MyModel::from_prior(RNG& rng)
 	calculate_mu();
 }
 
-void MyModel::calculate_mu()
+void MyModel::calculate_mu(bool update)
 {
 	// Get the times from the data
 	const vector<double>& t = Data::get_instance().get_t();
-
-	// Update or from scratch?
-	bool update = (objects.get_removed().size() == 0);
 
 	// Get the components
 	const vector< vector<double> >& components = (update)?(objects.get_added()):
@@ -57,7 +54,7 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.75)
 	{
 		logH += objects.perturb(rng);
-		calculate_mu();
+		calculate_mu(objects.get_removed().size() == 0);
 	}
 	else
 	{
@@ -91,6 +88,18 @@ void MyModel::print(std::ostream& out) const
 		out<<mu[i]<<' ';
 	out<<sigma<<' ';
 	objects.print(out); out<<' ';
+}
+
+void MyModel::read(std::istream& in)
+{
+    double junk;
+	for(size_t i=0; i<mu.size(); i++)
+		in>>junk;
+	in>>sigma;
+    log_sigma = log(sigma);
+
+	objects.read(in);
+    calculate_mu();
 }
 
 string MyModel::description() const

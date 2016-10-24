@@ -92,6 +92,9 @@ class RJObject
 		// For output
 		void print(std::ostream& out) const;
 
+        // For input (if the need arises)
+        void read(std::istream& in);
+
 		// Getter for components
 		const std::vector< std::vector<double> >& get_components() const
 		{ return components; }

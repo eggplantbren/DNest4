@@ -257,6 +257,41 @@ void RJObject<ConditionalPrior>::print(std::ostream& out) const
 }
 
 template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::read(std::istream& in)
+{
+    double a, b;
+
+    in>>a>>b;
+    num_dimensions = (int)a;
+    max_num_components = (int)b;
+
+    conditional_prior.read(in);
+    in>>a;
+    num_components = (int)a;
+
+    // Resize and read in components
+    components.assign(num_components, std::vector<double>(num_dimensions, 0.0));
+    for(int j=0; j<num_dimensions; ++j)
+    {
+        for(int i=0; i<num_components; ++i)
+            in>>components[i][j];
+
+        // Read in the zero padding
+        double junk;
+		for(int i=num_components; i<max_num_components; i++)
+            in>>junk;
+    }
+
+    // Calculate u_components
+    u_components = components;
+    for(int i=0; i<num_components; ++i)
+        conditional_prior.to_uniform(u_components[i]);
+
+    added.clear();
+    removed.clear();
+}
+
+template<class ConditionalPrior>
 void RJObject<ConditionalPrior>::consolidate_diff()
 {
 	if(ConditionalPrior::weight_parameter == -1)
