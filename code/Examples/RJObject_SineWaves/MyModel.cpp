@@ -131,6 +131,6 @@ string MyModel::description() const
         s<<"log_amplitude["<<i<<"], ";
     for(int i=0; i<100; ++i)
         s<<"phase["<<i<<"], ";
-	return s.str();
+    return s.str();
 }
 

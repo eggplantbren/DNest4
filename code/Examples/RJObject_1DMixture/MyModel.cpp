@@ -28,7 +28,7 @@ double MyModel::perturb(RNG& rng)
     if(gaussians.get_components().size() == 0)
         return -std::numeric_limits<double>::max();
 
-	return logH;
+    return logH;
 }
 
 double MyModel::log_likelihood() const

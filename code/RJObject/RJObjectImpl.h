@@ -147,8 +147,8 @@ double RJObject<ConditionalPrior>::perturb_num_components(RNG& rng)
 	difference = new_num_components - num_components;
 
     // Add to logH for non-uniform prior on N
-    if(prior_type == PriorType::log_uniform)
-        logH += log(num_components + 1) - log(new_num_components + 1);
+	if(prior_type == PriorType::log_uniform)
+		logH += log(num_components + 1) - log(new_num_components + 1);
 
 	// Now do the required changes
 	if(difference > 0)
