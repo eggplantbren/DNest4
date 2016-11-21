@@ -85,8 +85,8 @@ double RJObject<ConditionalPrior>::perturb_components(RNG& rng)
 			for(int j=0; j<num_dimensions; j++)
 			{
 				u_components[i][j] += rng.randh();
-				u_components[i][j] = mod(
-							u_components[i][j], 1.);
+				u_components[i][j] = DNest4::mod(
+							u_components[i][j], 1.0);
 				components[i][j] = u_components[i][j];
 			}
 			conditional_prior.from_uniform(components[i]);
