@@ -1,6 +1,9 @@
 DNest4
 ======
 
+
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/eggplantbren/NestedSampling.hs/blob/master/LICENSE)
+
 DNest4 is a C++11 implementation of Diffusive Nested Sampling, a Markov Chain
 Monte Carlo (MCMC) algorithm for Bayesian Inference and Statistical Mechanics.
 
