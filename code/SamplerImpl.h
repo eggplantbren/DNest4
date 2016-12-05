@@ -386,7 +386,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		if(enough_levels(levels))
 		{
 			Level::renormalise_visits(levels,
-				static_cast<int>(0.1*options.new_level_interval));
+				static_cast<int>(options.new_level_interval));
 			all_above.clear();
             options.max_num_levels = levels.size();
             std::cout<<"# Done creating levels."<<std::endl;
