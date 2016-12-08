@@ -15,7 +15,7 @@ default:
 	make nolib -C Examples/Rosenbrock
 
 noexamples:
-	$(CXX) $(CXXFLAGS) -c *.cpp
+	$(CXX) $(CXXFLAGS) -c *.cpp Distributions/*.cpp RJObject/ConditionalPriors/*.cpp
 	ar rcs libdnest4.a *.o
 	rm -f *.o
 

@@ -411,7 +411,7 @@ GNU/Linux, Mac OS X, and FreeBSD. Currently we have not tested
 
 Development of \pkg{DNest4} takes place in the \pkg{git} repository located at
 \begin{center}
-{\tt https://github.com/eggplantbren/DNest4/}\\
+\url{https://github.com/eggplantbren/DNest4/}
 \end{center}
 The software
 is licensed under the permissive open source
@@ -428,9 +428,9 @@ To download and compile \pkg{DNest4}
 the following steps are sufficient:
 \begin{CodeChunk}
 \begin{CodeInput}
-> wget https://github.com/eggplantbren/DNest4/archive/0.1.3.tar.gz
-> tar xvzf 0.1.3.tar.gz
-> mv DNest4-0.1.3 DNest4
+> wget https://github.com/eggplantbren/DNest4/archive/0.1.4.tar.gz
+> tar xvzf 0.1.4.tar.gz
+> mv DNest4-0.1.4 DNest4
 > cd DNest4/code
 > make
 > cd ../python
@@ -438,9 +438,11 @@ the following steps are sufficient:
 \end{CodeInput}
 \end{CodeChunk}
 
-In Mac OS X, the final line might need to provide information about
-your OS version, like so:
-
+In Mac OS X, the final line (which installs the \proglang{Python} parts)
+of \pkg{DNest4})
+needs to provide information about
+your OS version. For example, if your computer runs Mac OS X 10.9,
+the installation command for the \proglang{Python} package is
 \begin{CodeChunk}
 \begin{CodeInput}
 > MACOSX_DEPLOYMENT_TARGET=10.9 python setup.py install
@@ -474,7 +476,7 @@ code is explained in Section~\ref{sec:models}.
 To execute \pkg{DNest4} on this problem, go to this directory and
 execute {\tt main}. The output to the screen
 should contain information about levels and ``saving particles to disk''.
-After 5000 particles have been saved to the disk, the run will terminate.
+After 10,000 particles have been saved to the disk, the run will terminate.
 
 \section{Output files}
 The executable {\tt main} is responsible for the exploration part of the
@@ -551,9 +553,9 @@ This produces the three diagnostic plots in Figures~\ref{fig:fig1},
 \ref{fig:fig2}, and~\ref{fig:fig3}, along with the following output:
 \begin{CodeChunk}
 \begin{CodeOutput}
-log(Z) = -175.545067073
-Information = 15.2168377939 nats.
-Effective sample size = 658.958278958
+log(Z) = -175.512920079
+Information = 15.1683473499 nats.
+Effective sample size = 1521.58236273
 \end{CodeOutput}
 \end{CodeChunk}
 These are the natural log of the marginal likelihood, the
@@ -592,8 +594,8 @@ been created, and then diffuse evenly throughout all the levels.
 \begin{minipage}{7.5cm}
 \centering
 \includegraphics[width=8cm]{figures/fig2.pdf}
-\caption{{\bf Top panel}: The estimated compression factor between subsequent
-levels, expressed as $\ln(X_{i+1}/X_{i})$. {\bf Bottom panel}:
+\caption{Top panel: The estimated compression factor between subsequent
+levels, expressed as $\ln(X_{i+1}/X_{i})$. Bottom panel:
 The Metropolis acceptance fraction as a function of level.
 \label{fig:fig2}}
 \end{minipage}
@@ -602,9 +604,9 @@ The Metropolis acceptance fraction as a function of level.
 \begin{figure}[ht!]
 \begin{minipage}{7.5cm}
 \includegraphics[width=7cm]{figures/fig3.pdf}
-\caption{{\bf Top panel}: The log-likelihood curve, showing the relationship
+\caption{Top panel: The log-likelihood curve, showing the relationship
 between log-likelihood and the enclosed prior mass.
-{\bf Bottom panel}: Posterior weights of the saved particles.
+Bottom panel: Posterior weights of the saved particles.
 For a successful run, there should be a clear peak, and saved particles
 to the left of this plot should have insignificant posterior weight compared
 to those in the peak.
@@ -634,7 +636,7 @@ regression example:
 0       # maximum number of levels (0 ==> automatic)
 10      # Backtracking scale length (lambda in the paper)
 100     # Equal weight enforcement. Beta in the paper
-5000    # Maximum number of saves (0 ==> run forever)
+10000   # Maximum number of saves (0 ==> run forever)
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -918,10 +920,10 @@ implement. The following procedure generates
 $x$ from a heavy-tailed distribution:
 
 \begin{enumerate}
-\item Generate $a \sim$ Normal$(0, 1)$
-\item Generate $b \sim$ Uniform$(0, 1)$
-\item Define $t := a/\sqrt{-\ln(b)}$
-\item Generate $n \sim$ Normal$(0, 1)$
+\item Generate $a \sim$ Normal$(0, 1)$;
+\item Generate $b \sim$ Uniform$(0, 1)$;
+\item Define $t := a/\sqrt{-\ln(b)}$;
+\item Generate $n \sim$ Normal$(0, 1)$;
 \item Set $x := 10^{1.5 - 3|t|}n$
 \end{enumerate}
 The variable $t$ has a student-$t$ distribution with 2 degrees of freedom.
@@ -1143,7 +1145,7 @@ can encapsulate this part of the model.
 \hspace*{-2cm}\includegraphics[width=0.4\textwidth]{figures/rjobject_pgm.pdf}
 \caption{A PGM showing the kind of prior information the \code{RJObject}
 template class expresses.
-Figure created using Daft ({\tt http://daft-pgm.org}).\label{fig:rjobject_pgm}}
+Figure created using Daft (\url{http://daft-pgm.org}).\label{fig:rjobject_pgm}}
 \end{center}
 \end{figure}
 
@@ -1411,8 +1413,8 @@ void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
 The data and the posterior mean fit are shown
 in Figure~\ref{fig:galaxies} and the posterior distribution for
 $N$ is shown in Figure~\ref{fig:galaxies_N}.
-The marginal likelihood was $\ln(Z) = -242.2$, and
-the information (measured in nats) was $\mathcal{H} = 32.3$.
+The marginal likelihood was $\ln(Z) = -232.2$, and
+the information (measured in nats) was $\mathcal{H} = 29.5$.
 
 \begin{figure}
 \begin{minipage}{0.45\textwidth}
@@ -1436,7 +1438,10 @@ galaxy data.\label{fig:galaxies_N}}
 \caption{The log-likelihood and posterior weights as a function
 of compression $X$ for the galaxy data. There are phase changes
 \citep{skilling2006nested} for which Nested Sampling is the best known
-solution.
+solution. There are some points with high posterior weight at the left
+of the plot, but there are so few of them that they make up a trivial
+fraction of the posterior mass. In practice, however, it is worth
+re-running with more levels to verify that a second peak is not forming.
 \label{fig:galaxies_fig3}}
 \end{figure}
 
@@ -1526,9 +1531,9 @@ That is,
 The main challenges associated with ABC are:
 \begin{enumerate}[(i)]
 \item The choice of discrepancy function $\rho(D; D_{\rm observed})$, which
-may involve a choice of summary statistics,
+may involve a choice of summary statistics;
 \item How to choose the value of $\epsilon$, or how to change it as a run
-progresses,
+progresses; and
 \item How to make algorithms more efficient than rejection sampling.
 \end{enumerate}
 Challenge (i) is Bayesian in nature, i.e., it relates to the very

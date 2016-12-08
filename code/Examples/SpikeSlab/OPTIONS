@@ -1,4 +1,4 @@
-# File containing parameters for DNest3
+# File containing parameters for DNest4
 # Put comments at the top, or at the end of the line.
 5       # Number of particles
 10000   # new level interval
@@ -7,4 +7,4 @@
 100      # maximum number of levels
 10      # Backtracking scale length (lambda in the paper)
 100     # Strength of effect to force histogram to equal push (beta in the paper)
-5000	# Maximum number of saves (0 = infinite)
+10000	# Maximum number of saves (0 = infinite)

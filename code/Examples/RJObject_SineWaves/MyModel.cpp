@@ -2,6 +2,7 @@
 #include "DNest4/code/DNest4.h"
 #include "Data.h"
 #include <cmath>
+#include <sstream>
 
 using namespace std;
 using namespace DNest4;
@@ -23,13 +24,10 @@ void MyModel::from_prior(RNG& rng)
 	calculate_mu();
 }
 
-void MyModel::calculate_mu()
+void MyModel::calculate_mu(bool update)
 {
 	// Get the times from the data
 	const vector<double>& t = Data::get_instance().get_t();
-
-	// Update or from scratch?
-	bool update = (objects.get_removed().size() == 0);
 
 	// Get the components
 	const vector< vector<double> >& components = (update)?(objects.get_added()):
@@ -57,7 +55,7 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.75)
 	{
 		logH += objects.perturb(rng);
-		calculate_mu();
+		calculate_mu(objects.get_removed().size() == 0);
 	}
 	else
 	{
@@ -93,8 +91,46 @@ void MyModel::print(std::ostream& out) const
 	objects.print(out); out<<' ';
 }
 
+void MyModel::read(std::istream& in)
+{
+    double junk;
+	for(size_t i=0; i<mu.size(); i++)
+		in>>junk;
+	in>>sigma;
+    log_sigma = log(sigma);
+
+	objects.read(in);
+    calculate_mu();
+}
+
 string MyModel::description() const
 {
-	return string("objects, sigma");
+    stringstream s;
+
+    // Anything printed by MyModel::print (except the last line)
+    for(size_t i=0; i<mu.size(); i++)
+        s<<"mu ["<<i<<"], ";
+    s<<"sigma, ";
+
+    // The rest is all what happens when you call .print on an RJObject
+    s<<"dim_components, max_num_components, ";
+
+    // Then the hyperparameters (i.e. whatever MyConditionalPrior::print prints)
+    s<<"location_log_period, scale_log_period, ";
+    s<<"location_log_amplitude, scale_log_amplitude, ";
+
+    // Then the actual number of components
+    s<<"num_components, ";
+
+    // Then it's all the components, padded with zeros
+    // max_num_components is 100 in this model, so that's how far the
+    // zero padding goes.
+    for(int i=0; i<100; ++i)
+        s<<"log_period["<<i<<"], ";
+    for(int i=0; i<100; ++i)
+        s<<"log_amplitude["<<i<<"], ";
+    for(int i=0; i<100; ++i)
+        s<<"phase["<<i<<"], ";
+    return s.str();
 }
 

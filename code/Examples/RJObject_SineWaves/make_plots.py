@@ -3,7 +3,9 @@ from pylab import *
 rc("font", size=14, family="serif", serif="Computer Sans")
 rc("text", usetex=True)
 
-posterior_sample = loadtxt('posterior_sample.txt')
+import dnest4.classic as dn4
+
+posterior_sample = dn4.my_loadtxt('posterior_sample.txt')
 data = loadtxt('fake_data.txt')
 
 width = 0.5

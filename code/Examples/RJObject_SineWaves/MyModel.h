@@ -13,7 +13,7 @@ class MyModel
 
 		// The signal
 		std::vector<long double> mu;
-		void calculate_mu();
+		void calculate_mu(bool update=false);
 
         static const DNest4::Cauchy cauchy;
 
@@ -31,6 +31,9 @@ class MyModel
 
 		// Print to stream
 		void print(std::ostream& out) const;
+
+        // Read from stream
+        void read(std::istream& in);
 
 		// Return string with column information
 		std::string description() const;

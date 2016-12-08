@@ -17,7 +17,10 @@ def mixture(x, params):
 
     y = zeros(x.shape)
     for i in range(0, N):
-        y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
+        # Don't plot flukey narrow things (which ought to eventually average
+        # out, but won't in a finite sample)
+        if widths[i] >= 0.02:
+            y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
 
     return y
 
@@ -41,8 +44,8 @@ show()
 width = 0.3
 bins = arange(0, 101) - 0.5*width
 hist(posterior_sample[:,7], bins, width=width, normed=True, color="k", alpha=0.2)
-xlim([0, 15])
-ylim([0, 0.5])
+xlim([0, 100.5])
+ylim([0, 0.05])
 xlabel("Number of gaussians, $N$")
 ylabel("Posterior Probability")
 savefig("galaxies_N.pdf", bbox_inches="tight")

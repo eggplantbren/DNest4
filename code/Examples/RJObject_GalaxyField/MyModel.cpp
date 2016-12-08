@@ -1,6 +1,7 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
 #include "Data.h"
+#include "Lookup.h"
 #include <cmath>
 
 using namespace std;
@@ -67,10 +68,10 @@ void MyModel::calculate_image()
 				rsq = q*xx*xx + yy*yy/q;
 				// Outer gaussian
 				if(rsq < 25.*wsq)
-					image[i][j] += (1. - frac)*M/(2.*M_PI*wsq)*exp(-0.5*rsq/wsq);
+					image[i][j] += (1. - frac)*M/(2.*M_PI*wsq)*Lookup::evaluate(0.5*rsq/wsq);
 				// Inner gaussian
 				if(rsq < 25.*rinnersq)
-					image[i][j] += frac*M/(2.*M_PI*rinnersq)*exp(-0.5*rsq/rinnersq);
+					image[i][j] += frac*M/(2.*M_PI*rinnersq)*Lookup::evaluate(-0.5*rsq/rinnersq);
 			}
 		}
 	}

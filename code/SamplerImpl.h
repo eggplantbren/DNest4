@@ -346,7 +346,7 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
         if(num_levels_to_check < 20)
             num_levels_to_check = 20;
 
-        int k = levels.size() - 1;
+        int k = l.size() - 1;
         for(int i=0; i<num_levels_to_check; ++i)
         {
             if(l[k].get_log_likelihood().get_value()
@@ -386,7 +386,7 @@ void Sampler<ModelType>::do_bookkeeping()
 		if(enough_levels(levels))
 		{
 			Level::renormalise_visits(levels,
-				static_cast<int>(0.1*options.new_level_interval));
+				static_cast<int>(options.new_level_interval));
 			all_above.clear();
             options.max_num_levels = levels.size();
             std::cout<<"# Done creating levels."<<std::endl;

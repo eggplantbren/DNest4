@@ -95,3 +95,10 @@ void MyConditionalPrior::print(std::ostream& out) const
     out<<location_log_amplitude<<' '<<scale_log_amplitude<<' ';
 }
 
+void MyConditionalPrior::read(std::istream& in)
+{
+    in>>location_log_period>>scale_log_period;
+    in>>location_log_amplitude>>scale_log_amplitude;
+}
+
+
