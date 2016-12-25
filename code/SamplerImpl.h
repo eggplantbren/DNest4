@@ -402,7 +402,8 @@ void Sampler<ModelType>::do_bookkeeping()
 	}
 
 	// Recalculate log_X values of levels
-	Level::recalculate_log_X(levels, compression, options.new_level_interval);
+	Level::recalculate_log_X(levels, compression,
+                        options.new_level_interval*sqrt(options.lambda));
 
 	// Save levels if one was created
 	if(created_level)
