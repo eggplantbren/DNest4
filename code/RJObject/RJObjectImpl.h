@@ -287,7 +287,8 @@ void RJObject<ConditionalPrior>::read(std::istream& in)
     for(int i=0; i<num_components; ++i)
         conditional_prior.to_uniform(u_components[i]);
 
-    added.clear();
+    // All components have been "added"
+    added = components;
     removed.clear();
 }
 
