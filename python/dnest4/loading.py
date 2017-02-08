@@ -21,7 +21,10 @@ def my_loadtxt(filename, single_precision=False, delimiter=" "):
     while(True):
         # Read the line and split by whitespace
         line = f.readline()
-        cells = line.split(delimiter)
+        if delimiter != " ":
+            cells = line.split(delimiter)
+        else:
+            cells = line.split()
 
         # Quit when you see a different number of columns
         if ncol is not None and len(cells) != ncol:
