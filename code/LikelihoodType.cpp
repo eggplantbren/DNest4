@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include <limits>
 #include <cassert>
+#include <iostream>
 
 namespace DNest4
 {
@@ -14,10 +15,12 @@ LikelihoodType::LikelihoodType()
 }
 
 LikelihoodType::LikelihoodType(double value, double tiebreaker)
-:value(value)
-,tiebreaker(tiebreaker)
 {
 	assert(tiebreaker > 0. && tiebreaker < 1.);
+    if(std::isinf(value) || std::isnan(value))
+        value = -1E300;
+    this->value = value;
+    this->tiebreaker = tiebreaker;
 }
 
 double LikelihoodType::perturb(RNG& rng)
