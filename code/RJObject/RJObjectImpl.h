@@ -309,3 +309,14 @@ void RJObject<ConditionalPrior>::consolidate_diff()
 	removed.clear();
 }
 
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::clear()
+{
+    num_components = 0;
+    removed = components;
+    components.clear();
+    u_components.clear();
+    added.clear();
+}
+
+
