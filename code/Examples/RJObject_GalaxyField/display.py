@@ -18,8 +18,6 @@ posterior_sample = atleast_2d(dnest4.my_loadtxt('posterior_sample.txt', single_p
 data = loadtxt('Data/test_image.txt')
 sig = loadtxt('Data/test_sigma.txt')
 
-ion()
-hold(False)
 for i in range(0, posterior_sample.shape[0]):
 	img = posterior_sample[i, 0:200**2].reshape((200, 200))
 	subplot(1, 2, 1)
@@ -39,12 +37,9 @@ for i in range(0, posterior_sample.shape[0]):
 	gca().set_xticklabels(['-1', '0', '1'])
 	gca().set_yticklabels(['1', '0', '-1'])
 
-	draw()
-
 	if saveFrames:
 		savefig('Frames/' + '%0.4d'%(i+1) + '.png', bbox_inches='tight')
 		print('Frames/' + '%0.4d'%(i+1) + '.png')
 
-ioff()
 show()
 
