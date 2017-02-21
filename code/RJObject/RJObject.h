@@ -116,6 +116,9 @@ class RJObject
 
         // In case someone wants to clear everything
         void clear();
+
+        // A setter for the components
+        void set_components(const std::vector<std::vector<double>>& comp);
 };
 
 #include "RJObjectImpl.h"

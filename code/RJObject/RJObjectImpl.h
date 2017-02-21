@@ -319,4 +319,19 @@ void RJObject<ConditionalPrior>::clear()
     added.clear();
 }
 
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::set_components
+            (const std::vector<std::vector<double>>& comp)
+{
+    removed = components;
+    components = comp;
+    u_components = comp;
+    for(size_t i=0; i<u_components.size(); ++i)
+        conditional_prior.to_uniform(u_components[i]);
+    added = components;
+    num_components = components.size();
+}
+
+
+
 
