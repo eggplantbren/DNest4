@@ -34,28 +34,28 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	sample_info = sample_info[cut:, :]
 
 	if plot:
-		plt.figure(1)
-		plt.plot(sample_info[:,0], "k")
-		plt.xlabel("Iteration")
-		plt.ylabel("Level")
+		fig1, ax1 = plt.subplots(1, 1, num=1)
+		ax1.plot(sample_info[:,0], "k")
+		ax1.set_xlabel("Iteration")
+		ax1.set_ylabel("Level")
 
-		plt.figure(2)
-		plt.subplot(2,1,1)
-		plt.plot(np.diff(levels_orig[:,0]), "k")
-		plt.ylabel("Compression")
-		plt.xlabel("Level")
-		xlim = plt.gca().get_xlim()
-		plt.axhline(-1., color='g')
-		plt.axhline(-np.log(10.), color='g', linestyle="--")
-		plt.ylim(ymax=0.05)
+		fig2, (ax21, ax22) = plt.subplots(2, 1, num=2)
+		#plt.subplot(2,1,1)
+		ax21.plot(np.diff(levels_orig[:,0]), "k")
+		ax21.set_ylabel("Compression")
+		ax21.set_xlabel("Level")
+		xlim = ax21.get_xlim()#plt.gca().get_xlim()
+		ax21.axhline(-1., color='g')
+		ax21.axhline(-np.log(10.), color='g', linestyle="--")
+		ax21.set_ylim(ymax=0.05)
 
-		plt.subplot(2,1,2)
+		#plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
-		plt.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
-		plt.xlim(xlim)
-		plt.ylim([0., 1.])
-		plt.xlabel("Level")
-		plt.ylabel("MH Acceptance")
+		ax22.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
+		ax22.set_xlim(xlim)
+		ax22.set_ylim([0., 1.])
+		ax22.set_xlabel("Level")
+		ax22.set_ylabel("MH Acceptance")
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreaker
@@ -133,14 +133,12 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		H_estimates[z] = -logz_estimates[z] + np.sum(P_samples[:,z]*logl)
 
 		if plot:
-			plt.figure(3)
-
-			plt.subplot(2,1,1)
-			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
-			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
-			plt.legend(numpoints=1, loc='lower left')
-			plt.ylabel('log(L)')
-			plt.title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
+			fig3, (ax31, ax32) = plt.subplots(2,1, num=3)
+			ax31.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
+			ax31.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
+			ax31.legend(numpoints=1, loc='lower left')
+			ax31.set_ylabel('log(L)')
+			ax31.set_title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
 			# Use all plotted logl values to set ylim
 			combined_logl = np.hstack([sample_info[:,1], levels[1:, 1]])
 			combined_logl = np.sort(combined_logl)
@@ -150,15 +148,13 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			lower -= 0.05*diff
 			upper += 0.05*diff
 			if zoom_in:
-				plt.ylim([lower, upper])
-			xlim = plt.gca().get_xlim()
+				ax31.set_ylim([lower, upper])
+			xlim = ax31.get_xlim()
 
-		if plot:
-			plt.subplot(2,1,2)
-			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
-			plt.ylabel('Posterior Weights')
-			plt.xlabel('log(X)')
-			plt.xlim(xlim)
+			ax32.plot(logx_samples[:,z], P_samples[:,z], 'k.')
+			ax32.set_ylabel('Posterior Weights')
+			ax32.set_xlabel('log(X)')
+			ax32.set_xlim(xlim)
 
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
@@ -242,28 +238,26 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 	sample_info = sample_info[cut:, :]
 
 	if plot:
-		plt.figure(1)
-		plt.plot(sample_info[:,0], "k")
-		plt.xlabel("Iteration")
-		plt.ylabel("Level")
+		fig1, ax1 = plt.subplots(1, 1, num=1)
+		ax1.plot(sample_info[:,0], "k")
+		ax1.set_xlabel("Iteration")
+		ax1.set_ylabel("Level")
 
-		plt.figure(2)
-		plt.subplot(2,1,1)
-		plt.plot(np.diff(levels_orig[:,0]), "k")
-		plt.ylabel("Compression")
-		plt.xlabel("Level")
-		xlim = plt.gca().get_xlim()
-		plt.axhline(-1., color='g')
-		plt.axhline(-np.log(10.), color='g', linestyle="--")
-		plt.ylim(ymax=0.05)
+		fig2, (ax21, ax22) = plt.subplots(2, 1, num=2)
+		ax21.plot(np.diff(levels_orig[:,0]), "k")
+		ax21.set_ylabel("Compression")
+		ax21.set_xlabel("Level")
+		xlim = ax21.get_xlim()
+		ax21.axhline(-1., color='g')
+		ax21.axhline(-np.log(10.), color='g', linestyle="--")
+		ax21.set_ylim(ymax=0.05)
 
-		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
-		plt.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
-		plt.xlim(xlim)
-		plt.ylim([0., 1.])
-		plt.xlabel("Level")
-		plt.ylabel("MH Acceptance")
+		ax22.plot(levels_orig[good,3]/levels_orig[good,4], "ko-")
+		ax22.set_xlim(xlim)
+		ax22.set_ylim([0., 1.])
+		ax22.set_xlabel("Level")
+		ax22.set_ylabel("MH Acceptance")
 
 	# Convert to lists of tuples
 	logl_levels = [(levels_orig[i,1], levels_orig[i, 2]) for i in range(0, levels_orig.shape[0])] # logl, tiebreakercut
@@ -348,14 +342,13 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 		H_estimates[z] = -logz_estimates[z] + np.sum(P_samples[:,z]*logl)
 
 		if plot:
-			plt.figure(3)
-
-			plt.subplot(2,1,1)
-			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
-			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
-			plt.legend(numpoints=1, loc='lower left')
-			plt.ylabel('log(L)')
-			plt.title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
+			fig3, (ax31, ax32) = plt.subplots(2, 1, num=3)
+			ax31.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
+			#plt.hold(True)
+			ax31.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
+			ax31.legend(numpoints=1, loc='lower left')
+			ax31.set_ylabel('log(L)')
+			ax31.set_title(str(z+1) + "/" + str(numResampleLogX) + ", log(Z) = " + str(logz_estimates[z][0]))
 			# Use all plotted logl values to set ylim
 			combined_logl = np.hstack([sample_info[:,1], levels[1:, 1]])
 			combined_logl = np.sort(combined_logl)
@@ -367,14 +360,12 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 			if zoom_in:
 				plt.ylim([lower, upper])
 
-			xlim = plt.gca().get_xlim()
+			xlim = ax31.get_xlim()
 
-		if plot:
-			plt.subplot(2,1,2)
-			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
-			plt.ylabel('Posterior Weights')
-			plt.xlabel('log(X)')
-			plt.xlim(xlim)
+			ax32.plot(logx_samples[:,z], P_samples[:,z], 'k.')
+			ax32.set_ylabel('Posterior Weights')
+			ax32.set_xlabel('log(X)')
+			ax32.set_xlim(xlim)
 
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
