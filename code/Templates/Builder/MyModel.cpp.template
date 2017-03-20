@@ -10,8 +10,6 @@ boost::math::normal __boost_dist(0.0, 1.0);
 using namespace std;
 using namespace DNest4;
 
-{STATICS}
-
 MyModel::MyModel()
 {
 

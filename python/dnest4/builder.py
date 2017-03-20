@@ -5,6 +5,9 @@ __all__ = ["Model", "Node", "data_declaration", "data_definition",\
             "generate_h", "generate_cpp"]
 
 class Model:
+    """
+    A model, which contains nodes.
+    """
     def __init__(self):
         self.nodes = []
         self.indices = {}
@@ -21,6 +24,9 @@ class Model:
             self.num_params += 1
 
     def declaration(self):
+        """
+        Emits C++ code containing declarations of variables.
+        """
         s = ""
         for node in self.nodes:
             if not node.observed:
@@ -34,6 +40,9 @@ class Model:
         return s
 
     def from_prior(self):
+        """
+        Emits C++ code for from_priore.
+        """
         s = ""
         for node in self.nodes:
             if node.observed == False and type(node.distribution) is not Delta:
@@ -44,7 +53,14 @@ class Model:
                 s += "" + node.distribution.from_uniform().format(x=node.name)
         return s
 
+    def transformed_parameters(self):
+        s = ""
+        return s
+
     def perturb(self):
+        """
+        Emits C++ code for perturb.
+        """
         s = ""
         s += "double logH = 0.0;\n\n"
         s += "int which;\n"
@@ -74,6 +90,9 @@ class Model:
         return s
 
     def log_likelihood(self):
+        """
+        Emits C++ code for log likelihood.
+        """
         s = ""
         s += "double logp = 0.0;\n\n"
         for node in self.nodes:
@@ -155,28 +174,6 @@ def data_declaration(data):
 
     return s
 
-def data_definition(data):
-    s = ""
-#    # Static variables for anything which is data or prior info
-#    for name in data:
-#        if type(data[name]) == int:
-#            s += "constexpr int MyModel::" + name + " = "\
-#                                       + str(data[name]) + ";\n"
-#        elif type(data[name]) == float:
-#            s += "constexpr double MyModel::" + name + " = "\
-#                                       + str(data[name]) + ";\n"
-#        elif type(data[name] == np.array) and\
-#            data[name].dtype.name == 'int64':
-#            for i in range(0, len(data[name])):
-#                s += "constexpr int MyModel::" + name + str(i)\
-#                                       + " = " + str(data[name][i]) + ";\n"
-#        elif type(data[name] == np.array) and\
-#            data[name].dtype.name == 'float64':
-#            for i in range(0, len(data[name])):
-#                s += "constexpr double MyModel::" + name + str(i)\
-#                                       + " = " + str(data[name][i]) + ";\n"
-    return s
-
 def generate_h(model, data):
     f = open("MyModel.h.template")
     s = "".join(f.readlines())
@@ -191,8 +188,6 @@ def generate_cpp(model, data):
     f = open("MyModel.cpp.template")
     s = "".join(f.readlines())
     f.close()
-    s = s.replace("{STATICS}",
-                        data_definition(data))
     s = s.replace("{FROM_PRIOR}",
                         model.from_prior())
     s = s.replace("{PERTURB}",
@@ -206,7 +201,4 @@ def generate_cpp(model, data):
     f = open("MyModel.cpp", "w")
     f.write(s)
     f.close()
-
-
-
 
