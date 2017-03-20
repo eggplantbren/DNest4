@@ -18,11 +18,22 @@ MyModel::MyModel()
 void MyModel::from_prior(RNG& rng)
 {
 {FROM_PRIOR}
+
+    compute_derived_quantities();
 }
 
 double MyModel::perturb(RNG& rng)
 {
+    double logH = 0.0;
 {PERTURB}
+
+    compute_derived_quantities();
+    return logH;
+}
+
+void MyModel::compute_derived_quantities()
+{
+{DERIVED}
 }
 
 double MyModel::log_likelihood() const

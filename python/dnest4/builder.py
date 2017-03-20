@@ -36,12 +36,16 @@ class Model:
                 else:
                     s += node.cpp_type +\
                                 " _{x}, {x};\n".format(x=node.name)
-
+                try:
+                    s += "" + node.distribution.derived_quantities()["declaration"]\
+                                .format(x=node.name)
+                except:
+                    pass
         return s
 
     def from_prior(self):
         """
-        Emits C++ code for from_priore.
+        Emits C++ code for from_prior.
         """
         s = ""
         for node in self.nodes:
@@ -53,8 +57,15 @@ class Model:
                 s += "" + node.distribution.from_uniform().format(x=node.name)
         return s
 
-    def transformed_parameters(self):
+    def compute_derived_quantities(self):
         s = ""
+        for node in self.nodes:
+            if node.observed == False:
+                try:
+                    s += "" + node.distribution.derived_quantities()["definition"]\
+                                .format(x=node.name)
+                except:
+                    pass
         return s
 
     def perturb(self):
@@ -62,7 +73,6 @@ class Model:
         Emits C++ code for perturb.
         """
         s = ""
-        s += "double logH = 0.0;\n\n"
         s += "int which;\n"
         s += "int reps = 1;\n"
         s += "if(rng.rand() <= 0.5)\n"
@@ -86,7 +96,7 @@ class Model:
                 s += "" + node.distribution.from_uniform()\
                                         .format(x=node.name)
 
-        s += "\nreturn logH;\n\n"
+        s += "\n\n"
         return s
 
     def log_likelihood(self):
@@ -194,6 +204,8 @@ def generate_cpp(model, data):
                         model.perturb())
     s = s.replace("{LOG_LIKELIHOOD}",
                         model.log_likelihood())
+    s = s.replace("{DERIVED}",
+                        model.compute_derived_quantities())
     s = s.replace("{PRINT}",
                         model.print())
     s = s.replace("{DESCRIPTION}",

@@ -20,6 +20,9 @@ class MyModel
         // Metropolis-Hastings proposals
         double perturb(DNest4::RNG& rng);
 
+        // Compute any intermediate quantities
+        void compute_derived_quantities();
+
         // Likelihood function
         double log_likelihood() const;
 

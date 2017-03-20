@@ -124,6 +124,18 @@ class Normal(Double):
         s += "{x} = {mu} + {sigma}*quantile(__boost_dist, _{x});\n"
         return self.insert_parameters(s)
 
+    def derived_quantities(self):
+        s = ""
+        s += "double tau_{x};\n"
+        s = self.insert_parameters(s)
+
+        s2 = ""
+        s2 += "tau_{x} = pow({sigma}, -2);\n"
+        s2 = self.insert_parameters(s2)
+
+        return {"declaration": s,
+                "definition": s2}
+
     def log_prob(self):
         s = ""
         s += "logp += -0.5*log(2*M_PI) - log({sigma}) "
