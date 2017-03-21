@@ -1,8 +1,22 @@
 class Double:
     cpp_type = "double"
 
+    def derived_quantities():
+        """
+        A placeholder that gets overriden by some derived classes.
+        """
+        return {"declaration": "",
+                "definition":  ""}
+
 class Int:
     cpp_type = "int"
+
+    def derived_quantities():
+        """
+        A placeholder that gets overriden by some derived classes.
+        """
+        return {"declaration": "",
+                "definition":  ""}
 
 class Uniform(Double):
     """
@@ -13,13 +27,13 @@ class Uniform(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = {a} + ({b} - ({a}))*_{x};\n"
+        s += "    {x} = {a} + ({b} - ({a}))*_{x};\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
-        s  = "if({x} < ({a}) || {x} > ({b}))\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({b} - ({a}));\n"
+        s  = "    if({x} < ({a}) || {x} > ({b}))\n"
+        s += "        logp = -numeric_limits<double>::max();\n"
+        s += "    logp += -log({b} - ({a}));\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -36,29 +50,29 @@ class BiExponential(Double):
         self.m, self.s, self.r = m, s, r
 
     def from_uniform(self):
-        s = "double prob_left_{x} = 1.0 / ({r} + 1.0);\n"
-        s += "if(_{x} < prob_left_{x})\n"
-        s += "{{\n"
-        s += "    double u_{x} = _{x}/prob_left_{x};\n"
-        s += "    {x} = ({m}) + ({s})/sqrt({r})*log(u_{x});\n"
-        s += "}}\n"
-        s += "else\n"
-        s += "{{\n"
-        s += "    double u_{x} = (_{x} - prob_left_{x})/(1.0 - prob_left_{x});\n"
-        s += "    {x} = ({m}) - ({s})*sqrt({r})*log(1.0 - u_{x});\n"
-        s += "}}\n"
+        s = "    double prob_left_{x} = 1.0 / ({r} + 1.0);\n"
+        s += "    if(_{x} < prob_left_{x})\n"
+        s += "    {{\n"
+        s += "        double u_{x} = _{x}/prob_left_{x};\n"
+        s += "        {x} = ({m}) + ({s})/sqrt({r})*log(u_{x});\n"
+        s += "    }}\n"
+        s += "    else\n"
+        s += "    {{\n"
+        s += "        double u_{x} = (_{x} - prob_left_{x})/(1.0 - prob_left_{x});\n"
+        s += "        {x} = ({m}) - ({s})*sqrt({r})*log(1.0 - u_{x});\n"
+        s += "    }}\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
-        s = "double logC_{x} = -log({s}) + 0.5*log({r}) - log({r} + 1.0);\n"
-        s += "if({x} < ({m}))\n"
-        s += "{{\n"
-        s += "    logp += logC_{x} + ({x} - ({m}))/(({s})/sqrt({r}));\n"
-        s += "}}\n"
-        s += "else\n"
-        s += "{{\n"
-        s += "    logp += logC_{x} - ({x} - ({m}))/(({s})*sqrt({r}));\n"
-        s += "}}\n"
+        s = "    double logC_{x} = -log({s}) + 0.5*log({r}) - log({r} + 1.0);\n"
+        s += "    if({x} < ({m}))\n"
+        s += "    {{\n"
+        s += "        logp += logC_{x} + ({x} - ({m}))/(({s})/sqrt({r}));\n"
+        s += "    }}\n"
+        s += "    else\n"
+        s += "    {{\n"
+        s += "        logp += logC_{x} - ({x} - ({m}))/(({s})*sqrt({r}));\n"
+        s += "    }}\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -76,13 +90,13 @@ class LogUniform(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = exp(log({a}) + log(({b})/({a}))*_{x});\n"
+        s += "    {x} = exp(log({a}) + log(({b})/({a}))*_{x});\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
-        s  = "if({x} < ({a}) || {x} > ({b}))\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({x}) - log(log(({b})/({a})));\n"
+        s  = "    if({x} < ({a}) || {x} > ({b}))\n"
+        s += "        logp = -numeric_limits<double>::max();\n"
+        s += "    logp += -log({x}) - log(log(({b})/({a})));\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -99,13 +113,13 @@ class Exponential(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = -({mu})*log(1.0 - _{x});\n"
+        s += "    {x} = -({mu})*log(1.0 - _{x});\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
-        s  = "if({x} < 0.0)\n"
-        s += "    logp = -numeric_limits<double>::max();\n"
-        s += "logp += -log({mu}) - {x}/({mu});\n"
+        s  = "    if({x} < 0.0)\n"
+        s += "        logp = -numeric_limits<double>::max();\n"
+        s += "    logp += -log({mu}) - {x}/({mu});\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
@@ -121,16 +135,18 @@ class Normal(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = {mu} + {sigma}*quantile(__boost_dist, _{x});\n"
+        s += "    {x} = {mu} + {sigma}*quantile(__boost_dist, _{x});\n"
         return self.insert_parameters(s)
 
     def derived_quantities(self):
         s = ""
-        s += "double tau_{x};\n"
+        s += "    double tau_{x};\n"
+        s += "    double log_sigma_{x};\n"
         s = self.insert_parameters(s)
 
         s2 = ""
-        s2 += "tau_{x} = pow({sigma}, -2);\n"
+        s2 += "    tau_{x} = pow({sigma}, -2);\n"
+        s2 += "    log_sigma_{x} = log({sigma});\n"
         s2 = self.insert_parameters(s2)
 
         return {"declaration": s,
@@ -138,8 +154,8 @@ class Normal(Double):
 
     def log_prob(self):
         s = ""
-        s += "logp += -0.5*log(2*M_PI) - log({sigma}) "
-        s += "- 0.5*pow((({x}) - ({mu}))/({sigma}), 2);\n"
+        s += "    logp += -0.5*log(2*M_PI) - log_sigma_{x} "
+        s += "            -0.5*pow(({x}) - ({mu}), 2)*tau_{x};\n"
         return self.insert_parameters(s)
 
     def insert_parameters(self, s):
