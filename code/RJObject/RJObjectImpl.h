@@ -287,7 +287,8 @@ void RJObject<ConditionalPrior>::read(std::istream& in)
     for(int i=0; i<num_components; ++i)
         conditional_prior.to_uniform(u_components[i]);
 
-    added.clear();
+    // All components have been "added"
+    added = components;
     removed.clear();
 }
 
@@ -307,4 +308,30 @@ void RJObject<ConditionalPrior>::consolidate_diff()
 	}
 	removed.clear();
 }
+
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::clear()
+{
+    num_components = 0;
+    removed = components;
+    components.clear();
+    u_components.clear();
+    added.clear();
+}
+
+template<class ConditionalPrior>
+void RJObject<ConditionalPrior>::set_components
+            (const std::vector<std::vector<double>>& comp)
+{
+    removed = components;
+    components = comp;
+    u_components = comp;
+    for(size_t i=0; i<u_components.size(); ++i)
+        conditional_prior.to_uniform(u_components[i]);
+    added = components;
+    num_components = components.size();
+}
+
+
+
 

@@ -4,7 +4,7 @@ import numpy as np
 
 __all__ = ["my_loadtxt", "loadtxt_rows", "load_column_names"]
 
-def my_loadtxt(filename, single_precision=False):
+def my_loadtxt(filename, single_precision=False, delimiter=" "):
     """
     Load quickly
     """
@@ -21,7 +21,10 @@ def my_loadtxt(filename, single_precision=False):
     while(True):
         # Read the line and split by whitespace
         line = f.readline()
-        cells = line.split()
+        if delimiter != " ":
+            cells = line.split(delimiter)
+        else:
+            cells = line.split()
 
         # Quit when you see a different number of columns
         if ncol is not None and len(cells) != ncol:

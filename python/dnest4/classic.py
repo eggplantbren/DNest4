@@ -136,9 +136,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.figure(3)
 
 			plt.subplot(2,1,1)
-			plt.hold(False)
 			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
-			plt.hold(True)
 			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
 			plt.legend(numpoints=1, loc='lower left')
 			plt.ylabel('log(L)')
@@ -157,7 +155,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 		if plot:
 			plt.subplot(2,1,2)
-			plt.hold(False)
 			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')
@@ -354,9 +351,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 			plt.figure(3)
 
 			plt.subplot(2,1,1)
-			plt.hold(False)
 			plt.plot(logx_samples[:,z], sample_info[:,1], 'k.', label='Samples')
-			plt.hold(True)
 			plt.plot(levels[1:,0], levels[1:,1], 'g.', label='Levels')
 			plt.legend(numpoints=1, loc='lower left')
 			plt.ylabel('log(L)')
@@ -376,7 +371,6 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 
 		if plot:
 			plt.subplot(2,1,2)
-			plt.hold(False)
 			plt.plot(logx_samples[:,z], P_samples[:,z], 'k.')
 			plt.ylabel('Posterior Weights')
 			plt.xlabel('log(X)')

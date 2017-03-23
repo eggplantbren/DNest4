@@ -119,17 +119,17 @@ def data_declaration(data):
 
     for name in data:
         if type(data[name]) == int:
-            s += "static const int " + name + ";\n"
+            s += "static constexpr int " + name + ";\n"
         elif type(data[name]) == float:
-            s += "static const double " + name + ";\n"
+            s += "static constexpr double " + name + ";\n"
         elif type(data[name] == np.array) and\
             data[name].dtype.name == 'int64':
             for i in range(0, len(data[name])):
-                s += "static const int " + name + str(i) + ";\n"
+                s += "static constexpr int " + name + str(i) + ";\n"
         elif type(data[name] == np.array) and\
             data[name].dtype.name == 'float64':
             for i in range(0, len(data[name])):
-                s += "static const double " + name + str(i) + ";\n"
+                s += "static constexpr double " + name + str(i) + ";\n"
 
     return s
 
@@ -139,40 +139,42 @@ def data_declaration(data):
 
     for name in data:
         if type(data[name]) == int:
-            s += "static const int " + name + ";\n"
+            s += "static constexpr int " + name + " = "\
+                                       + str(data[name]) + ";\n"
         elif type(data[name]) == float:
-            s += "static const double " + name + ";\n"
+            s += "static constexpr double " + name + " = "\
+                                       + str(data[name]) + ";\n"
         elif type(data[name] == np.array) and\
             data[name].dtype.name == 'int64':
             for i in range(0, len(data[name])):
-                s += "static const int " + name + str(i) + ";\n"
+                s += "static constexpr int " + name + str(i) + " = " + str(data[name][i]) + ";\n"
         elif type(data[name] == np.array) and\
             data[name].dtype.name == 'float64':
             for i in range(0, len(data[name])):
-                s += "static const double " + name + str(i) + ";\n"
+                s += "static constexpr double " + name + str(i) + " = " + str(data[name][i]) + ";\n"
 
     return s
 
 def data_definition(data):
     s = ""
-    # Static variables for anything which is data or prior info
-    for name in data:
-        if type(data[name]) == int:
-            s += "const int MyModel::" + name + " = "\
-                                       + str(data[name]) + ";\n"
-        elif type(data[name]) == float:
-            s += "const double MyModel::" + name + " = "\
-                                       + str(data[name]) + ";\n"
-        elif type(data[name] == np.array) and\
-            data[name].dtype.name == 'int64':
-            for i in range(0, len(data[name])):
-                s += "const int MyModel::" + name + str(i)\
-                                       + " = " + str(data[name][i]) + ";\n"
-        elif type(data[name] == np.array) and\
-            data[name].dtype.name == 'float64':
-            for i in range(0, len(data[name])):
-                s += "const double MyModel::" + name + str(i)\
-                                       + " = " + str(data[name][i]) + ";\n"
+#    # Static variables for anything which is data or prior info
+#    for name in data:
+#        if type(data[name]) == int:
+#            s += "constexpr int MyModel::" + name + " = "\
+#                                       + str(data[name]) + ";\n"
+#        elif type(data[name]) == float:
+#            s += "constexpr double MyModel::" + name + " = "\
+#                                       + str(data[name]) + ";\n"
+#        elif type(data[name] == np.array) and\
+#            data[name].dtype.name == 'int64':
+#            for i in range(0, len(data[name])):
+#                s += "constexpr int MyModel::" + name + str(i)\
+#                                       + " = " + str(data[name][i]) + ";\n"
+#        elif type(data[name] == np.array) and\
+#            data[name].dtype.name == 'float64':
+#            for i in range(0, len(data[name])):
+#                s += "constexpr double MyModel::" + name + str(i)\
+#                                       + " = " + str(data[name][i]) + ";\n"
     return s
 
 def generate_h(model, data):

@@ -3,6 +3,7 @@
 
 #define DNEST4_MAJOR_VERSION 0
 #define DNEST4_MINOR_VERSION 1
-#define DNEST4_PATCH_VERSION 4
+#define DNEST4_PATCH_VERSION 5
 
 #endif  // DNest4_Version
+

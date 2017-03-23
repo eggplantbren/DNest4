@@ -72,7 +72,7 @@ class RJObject
 		* specifies a star, so num_dimensions = 3.
 		*
 		* max_num_components: obvious
-		* fixed: if true, doesn't do RJ steps. N will be fixeded at
+		* fixed: if true, doesn't do RJ steps. N will be fixed at
 		* max_num_components
 		*/
 		RJObject(int num_dimensions, int max_num_components, bool fixed,
@@ -113,6 +113,12 @@ class RJObject
 
         bool components_changed() const
         { return components_changed_flag; }
+
+        // In case someone wants to clear everything
+        void clear();
+
+        // A setter for the components
+        void set_components(const std::vector<std::vector<double>>& comp);
 };
 
 #include "RJObjectImpl.h"

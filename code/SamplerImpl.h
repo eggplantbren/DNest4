@@ -385,8 +385,9 @@ void Sampler<ModelType>::do_bookkeeping()
 		// If last level
 		if(enough_levels(levels))
 		{
-			Level::renormalise_visits(levels,
-				static_cast<int>(options.new_level_interval));
+            // Regularisation
+            double reg = options.new_level_interval*sqrt(options.lambda);
+			Level::renormalise_visits(levels, static_cast<int>(reg));
 			all_above.clear();
             options.max_num_levels = levels.size();
             std::cout<<"# Done creating levels."<<std::endl;
@@ -401,7 +402,8 @@ void Sampler<ModelType>::do_bookkeeping()
 	}
 
 	// Recalculate log_X values of levels
-	Level::recalculate_log_X(levels, compression, options.new_level_interval);
+	Level::recalculate_log_X(levels, compression,
+                        options.new_level_interval*sqrt(options.lambda));
 
 	// Save levels if one was created
 	if(created_level)

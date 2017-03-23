@@ -5,6 +5,9 @@ class Int:
     cpp_type = "int"
 
 class Uniform(Double):
+    """
+    Uniform distributions.
+    """
     def __init__(self, a, b):
         self.a, self.b = a, b
 
@@ -24,6 +27,45 @@ class Uniform(Double):
         s = s.replace("{b}", str(self.b))
         return s
 
+class BiExponential(Double):
+    """
+    Biexponential distributions
+    with location mu, scale s, and skewness r
+    """
+    def __init__(self, m, s, r):
+        self.m, self.s, self.r = m, s, r
+
+    def from_uniform(self):
+        s = "double prob_left_{x} = 1.0 / ({r} + 1.0);\n"
+        s += "if(_{x} < prob_left_{x})\n"
+        s += "{{\n"
+        s += "    double u_{x} = _{x}/prob_left_{x};\n"
+        s += "    {x} = ({m}) + ({s})/sqrt({r})*log(u_{x});\n"
+        s += "}}\n"
+        s += "else\n"
+        s += "{{\n"
+        s += "    double u_{x} = (_{x} - prob_left_{x})/(1.0 - prob_left_{x});\n"
+        s += "    {x} = ({m}) - ({s})*sqrt({r})*log(1.0 - u_{x});\n"
+        s += "}}\n"
+        return self.insert_parameters(s)
+
+    def log_prob(self):
+        s = "double logC_{x} = -log({s}) + 0.5*log({r}) - log({r} + 1.0);\n"
+        s += "if({x} < ({m}))\n"
+        s += "{{\n"
+        s += "    logp += logC_{x} + ({x} - ({m}))/(({s})/sqrt({r}));\n"
+        s += "}}\n"
+        s += "else\n"
+        s += "{{\n"
+        s += "    logp += logC_{x} - ({x} - ({m}))/(({s})*sqrt({r}));\n"
+        s += "}}\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{m}", str(self.m))
+        s = s.replace("{s}", str(self.s))
+        s = s.replace("{r}", str(self.r))
+        return s
 
 class LogUniform(Double):
     """
