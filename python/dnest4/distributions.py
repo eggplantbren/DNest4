@@ -121,7 +121,7 @@ class Normal(Double):
 
     def from_uniform(self):
         s = ""
-        s += "{x} = {mu} + {sigma}*quantile(__boost_dist, _{x});\n"
+        s += "{x} = {mu} + ({sigma})*quantile(__boost_dist, _{x});\n"
         return self.insert_parameters(s)
 
     def log_prob(self):
