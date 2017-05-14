@@ -24,7 +24,6 @@ class Sampler
 
 		// Threads and barrier
 		std::vector<std::thread*> threads;
-		Barrier* barrier;
 
 		// Number of threads and compression
 		unsigned int num_threads;
@@ -40,7 +39,6 @@ class Sampler
 
 		// Levels
 		std::vector<Level> levels;
-		std::vector< std::vector<Level> > copies_of_levels;
 
 		// Storage for creating new levels
 		std::vector<LikelihoodType> all_above;
@@ -52,9 +50,6 @@ class Sampler
 		unsigned int count_saves;
         unsigned int count_mcmc_steps_since_save;
 		unsigned long long int count_mcmc_steps;
-
-		// Storage for likelihoods above threshold
-		std::vector< std::vector<LikelihoodType> > above;
 
 		/* Private methods */
 		// Master function to be called from each thread
