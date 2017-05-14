@@ -22,13 +22,11 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,log_likelihoods(options.num_particles*num_threads)
 ,level_assignments(options.num_particles*num_threads, 0)
 ,levels(1, LikelihoodType())
-,copies_of_levels(num_threads, levels)
 ,all_above()
 ,rngs(num_threads)
 ,count_saves(0)
 ,count_mcmc_steps_since_save(0)
 ,count_mcmc_steps(0)
-,above(num_threads)
 {
 	assert(num_threads >= 1);
 	assert(compression > 1.);
