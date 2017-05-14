@@ -14,7 +14,6 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 							const Options& options, bool save_to_disk)
 :save_to_disk(save_to_disk)
 ,threads(num_threads, nullptr)
-,barrier(nullptr)
 ,num_threads(num_threads)
 ,compression(compression)
 ,options(options)
@@ -73,18 +72,13 @@ template<class ModelType>
 void Sampler<ModelType>::run()
 {
 #ifndef NO_THREADS
-	// Set up threads and barrier
+	// Set up threads
 	// Delete if necessary (shouldn't be needed!)
-	if(barrier != nullptr)
-		delete barrier;
 	for(auto& thread: threads)
 	{
 		if(thread != nullptr)
 			delete thread;
 	}
-
-	// Create the barrier
-	barrier = new Barrier(num_threads);
 
 	// Create and launch threads
 	for(size_t i=0; i<threads.size(); ++i)
@@ -96,13 +90,11 @@ void Sampler<ModelType>::run()
 		threads[i] = new std::thread(func);
 	}
 
-	// Join and de-allocate all threads and barrier
+	// Join and de-allocate all threads
 	for(auto& t: threads)
 		t->join();
 
 	// Delete dynamically allocated stuff and point to nullptr
-	delete barrier;
-	barrier = nullptr;
 	for(auto& t: threads)
 	{
 		delete t;
@@ -121,6 +113,8 @@ void Sampler<ModelType>::run()
 template<class ModelType>
 void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 {
+    std::mutex above_mutex;
+
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
@@ -148,7 +142,11 @@ void Sampler<ModelType>::mcmc_thread(unsigned int thread)
 		}
 		if(!enough_levels(_levels) &&
 				_levels.back().get_log_likelihood() < log_likelihoods[which])
+        {
+            above_mutex.lock();
 			above[thread].push_back(log_likelihoods[which]);
+            above_mutex.unlock();
+        }
 	}
 }
 
@@ -158,11 +156,8 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
-	// Reference to copies_of_levels[thread]
-	std::vector<Level>& _levels = copies_of_levels[thread];
-
 	// Reference to the level we're in
-	Level& level = _levels[level_assignments[which]];
+	Level& level = levels[level_assignments[which]];
 
 	// Reference to the particle being moved
 	ModelType& particle = particles[which];
@@ -197,12 +192,12 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 
 	// Count visits and exceeds
 	unsigned int current_level = level_assignments[which];
-	for(; current_level < (_levels.size()-1); ++current_level)
+	for(; current_level < (levels.size()-1); ++current_level)
 	{
-		_levels[current_level].increment_visits(1);
-		if(_levels[current_level+1].get_log_likelihood() <
+		levels[current_level].increment_visits(1);
+		if(levels[current_level+1].get_log_likelihood() <
 											log_likelihoods[which])
-			_levels[current_level].increment_exceeds(1);
+			llevels[current_level].increment_exceeds(1);
 		else
 			break;
 	}
@@ -215,9 +210,6 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 	// Reference to the RNG for this thread
 	RNG& rng = rngs[thread];
 
-	// Reference to this thread's copy of levels
-	std::vector<Level>& _levels = copies_of_levels[thread];
-
 	// Generate proposal
 	int proposal = static_cast<int>(level_assignments[which])
 						+ static_cast<int>(pow(10., 2.*rng.rand())*rng.randn());
@@ -227,25 +219,25 @@ void Sampler<ModelType>::update_level_assignment(unsigned int thread,
 		proposal = ((rng.rand() < 0.5)?(proposal-1):(proposal+1));
 
 	// Wrap into allowed range
-	proposal = DNest4::mod(proposal, static_cast<int>(_levels.size()));
+	proposal = DNest4::mod(proposal, static_cast<int>(levels.size()));
 
 	// Acceptance probability
-	double log_A = -_levels[proposal].get_log_X()
-					+ _levels[level_assignments[which]].get_log_X();
+	double log_A = -levels[proposal].get_log_X()
+					+ levels[level_assignments[which]].get_log_X();
 
 	// Pushing up part
 	log_A += log_push(proposal) - log_push(level_assignments[which]);
 
 	// Enforce uniform exploration part (if all levels exist)
-	if(_levels.size() == options.max_num_levels)
-		log_A += options.beta*log((double)(_levels[level_assignments[which]].get_tries() + 1)/(double)(_levels[proposal].get_tries() + 1));
+	if(levels.size() == options.max_num_levels)
+		log_A += options.beta*log((double)(levels[level_assignments[which]].get_tries() + 1)/(double)(levels[proposal].get_tries() + 1));
 
 	// Prevent exponentiation of huge numbers
 	if(log_A > 0.)
 		log_A = 0.;
 
 	// Make a LikelihoodType for the proposal
-	if(rng.rand() <= exp(log_A) && _levels[proposal].get_log_likelihood() < log_likelihoods[which])
+	if(rng.rand() <= exp(log_A) && levels[proposal].get_log_likelihood() < log_likelihoods[which])
 	{
 		// Accept
 		level_assignments[which] = static_cast<unsigned int>(proposal);
@@ -267,11 +259,6 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 				copies_of_levels[i] = levels;
 		}
 
-#ifndef NO_THREADS
-		// Wait for all threads to get here before proceeding
-		barrier->wait();
-#endif
-
 		// Do the MCMC (all threads do this!)
 		mcmc_thread(thread);
 
@@ -279,10 +266,6 @@ void Sampler<ModelType>::run_thread(unsigned int thread)
 		if(options.max_num_saves != 0 &&
 				count_saves != 0 && (count_saves%options.max_num_saves == 0))
 			return;
-
-#ifndef NO_THREADS
-		barrier->wait();
-#endif
 
 		// Thread zero takes full responsibility for some tasks
 		if(thread == 0)
