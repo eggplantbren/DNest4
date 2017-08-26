@@ -7,7 +7,22 @@
 class MyModel
 {
     private:
+        // The number of atoms
+        static constexpr size_t num_atoms = 13;
 
+        // Positions of the atoms
+        std::vector<double> x;
+        std::vector<double> y;
+        std::vector<double> z;
+
+        // Potential energy of pairs
+        std::vector<std::vector<double>> PE;
+
+        // Compute all PEs
+        void compute_PE();
+
+        // Compute a single PE
+        void compute_PE(size_t i, size_t j);
 
     public:
         // Constructor only gives size of params
