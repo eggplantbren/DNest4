@@ -20,9 +20,9 @@ void MyModel::from_prior(RNG& rng)
     // Uniform prior for positions
     for(size_t i=0; i<num_atoms; ++i)
     {
-        x[i] = rng.rand();
-        y[i] = rng.rand();
-        z[i] = rng.rand();
+        x[i] = L*rng.rand();
+        y[i] = L*rng.rand();
+        z[i] = L*rng.rand();
     }
 
     compute_PE();
@@ -55,18 +55,18 @@ double MyModel::perturb(RNG& rng)
 
     if(coord == 0)
     {
-        x[which] += rng.randh();
-        wrap(x[which], 0.0, 1.0);
+        x[which] += L*rng.randh();
+        wrap(x[which], 0.0, L);
     }
     else if(coord == 1)
     {
-        y[which] += rng.randh();
-        wrap(y[which], 0.0, 1.0);
+        y[which] += L*rng.randh();
+        wrap(y[which], 0.0, L);
     }
     else
     {
-        z[which] += rng.randh();
-        wrap(z[which], 0.0, 1.0);
+        z[which] += L*rng.randh();
+        wrap(z[which], 0.0, L);
     }
 
     for(size_t i=0; i<num_atoms; ++i)

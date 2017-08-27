@@ -7,8 +7,11 @@
 class MyModel
 {
     private:
+        // Length of the box
+        static constexpr double L = 50.0;
+
         // The number of atoms
-        static constexpr size_t num_atoms = 13;
+        static constexpr size_t num_atoms = 38;
 
         // Positions of the atoms
         std::vector<double> x;
