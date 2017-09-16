@@ -8,30 +8,16 @@ class MyConditionalPrior:public DNest4::ConditionalPrior
 {
 	private:
 		// Limits
-		double x_min, x_max, y_min, y_max;
-		double fluxlim_min, fluxlim_max;
-		double radiuslim_min, radiuslim_max;
+		double x_min, x_max, y_min, y_max, scale;
 
-		// Lower limit and 1/slope for Pareto interim prior
-		// for masses
-		double fluxlim;
-		double gamma;
-
-		// Lower limit and 1/slope for Pareto interim prior
-		// for radii
-		double radiuslim;
-		double gamma_radius;
-
-		// Uniform interim prior for radius ratio and mass ratio
-		double a1, b1;
-		double a2, b2;
+		double typical_flux, dev_log_flux;
+		double typical_radius, dev_log_radius;
 
 		double perturb_hyperparameters(DNest4::RNG& rng);
 
 	public:
 		MyConditionalPrior(double x_min, double x_max,
-					double y_min, double y_max,
-					double fluxlim_min, double fluxlim_max);
+					       double y_min, double y_max);
 
 		void from_prior(DNest4::RNG& rng);
 
