@@ -28,7 +28,7 @@ show()
 
 posterior_sample = dn4.my_loadtxt('posterior_sample.txt')
 
-hist(posterior_sample[:,40010], 50)
+hist(posterior_sample[:,40006], 50)
 xlabel('Number of Galaxies $N$', fontsize=14)
 ylabel('Number of posterior samples', fontsize=14)
 xlim([-0.5, 100.5])
