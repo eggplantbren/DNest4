@@ -114,6 +114,9 @@ class RJObject
         bool components_changed() const
         { return components_changed_flag; }
 
+        int get_max_num_components() const
+        { return max_num_components; }
+
         // In case someone wants to clear everything
         void clear();
 
