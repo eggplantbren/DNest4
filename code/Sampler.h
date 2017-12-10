@@ -123,6 +123,9 @@ class Sampler
 
 		const std::vector<Level>& get_levels () const { return levels; };
 
+        std::vector<DNest4::RNG> get_rngs() const
+        { return rngs; }
+
 		void print(std::ostream& out) const;
 		void read(std::istream& in);
 };
