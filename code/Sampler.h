@@ -38,6 +38,12 @@ class Sampler
 		std::vector<LikelihoodType> log_likelihoods;
 		std::vector<unsigned int> level_assignments; // j in the paper
 
+        // Best ever particle and its log likelihood
+        // since someone might want to use DNest4 as an optimiser...
+        // Only checks for an update during the book-keeping stage.
+        ModelType best_ever_particle;
+        LikelihoodType best_ever_log_likelihood;
+
 		// Levels
 		std::vector<Level> levels;
 		std::vector< std::vector<Level> > copies_of_levels;

@@ -39,6 +39,11 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
         std::cerr<<std::endl;
         exit(0);
     }
+
+    // Find best ever particle
+    auto indices = argsort(log_likelihoods);
+    best_ever_particle = particles[indices.back()];
+    best_ever_log_likelihood = log_likelihoods[indices.back()];
 }
 
 template<class ModelType>
@@ -417,6 +422,14 @@ void Sampler<ModelType>::do_bookkeeping()
 		if(!created_level)
 			save_levels();
 	}
+
+    // Check for a new record holder
+    auto indices = argsort(log_likelihoods);
+    if(best_ever_log_likelihood < log_likelihoods[indices.back()])
+    {
+        best_ever_particle = particles[indices.back()];
+        best_ever_log_likelihood = log_likelihoods[indices.back()];
+    }
 }
 
 template<class ModelType>
