@@ -114,6 +114,10 @@ class Sampler
 		// Increase max_num_saves (allows continuation)
 		void increase_max_num_saves(unsigned int increment);
 
+        // One setter
+        void set_max_num_saves(unsigned int n)
+        { options.max_num_saves = n; }
+
 		// GETTERS!!!
 		const std::vector<ModelType>& get_particles() const
 		{ return particles; }
