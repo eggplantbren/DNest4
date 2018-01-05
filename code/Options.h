@@ -47,6 +47,10 @@ class Options
 		Options(const char* filename);
 		void load(const char* filename);
 
+        // One setter
+        void set_max_num_saves(unsigned int n)
+        { max_num_saves = n; }
+
 		void print(std::ostream& out) const;
 		void read(std::istream& in);
 };
