@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <functional>
 #include <thread>
 #include <algorithm>
 #include <iomanip>
