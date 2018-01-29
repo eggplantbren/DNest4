@@ -10,10 +10,9 @@ using namespace DNest4;
 MyModel::MyModel()
 :objects(8, 100, false, MyConditionalPrior(
 	Data::get_instance().get_x_min(), Data::get_instance().get_x_max(),
-	Data::get_instance().get_y_min(), Data::get_instance().get_y_max(),
-			1E-3, 1E3), PriorType::log_uniform)
+	Data::get_instance().get_y_min(), Data::get_instance().get_y_max()), PriorType::log_uniform)
 ,image(Data::get_instance().get_ni(),
-	vector<long double>(Data::get_instance().get_nj()))
+	vector<double>(Data::get_instance().get_nj()))
 {
 
 }
@@ -41,12 +40,13 @@ void MyModel::calculate_image()
 	{
 		// Zero the image
 		image.assign(Data::get_instance().get_ni(),
-			vector<long double>(Data::get_instance().get_nj(), 0.));
+			vector<double>(Data::get_instance().get_nj(), 0.));
 	}
 
 	double xc, yc, M, w, q, theta, cos_theta, sin_theta, wsq;
 	double rinner, rinnersq, frac;
-	double xx, yy, rsq;
+	double xx, yy, rsq, qInv, coeff1, coeff2;
+    double lim1, lim2, tau1, tau2;
 
 	for(size_t k=0; k<components.size(); ++k)
 	{
@@ -58,6 +58,13 @@ void MyModel::calculate_image()
 		rinner = components[k][6]*w;
 		rinnersq = rinner*rinner;
 		frac = components[k][7];
+        qInv = 1.0/q;
+        coeff1 = (1.0 - frac)*M/(2*M_PI*wsq);
+        coeff2 = frac*M/(2*M_PI*rinnersq);
+        lim1 = 25.0*wsq;
+        lim2 = 25.0*rinnersq;
+        tau1 = 1.0/wsq;
+        tau2 = 1.0/rinnersq;
 
 		for(size_t i=0; i<image.size(); i++)
 		{
@@ -65,13 +72,13 @@ void MyModel::calculate_image()
 			{
 				xx =  (x[i][j] - xc)*cos_theta + (y[i][j] - yc)*sin_theta;
 				yy = -(x[i][j] - xc)*sin_theta + (y[i][j] - yc)*cos_theta;
-				rsq = q*xx*xx + yy*yy/q;
+				rsq = q*xx*xx + yy*yy*qInv;
 				// Outer gaussian
-				if(rsq < 25.*wsq)
-					image[i][j] += (1. - frac)*M/(2.*M_PI*wsq)*Lookup::evaluate(0.5*rsq/wsq);
+				if(rsq < lim1)
+					image[i][j] += coeff1*Lookup::evaluate(0.5*rsq*tau1);
 				// Inner gaussian
-				if(rsq < 25.*rinnersq)
-					image[i][j] += frac*M/(2.*M_PI*rinnersq)*Lookup::evaluate(-0.5*rsq/rinnersq);
+				if(rsq < lim2)
+					image[i][j] += coeff2*Lookup::evaluate(0.5*rsq*tau2);
 			}
 		}
 	}
@@ -123,6 +130,7 @@ void MyModel::print(std::ostream& out) const
 	for(size_t i=0; i<image.size(); i++)
 		for(size_t j=0; j<image[i].size(); j++)
 			out<<image[i][j]<<' ';
+
 	out<<setprecision(10);
 	objects.print(out); out<<' ';
 	out<<sigma<<' ';
@@ -130,6 +138,6 @@ void MyModel::print(std::ostream& out) const
 
 string MyModel::description() const
 {
-	return string("objects");
+	return string("");
 }
 

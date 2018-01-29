@@ -38,6 +38,12 @@ class Sampler
 		std::vector<LikelihoodType> log_likelihoods;
 		std::vector<unsigned int> level_assignments; // j in the paper
 
+        // Best ever particle and its log likelihood
+        // since someone might want to use DNest4 as an optimiser...
+        // Only checks for an update during the book-keeping stage.
+        ModelType best_ever_particle;
+        LikelihoodType best_ever_log_likelihood;
+
 		// Levels
 		std::vector<Level> levels;
 		std::vector< std::vector<Level> > copies_of_levels;
@@ -108,6 +114,10 @@ class Sampler
 		// Increase max_num_saves (allows continuation)
 		void increase_max_num_saves(unsigned int increment);
 
+        // One setter
+        void set_max_num_saves(unsigned int n)
+        { options.max_num_saves = n; }
+
 		// GETTERS!!!
 		const std::vector<ModelType>& get_particles() const
 		{ return particles; }
@@ -118,10 +128,16 @@ class Sampler
 		const std::vector<unsigned int> get_level_assignments() const
 		{ return level_assignments; }
 
+        const ModelType& get_best_ever_particle() const
+        { return best_ever_particle; }
+
 		int size () const { return particles.size(); };
 		ModelType* particle (unsigned int i) { return &(particles[i]); };
 
 		const std::vector<Level>& get_levels () const { return levels; };
+
+        std::vector<DNest4::RNG> get_rngs() const
+        { return rngs; }
 
 		void print(std::ostream& out) const;
 		void read(std::istream& in);

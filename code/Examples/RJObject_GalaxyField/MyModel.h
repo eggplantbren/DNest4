@@ -11,11 +11,8 @@ class MyModel
 		DNest4::RJObject<MyConditionalPrior> objects;
 
 		// The model image
-		std::vector< std::vector<long double> > image;
+		std::vector< std::vector<double> > image;
 		void calculate_image();
-
-		// How many steps since image was computed from scratch
-		int staleness;
 
 		// Noise standard deviation
 		double sigma;

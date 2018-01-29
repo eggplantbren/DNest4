@@ -25,7 +25,7 @@ def mixture(x, params):
     return y
 
 
-hold(False)
+clf()
 hist(data, 100, alpha=0.2, color="k", normed=True)
 y_tot = zeros(len(x))
 
@@ -33,7 +33,6 @@ for i in range(0, posterior_sample.shape[0]):
     y = mixture(x, posterior_sample[i, :])
     y_tot += y
 
-hold(True)
 plot(x, y_tot/posterior_sample.shape[0], 'g', linewidth=2)
 
 xlabel("Velocity (1000 km/s)")

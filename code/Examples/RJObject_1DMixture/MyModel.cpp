@@ -38,6 +38,10 @@ double MyModel::log_likelihood() const
     // Extract parameters
     vector<double> mu, sigma, log_weight, C;
     const auto& components = gaussians.get_components();
+
+    if(components.size() == 0)
+        return -1E300;
+
     for(const auto& c: components)
     {
         mu.push_back(c[0]);
