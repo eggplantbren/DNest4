@@ -2,10 +2,19 @@ CXX = g++
 export CXX
 CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
 
-default:
-	$(CXX) -I. $(CXXFLAGS) -c *.cpp Distributions/*.cpp RJObject/ConditionalPriors/*.cpp
-	ar rcs libdnest4.a *.o
-	rm -f *.o
+SRCS = $(wildcard *.cpp) \
+       $(wildcard Distributions/*.cpp) \
+       $(wildcard RJObject/ConditionalPriors/*.cpp)
+
+OBJS = $(patsubst %.cpp,%.o,$(SRCS))
+
+all: $(OBJS) libdnest4.a
+
+libdnest4.a: $(OBJS)
+	@echo Creating $@ library
+	@ar rcs $@ $^
+
+examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
 	make nolib -C Examples/RJObject_1DMixture
@@ -14,13 +23,12 @@ default:
 	make nolib -C Examples/ABC
 	make nolib -C Examples/Rosenbrock
 
-noexamples:
-	$(CXX) $(CXXFLAGS) -c *.cpp Distributions/*.cpp RJObject/ConditionalPriors/*.cpp
-	ar rcs libdnest4.a *.o
-	rm -f *.o
 
 windows:
-	x86_64-w64-mingw32-g++-posix -I. $(CXXFLAGS) -c *.cpp Distributions/*.cpp RJObject/ConditionalPriors/*.cpp
+	x86_64-w64-mingw32-g++-posix -I. $(CXXFLAGS) -c $(SRCS)
 	x86_64-w64-mingw32-ar rcs dnest4.lib *.o
 	rm -f *.o
 
+clean:
+	rm -f libdnest4.a
+	rm -f *.o Distributions/*.o
