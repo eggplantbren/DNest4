@@ -19,6 +19,8 @@ class Laplace:public ContinuousDistribution
 
     public:
         Laplace(double center=0.0, double width=1.0);
+        // setter
+        void setpars(double center, double width);
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;

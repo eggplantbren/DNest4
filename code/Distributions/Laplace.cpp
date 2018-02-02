@@ -14,6 +14,13 @@ Laplace::Laplace(double center, double width)
         throw std::domain_error("Laplace distribution must have positive width.");
 }
 
+void Laplace::setpars(double c, double w)
+{
+    if(w <= 0.0)
+        throw std::domain_error("Laplace distribution must have positive width.");
+    center = c;
+    width = w;
+}
 double Laplace::cdf(double x) const
 {
 	return 0.5 + 0.5*sign(x - center)*(1.0 - exp(-std::abs(x - center)/width));
