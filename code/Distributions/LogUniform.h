@@ -1,5 +1,5 @@
-#ifndef DNest4_Jeffreys
-#define DNest4_Jeffreys
+#ifndef DNest4_LogUniform
+#define DNest4_LogUniform
 
 #include "ContinuousDistribution.h"
 #include "../RNG.h"
@@ -8,9 +8,9 @@ namespace DNest4
 {
 
 /*
-* Jeffreys distributions (reciprocal)
+* LogUniform distributions (reciprocal)
 */
-class Jeffreys:public ContinuousDistribution
+class LogUniform:public ContinuousDistribution
 {
     private:
         // Support is defined between lower and upper
@@ -18,7 +18,7 @@ class Jeffreys:public ContinuousDistribution
         double d;
 
     public:
-        Jeffreys(double lower=1.0, double upper=100.0);
+        LogUniform(double lower=1.0, double upper=100.0);
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;
@@ -26,7 +26,7 @@ class Jeffreys:public ContinuousDistribution
 };
 
 
-class ModifiedJeffreys:public ContinuousDistribution
+class ModifiedLogUniform:public ContinuousDistribution
 {
     private:
         // Support is defined between 0 and upper
@@ -35,7 +35,7 @@ class ModifiedJeffreys:public ContinuousDistribution
         double d;
 
     public:
-        ModifiedJeffreys(double knee=1.0, double upper=100.0);
+        ModifiedLogUniform(double knee=1.0, double upper=100.0);
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;
