@@ -26,6 +26,7 @@
 #include "Distributions/Uniform.h"
 #include "Distributions/Exponential.h"
 #include "Distributions/LogUniform.h"
+#include "Distributions/Jeffreys.h"
 #include "Distributions/ContinuousDistribution.h"
 
 #endif
