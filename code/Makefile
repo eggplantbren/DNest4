@@ -8,7 +8,7 @@ SRCS = $(wildcard *.cpp) \
 
 OBJS = $(patsubst %.cpp,%.o,$(SRCS))
 
-all: $(OBJS) libdnest4.a
+all: examples $(OBJS) libdnest4.a
 
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
