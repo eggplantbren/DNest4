@@ -36,6 +36,8 @@ double Exponential::cdf_inverse(double p) const
 
 double Exponential::log_pdf(double x) const
 {
+    if(x < 0.0)
+        return -std::numeric_limits<double>::infinity();
     return -log(scale) - x/scale;
 }
 
