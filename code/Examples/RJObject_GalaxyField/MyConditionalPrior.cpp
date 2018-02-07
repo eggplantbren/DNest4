@@ -75,7 +75,7 @@ double MyConditionalPrior::perturb_hyperparameters(RNG& rng)
 // x, y, flux, radius, q, theta, rinner/router, Minner/Mtotal
 double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
 {
-	double logp = 0.0;
+    double logp = 0.0;
 
     // Position
     if(vec[0] < x_min || vec[0] > x_max || vec[1] < y_min || vec[1] > y_max)
@@ -105,7 +105,7 @@ double MyConditionalPrior::log_pdf(const std::vector<double>& vec) const
     if(vec[7] < 0.0 || vec[7] > 1.0)
         return -1E300;
 
-	return logp;
+    return logp;
 }
 
 void MyConditionalPrior::from_uniform(std::vector<double>& vec) const

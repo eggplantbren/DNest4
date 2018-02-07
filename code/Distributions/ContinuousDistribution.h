@@ -17,6 +17,9 @@ class ContinuousDistribution
         double generate(RNG& rng) const;
         double perturb(double& x, RNG& rng) const;
 
+        virtual void setpars(double) {};
+        virtual void setpars(double, double) {};
+
         virtual double cdf(double x) const = 0;
         virtual double cdf_inverse(double x) const = 0;
         virtual double log_pdf(double x) const = 0;
