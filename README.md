@@ -50,6 +50,43 @@ Some functions have slightly different names and specifications compared to
 DNest3. These changes are cosmetic, but mean that porting models from DNest3
 to DNest4 will take a little bit of work.
 
+SCons installation
+==================
+
+You can compile the DNest4 library (`libdnest4`) using the Makefile in the `code` directory
+using:
+
+```bash
+cd code
+make
+```
+
+Along with building the library this will compile all the examples.
+
+However, you can also compile *and* install the library using [SCons](http://scons.org/).
+To do this you just need to run:
+
+```bash
+scons install
+```
+
+By default it will attempt to install the library in `/usr/local` (with the library files in
+`/usr/local/lib` and the headers in `/usr/local/include/dnest4`), so the above command
+must be run as a user with root access or using `sudo`. To install to a different location
+you can instead run:
+
+```bash
+scons install --prefix <install_location>
+```
+
+where `<install_location>` is the base path for the install.
+
+To install with [GDB](https://www.gnu.org/software/gdb/) enabled during the library's compilation you can add the `--debug-mode`
+flag to the install command.
+
+Currently, the Scons installation does not compile the examples or the Python library. Any additions
+to this installation process are welcome.
+
 (c) 2015--2016 Brendon J. Brewer
 LICENCE: MIT.
 See the LICENSE file for details.
