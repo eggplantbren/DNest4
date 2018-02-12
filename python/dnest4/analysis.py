@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import matplotlib.pyplot as pl
 
 from .backends import CSVBackend
 
@@ -261,6 +260,7 @@ def make_plots(backend):
 
 
 def make_levels_plot(backend):
+    import matplotlib.pyplot as pl
     fig, ax = pl.subplots(1, 1)
 
     ax.plot(backend.sample_info["level_assignment"], color="k")
@@ -271,6 +271,7 @@ def make_levels_plot(backend):
 
 
 def make_compression_plot(backend):
+    import matplotlib.pyplot as pl
     fig, axes = pl.subplots(2, 1, sharex=True)
 
     levels = backend.levels
@@ -295,6 +296,7 @@ def make_compression_plot(backend):
 
 
 def make_log_X_log_L_plot(backend):
+    import matplotlib.pyplot as pl
     fig, axes = pl.subplots(2, 1, sharex=True)
 
     levels = backend.levels

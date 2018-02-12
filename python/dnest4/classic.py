@@ -1,6 +1,5 @@
 import copy
 import numpy as np
-import matplotlib.pyplot as plt
 from .loading import *
 
 def logsumexp(values):
@@ -34,6 +33,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	sample_info = sample_info[cut:, :]
 
 	if plot:
+		import matplotlib.pyplot as plt
 		plt.figure(1)
 		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
@@ -242,6 +242,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 	sample_info = sample_info[cut:, :]
 
 	if plot:
+		import matplotlib.pyplot as plt
 		plt.figure(1)
 		plt.plot(sample_info[:,0], "k")
 		plt.xlabel("Iteration")
@@ -437,7 +438,7 @@ def diffusion_plot():
 	"""
 	Plot a nice per-particle diffusion plot.
 	"""
-
+	import matplotlib.pyplot as plt
 	sample_info = np.atleast_2d(my_loadtxt('sample_info.txt'))
 	ID = sample_info[:,3].astype('int')
 	j = sample_info[:,0].astype('int')
@@ -456,6 +457,7 @@ def levels_plot():
 	"""
 	Plot the differences between the logl values of the levels.
 	"""
+	import matplotlib.pyplot as plt
 	levels = my_loadtxt('levels.txt')
 
 	plt.plot(np.log10(np.diff(levels[:,1])), "ko-")
