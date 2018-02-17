@@ -13,7 +13,6 @@ x = linspace(xmin - 0.2*(xmax - xmin), xmax + 0.2*(xmax - xmin), 1001)
 for i in range(posterior_sample.shape[0]):
     y = posterior_sample[i, 0]*x + posterior_sample[i, 1]
     plot(x, y, 'g', alpha=0.01)
-    hold(True)
 
 plot(data[:,0], data[:,1], 'ko')
 xlabel('$x$', fontsize=18)

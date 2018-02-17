@@ -9,7 +9,6 @@ plt.rc("text", usetex=True)
 posterior_sample = np.atleast_2d(dn4.my_loadtxt("posterior_sample.txt"))
 plt.plot(posterior_sample[:,0], np.exp(posterior_sample[:,1]),\
                     "ko", alpha=0.1, markersize=5, label="Posterior samples")
-plt.hold(True)
 plt.plot(0, 1, "r*", markersize=20, label="Truth", alpha=0.5)
 plt.xlabel("$\\mu$")
 plt.ylabel("$\\sigma$")
