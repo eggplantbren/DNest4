@@ -21,6 +21,7 @@
 #include "RJObject/ConditionalPriors/ConditionalPrior.h"
 #include "Distributions/Cauchy.h"
 #include "Distributions/Laplace.h"
+#include "Distributions/Pareto.h"
 #include "Distributions/Rayleigh.h"
 #include "Distributions/Uniform.h"
 #include "Distributions/Exponential.h"
