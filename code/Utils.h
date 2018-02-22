@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <stdexcept>
 
 // Useful functions, copied from DNest3
 
@@ -25,7 +26,8 @@ double logsumexp(const std::vector<double>& logv);
 double logsumexp(double a, double b);
 double logdiffexp(double a, double b);
 double normal_cdf(double x);
-double normal_inverse_cdf(double x);
+double normal_inverse_cdf(double p);
+double r8poly_value(int n, double a[], double x);
 
 // Argsort from
 // http://stackoverflow.com/questions/1577475/c-sorting-and-keeping-track-of-indexes
