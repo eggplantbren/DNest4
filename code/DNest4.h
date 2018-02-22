@@ -19,6 +19,7 @@
 #include "RJObject/ConditionalPriors/BasicCircular.h"
 #include "RJObject/ConditionalPriors/ClassicMassInf1D.h"
 #include "RJObject/ConditionalPriors/ConditionalPrior.h"
+#include "Distributions/Gaussian.h"
 #include "Distributions/Cauchy.h"
 #include "Distributions/Laplace.h"
 #include "Distributions/Pareto.h"

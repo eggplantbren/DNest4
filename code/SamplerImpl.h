@@ -14,6 +14,7 @@ template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 							const Options& options, bool save_to_disk)
 :save_to_disk(save_to_disk)
+,thin_print(1)
 ,threads(num_threads, nullptr)
 ,barrier(nullptr)
 ,num_threads(num_threads)
@@ -78,8 +79,11 @@ void Sampler<ModelType>::initialise(unsigned int first_seed)
 }
 
 template<class ModelType>
-void Sampler<ModelType>::run()
+void Sampler<ModelType>::run(unsigned int thin)
 {
+	// Set the thining of terminal output
+	thin_print = thin;
+
 #ifndef NO_THREADS
 	// Set up threads and barrier
 	// Delete if necessary (shouldn't be needed!)
@@ -502,8 +506,8 @@ void Sampler<ModelType>::save_particle()
 	if(!save_to_disk)
 		return;
 
-	std::cout<<"# Saving particle to disk. N = "<<count_saves<<".";
-	std::cout<<std::endl;
+	if(count_saves % thin_print == 0)
+		std::cout<<"# Saving particle to disk. N = "<<count_saves<<"."<<std::endl;
 
 	// Output file
 	std::fstream fout;
