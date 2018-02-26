@@ -62,6 +62,21 @@ make
 ```
 
 Along with building the library this will compile all the examples.
+Then, install the Python package:
+
+```
+cd ../python
+python setup.py install
+```
+
+In Mac OS X, the final line (which installs the Python parts) of DNest4) needs to provide
+information about your OS version. For example, if your computer runs Mac OS X 10.9, the
+installation command for the Python package is
+
+```
+MACOSX_DEPLOYMENT_TARGET=10.9 python setup.py install
+```
+
 
 
 Alternative build process with SCons
