@@ -21,6 +21,8 @@ class Sampler
 		// Whether to save anything to disk or not
 		// Use 'true' for standard mode
 		bool save_to_disk;
+		// thin the printing to terminal
+		unsigned int thin_print;
 
 		// Threads and barrier
 		std::vector<std::thread*> threads;
@@ -109,7 +111,7 @@ class Sampler
 		void initialise(unsigned int first_seed);
 
 		// Launch everything
-		void run();
+		void run(unsigned int thin=1);
 
 		// Increase max_num_saves (allows continuation)
 		void increase_max_num_saves(unsigned int increment);
