@@ -28,6 +28,7 @@
 #include "Distributions/Exponential.h"
 #include "Distributions/LogUniform.h"
 #include "Distributions/Jeffreys.h"
+#include "Distributions/Kumaraswamy.h"
 #include "Distributions/ContinuousDistribution.h"
 
 #endif
