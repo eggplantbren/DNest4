@@ -353,13 +353,17 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
 
         int k = l.size() - 1;
         double tot = 0.0;
+        double max = -1E300;
         for(int i=0; i<num_levels_to_check; ++i)
         {
-            tot += l[k].get_log_likelihood().get_value()
-                        - l[k-1].get_log_likelihood().get_value();
+            double diff = l[k].get_log_likelihood().get_value()
+                             - l[k-1].get_log_likelihood().get_value();
+            tot += diff;
+            if(diff > max)
+                max = diff;
             --k;
         }
-        if(tot / num_levels_to_check < 0.75)
+        if(tot / num_levels_to_check < 0.75 && max < 1.0)
             return true;
         else
             return false;
