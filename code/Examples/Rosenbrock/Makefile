@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11 -Ofast -march=native -Wall -Wextra -pedantic -DNDEBUG
+CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
 LIBS = -ldnest4 -lpthread
 
 default:
