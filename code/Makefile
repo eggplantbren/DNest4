@@ -27,7 +27,7 @@ examples: $(OBJS) libdnest4.a
 
 
 windows:
-	x86_64-w64-mingw32-g++-posix -I. $(CXXFLAGS) -c $(SRCS)
+	x86_64-w64-mingw32-g++-posix -I. -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG -c $(SRCS)
 	x86_64-w64-mingw32-ar rcs dnest4.lib *.o
 	rm -f *.o
 
