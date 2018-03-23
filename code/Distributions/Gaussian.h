@@ -3,6 +3,7 @@
 
 #include "ContinuousDistribution.h"
 #include "../RNG.h"
+#include "../Utils.h"
 
 namespace DNest4
 {
