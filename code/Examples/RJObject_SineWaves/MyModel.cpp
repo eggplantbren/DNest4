@@ -55,6 +55,13 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.75)
 	{
 		logH += objects.perturb(rng);
+
+        // Pre-rejection
+        if(rng.rand() >= exp(logH))
+            return -1E300;
+        else
+            logH = 0.0;
+
 		calculate_mu(objects.get_removed().size() == 0);
 	}
 	else
