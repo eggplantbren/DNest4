@@ -91,6 +91,13 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.75)
 	{
 		logH += objects.perturb(rng);
+
+        // Pre-reject
+        if(rng.rand() >= exp(logH))
+            return -1E300;
+        else
+            logH = 0.0;
+
 		calculate_image();
 	}
 	else
