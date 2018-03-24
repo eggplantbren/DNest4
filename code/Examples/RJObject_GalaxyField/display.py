@@ -5,6 +5,8 @@ import os
 
 # Piecewise linear stretch
 def stretch(x):
+	if x.max() == x.min():
+		return x
 	y = x.copy()
 	y = (y - y.min())/(y.max() - y.min())
 	y[y > 0.1] = 0.1 + 0.05*(y[y > 0.1] - 0.1)
