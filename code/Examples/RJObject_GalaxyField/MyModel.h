@@ -12,7 +12,7 @@ class MyModel
 
 		// The model image
 		std::vector< std::vector<double> > image;
-		void calculate_image();
+		void calculate_image(bool update);
 
 		// Noise standard deviation
 		double sigma;

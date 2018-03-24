@@ -20,18 +20,15 @@ MyModel::MyModel()
 void MyModel::from_prior(RNG& rng)
 {
 	objects.from_prior(rng);
-	calculate_image();
+	calculate_image(false);
 	sigma = exp(log(1.) + log(1E6)*rng.rand());
 }
 
-void MyModel::calculate_image()
+void MyModel::calculate_image(bool update)
 {
 	// Get coordinate stuff from data
 	const vector< vector<double> >& x = Data::get_instance().get_x_rays();
 	const vector< vector<double> >& y = Data::get_instance().get_y_rays();
-
-	// Diff
-	bool update = objects.get_removed().size() == 0;
 
 	// Components
 	const vector< vector<double> >& components = (update)?(objects.get_added())
@@ -98,7 +95,7 @@ double MyModel::perturb(RNG& rng)
         else
             logH = 0.0;
 
-		calculate_image();
+		calculate_image(objects.get_removed().size() == 0);
 	}
 	else
 	{
@@ -117,7 +114,7 @@ double MyModel::log_likelihood() const
 	const vector< vector<double> >& sig = Data::get_instance().get_sigma();
 
 	double logL = 0.;
-	double var;
+    double var;
 	for(size_t i=0; i<data.size(); i++)
 	{
 		for(size_t j=0; j<data[i].size(); j++)

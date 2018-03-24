@@ -47,7 +47,10 @@ double MyConditionalPrior::perturb_hyperparameters(RNG& rng)
         typical_flux = log(typical_flux);
         logH += cauchy.perturb(typical_flux, rng);
         if(std::abs(typical_flux) >= 50.0)
+        {
+            typical_flux = 1.0;
             return -1E300;
+        }
         typical_flux = exp(typical_flux);
     }
     else if(which == 1)
