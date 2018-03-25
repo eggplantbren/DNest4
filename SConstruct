@@ -32,7 +32,7 @@ env.Append(CPPPATH = [codedir])
 if GetOption('debug'):
   env.Append(CCFLAGS = ['-std=c++11', '-O0', '-Wall', '-Wextra', '-pedantic', '-g'])
 else:
-  env.Append(CCFLAGS = ['-std=c++11', '-O3', '-Wall', '-Wextra', '-pedantic', '-DNDEBUG'])
+  env.Append(CCFLAGS = ['-std=c++11', '-O3', '-march=native', '-Wall', '-Wextra', '-pedantic', '-DNDEBUG'])
 
 # create libraries
 sharedlib = env.SharedLibrary('libdnest4', cppfiles)
