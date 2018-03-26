@@ -21,6 +21,7 @@ data = loadtxt('Data/test_image.txt')
 sig = loadtxt('Data/test_sigma.txt')
 
 for i in range(0, posterior_sample.shape[0]):
+	clf()
 	img = posterior_sample[i, 0:200**2].reshape((200, 200))
 	subplot(1, 2, 1)
 	imshow(stretch(img), cmap='viridis', interpolation='nearest')
