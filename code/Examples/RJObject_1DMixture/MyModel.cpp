@@ -25,8 +25,16 @@ double MyModel::perturb(RNG& rng)
 	double logH = 0.0;
 
     logH += gaussians.perturb(rng);
+
+    // Don't allow zero components
     if(gaussians.get_components().size() == 0)
-        return -std::numeric_limits<double>::max();
+        return -1E300;
+
+    // Pre-rejection
+    if(rng.rand() >= exp(logH))
+        return -1E300;
+    else
+        logH = 0.0;
 
     return logH;
 }

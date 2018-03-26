@@ -57,6 +57,12 @@ double StraightLine::perturb(RNG& rng)
 		sigma = exp(sigma);
 	}
 
+	// Pre-reject
+	if(rng.rand() >= exp(log_H))
+		return -1E300;
+	else
+		log_H = 0.0;
+
 	// Calculate mu again if m or b changed
 	if(which == 0 || which == 1)
 		calculate_mu();
