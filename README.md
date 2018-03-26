@@ -106,7 +106,7 @@ flag to the install command.
 Currently, the Scons installation does not compile the examples or the Python library. Any additions
 to this installation process are welcome.
 
-(c) 2015--2018 Brendon J. Brewer
+(c) 2015--2018 Brendon J. Brewer and contributors.
 LICENCE: MIT.
 See the LICENSE file for details.
 
