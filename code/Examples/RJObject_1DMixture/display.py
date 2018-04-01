@@ -26,7 +26,7 @@ def mixture(x, params):
 
 
 clf()
-hist(data, 100, alpha=0.2, color="k", normed=True)
+hist(data, 100, alpha=0.2, color="k", density=True)
 y_tot = zeros(len(x))
 
 for i in range(0, posterior_sample.shape[0]):
@@ -42,7 +42,7 @@ show()
 
 width = 0.3
 bins = arange(0, 101) - 0.5*width
-hist(posterior_sample[:,7], bins, width=width, normed=True, color="k", alpha=0.2)
+hist(posterior_sample[:,7], bins, width=width, density=True, color="k", alpha=0.2)
 xlim([0, 100.5])
 ylim([0, 0.05])
 xlabel("Number of gaussians, $N$")
