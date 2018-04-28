@@ -2,7 +2,7 @@
 # called DNEST4_PATH for this to work.
 
 CC = g++
-CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -DNDEBUG
+CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -DNDEBUG
 LIBS = -ldnest4 -lpthread -ljulia
 
 default:
