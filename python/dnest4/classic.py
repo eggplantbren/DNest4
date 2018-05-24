@@ -464,7 +464,7 @@ def levels_plot():
 	plt.ylim([-1, 4])
 	plt.axhline(0., color='g', linewidth=2)
 	plt.axhline(np.log10(np.log(10.)), color='g')
-	plt.axhline(np.log10(0.8), color='g', linestyle='--')
+	plt.axhline(np.log10(0.75), color='g', linestyle='--')
 	plt.xlabel('Level')
 	plt.ylabel('$\\log_{10}$(Delta log likelihood)')
 	plt.show()
