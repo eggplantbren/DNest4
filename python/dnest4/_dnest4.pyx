@@ -213,7 +213,7 @@ def sample(
         # Convert the sampling results to arrays.
         result["samples"] = np.array(samples)
         result["sample_info"] = np.array(sample_info, dtype=[
-            ("level_assignment", np.uint16),
+            ("level_assignment", np.uint64),
             ("log_likelihood", np.float64),
             ("tiebreaker", np.float64),
         ])
@@ -223,9 +223,9 @@ def sample(
         n = levels.size()
         result["levels"] = np.empty(n, dtype=[
             ("log_X", np.float64), ("log_likelihood", np.float64),
-            ("tiebreaker", np.float64), ("accepts", np.uint16),
-            ("tries", np.uint16), ("exceeds", np.uint16),
-            ("visits", np.uint16)
+            ("tiebreaker", np.float64), ("accepts", np.uint64),
+            ("tries", np.uint64), ("exceeds", np.uint64),
+            ("visits", np.uint64)
         ])
         for j in range(n):
             level = levels[j]
