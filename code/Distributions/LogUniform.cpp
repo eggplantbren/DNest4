@@ -6,9 +6,9 @@
 namespace DNest4
 {
 
-LogUniform::LogUniform(double lower, double upper)
-:lower(lower)
-,upper(upper)
+LogUniform::LogUniform(double _lower, double _upper)
+:lower(_lower)
+,upper(_upper)
 {
     if(lower <= 0.0)
         throw std::domain_error("LogUniform distribution must have positive lower limit.");
@@ -42,9 +42,9 @@ double LogUniform::log_pdf(double x) const
 }
 
 
-ModifiedLogUniform::ModifiedLogUniform(double knee, double upper)
-:knee(knee)
-,upper(upper)
+ModifiedLogUniform::ModifiedLogUniform(double _knee, double _upper)
+:knee(_knee)
+,upper(_upper)
 {
     if(knee <= 0.0)
         throw std::domain_error("ModifiedLogUniform distribution must have positive knee.");
