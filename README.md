@@ -53,6 +53,11 @@ to DNest4 will take a little bit of work.
 Compiling
 =========
 
+## Note for Mac users:
+On some Macs, `g++` is an alias for `clang`, which is a C compiler. If this
+is the case for you, you'll need to edit the first line of the Makefile so
+that it uses `clang++`, which is a C++ compiler.
+
 You can compile the DNest4 library (`libdnest4`) using the Makefile in the `code` directory
 using:
 
