@@ -18,7 +18,7 @@ class LogUniform:public ContinuousDistribution
         double d;
 
     public:
-        LogUniform(double lower=1.0, double upper=100.0);
+        LogUniform(double _lower=1.0, double _upper=100.0);
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;
@@ -35,7 +35,7 @@ class ModifiedLogUniform:public ContinuousDistribution
         double d;
 
     public:
-        ModifiedLogUniform(double knee=1.0, double upper=100.0);
+        ModifiedLogUniform(double _knee=1.0, double _upper=100.0);
 
         double cdf(double x) const;
         double cdf_inverse(double x) const;
