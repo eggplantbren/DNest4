@@ -4,6 +4,7 @@ compiler:
 os:
   - linux
 script: 
+  - cd code
   - make
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
@@ -12,5 +13,5 @@ script:
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
   - /home/travis/miniconda3/bin/conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib cython
-  - cd python
+  - cd ../python
   - /home/travis/miniconda3/bin/python setup.py install
