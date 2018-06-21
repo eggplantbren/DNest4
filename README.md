@@ -1,7 +1,7 @@
 DNest4
 ======
 
-[![Build Status](https://travis-ci.org/eggplantbren/TwinPeaks2018.svg?branch=master)](https://travis-ci.org/eggplantbren/TwinPeaks2018)
+[![Build Status](https://travis-ci.org/eggplantbren/DNest4.svg?branch=master)](https://travis-ci.org/eggplantbren/DNest4)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/eggplantbren/DNest4/blob/master/LICENSE)
 
 DNest4 is a C++11 implementation of Diffusive Nested Sampling, a Markov Chain
