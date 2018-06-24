@@ -235,7 +235,7 @@ class T(Double):
         s = ""
         s += "boost::math::students_t_distribution<double> "
         s += "my_t_{x}({shape});\n" 
-        s += "{x} = {location} + {scale}*quantile(my_gamma_{x}, _{x});\n"
+        s += "{x} = {location} + {scale}*quantile(my_t_{x}, _{x});\n"
         return self.insert_parameters(s)
 
     def log_prob(self):

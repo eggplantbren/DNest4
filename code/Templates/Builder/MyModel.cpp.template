@@ -2,6 +2,7 @@
 #include "DNest4/code/DNest4.h"
 #include <boost/math/distributions/normal.hpp>
 #include <boost/math/distributions/gamma.hpp>
+#include <boost/math/distributions/students_t.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <iomanip>
 
