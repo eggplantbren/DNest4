@@ -222,6 +222,41 @@ class Gamma(Double):
         return s
 
 
+class T(Double):
+    """
+    Student t distributions, parameterised by (location, scale, shape)
+    """
+    def __init__(self, location, scale, shape):
+        self.location = location
+        self.scale = scale
+        self.shape = shape
+
+    def from_uniform(self):
+        s = ""
+        s += "boost::math::students_t_distribution<double> "
+        s += "my_t_{x}({shape});\n" 
+        s += "{x} = {location} + {scale}*quantile(my_gamma_{x}, _{x});\n"
+        return self.insert_parameters(s)
+
+    def log_prob(self):
+        s = ""
+        s += "logp += -log({scale}) "
+        s += "+ boost::math::lgamma<double>(0.5*({shape} + 1.0)) "
+        s += "- boost::math::lgamma<double>(0.5*({shape})) "
+        s += "- 0.5*log(M_PI*({shape})) "
+        s += "- 0.5*({shape} + 1.0)"
+        s += "*log(1.0 + pow(({x} - ({location}))/({scale}), 2)/({shape}));\n"
+        return self.insert_parameters(s)
+
+    def insert_parameters(self, s):
+        s = s.replace("{location}", str(self.location))
+        s = s.replace("{scale}", str(self.scale))
+        s = s.replace("{shape}", str(self.shape))
+        return s
+
+
+
+
 class Delta(Double):
     def __init__(self, formula):
         self.formula = formula
