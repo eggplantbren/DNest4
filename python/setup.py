@@ -47,10 +47,10 @@ if __name__ == "__main__":
             "Utils.cpp",
         ]]
         src += [
-            os.path.join("dnest4", "_dnest4.pyx"),
+            os.path.join("dnest4", "_dnest4.pyx")
         ]
 
-        ext = Extension(
+        ext = [Extension(
             "dnest4._dnest4",
             sources=src,
             language="c++",
@@ -61,8 +61,21 @@ if __name__ == "__main__":
                                 "-Wno-uninitialized",
                                 "-DNO_THREADS"],
             extra_link_args=["-std=c++11"],
-        )
-        extensions = cythonize([ext])
+        ),
+        Extension(
+            "dnest4.utils",
+            sources=[os.path.join("dnest4", "utils.pyx")],
+            language="c++",
+            libraries=libraries,
+            include_dirs=include_dirs,
+            extra_compile_args=["-std=c++11",
+                                "-Wno-unused-function",
+                                "-Wno-uninitialized",
+                                "-DNO_THREADS"],
+            extra_link_args=["-std=c++11"],
+            cython_directives={"cdivision": True}
+        )]
+        extensions = cythonize(ext)
 
     # Hackishly inject a constant into builtins to enable importing of the
     # package before the library is built.
