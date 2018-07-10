@@ -16,6 +16,7 @@ if not __DNEST4_SETUP__:
     from .loading import my_loadtxt, loadtxt_rows
     from .utils import rand
     from .utils import randn
+    from .utils import randt2
     from .utils import randh
     from .utils import wrap
 
