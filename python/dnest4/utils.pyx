@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ["randh", "wrap", "rand", "new_randh", "randn"]
+__all__ = ["rand", "randn", "randt2", "randh", "wrap"]
 
 cimport cython
 from libc.math cimport cos, log, sqrt, abs, M_PI
@@ -22,15 +22,17 @@ cpdef double randn(double mu=0.0, double sigma=1.0):
     cdef double z = cos(x2pi)*g2rad
     return mu + z*sigma
 
+cpdef double randt2():
+    """
+    Generate from t-distribution with 2 degrees of freedom
+    """
+    return randn()/sqrt(-log(rand()))
+
 cpdef double randh():
     """
     Generate from the heavy-tailed distribution.
     """
-    cdef double a = randn()
-    cdef double b = rand()
-    cdef double t = a/sqrt(-log(b))
-    cdef double n = randn()
-    return pow(10.0, (1.5 - 3*abs(t)))*n
+    return pow(10.0, (1.5 - 3*abs(randt2())))*randn()
 
 cpdef double wrap(double x, double a, double b):
     assert b > a
