@@ -17,7 +17,8 @@ features.
 They are consistent. I follow a convention where P(a|b) is the probability of
 statement a given statement b, and p(x|y) is the probability distribution
 (density/mass function) for quantity x given the value of quantity y.
-Should I outline the convention?
+
+I've briefly stated this convention in the first paragraph.
 
 > o Please check and correct:
 > 
