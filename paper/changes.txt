@@ -1,0 +1,79 @@
+> Dear Brendon,
+> 
+> apologies for the delay. We finally got round to preparing your
+> conditionally accepted manuscript "DNest4: Diffusive Nested Sampling in C++
+> and Python" for publication in JSS. However, we couldn't finalize it
+> because we had some issues. Please see the comments below for more details.
+> 
+> Manuscript:
+> 
+> o Should it read C++ or C++11 in the title?
+
+C++ is fine. There's nothing special (anymore) about using the new language
+features.
+ 
+> o The use of p() and P() does not seem to be consistent. Please check.
+
+They are consistent. I follow a convention where P(a|b) is the probability of
+statement a given statement b, and p(x|y) is the probability distribution
+(density/mass function) for quantity x given the value of quantity y.
+Should I outline the convention?
+
+> o Please check and correct:
+> 
+> In the nested sampling sphere, the simple \proglang{C} implementation of
+> given by \citet{skilling2006nested} is useful for understanding the classic
+> NS algorithm.
+
+I've deleted the 'of'.
+
+> Implementation:
+> 
+> o Compilation failed with
+> 
+> ../../../../DNest4/code/SamplerImpl.h:95:20: error: ‘bind’ is not a member
+> of ‘std’
+> 
+> but succeeded after adding in SamplerImp.h
+> 
+> #include <functional>
+> 
+> Please check and advise.
+
+I had this problem myself a while ago and have fixed it the same way.
+
+> o Compiling the Julia example using julia 0.6.2 also failed with:
+> 
+> MyModel.cpp: In member function ‘double MyModel::log_likelihood() const’:
+> MyModel.cpp:41:65: error: cannot convert ‘jl_datatype_t* {aka
+> _jl_datatype_t*}’ to ‘jl_value_t* {aka _jl_value_t*}’ for argument ‘1’ to
+> ‘jl_value_t* jl_apply_array_type(jl_value_t*, size_t)’
+>     jl_value_t* array_type = jl_apply_array_type(jl_float64_type, 1);
+> 
+> Please check and maybe add some information for which version of julia this
+> is supposed to work.
+
+I haven't kept up with Julia so I've just removed any mention of it.
+
+
+> 
+> Replication material:
+> 
+> o There seems that no random seed was set and thus results are not exactly
+> reproducible. Please check if it would be easy to add fixing a random seed
+> before running the examples. Otherwise this should be pointed out in the
+> manuscript so that readers are aware that they will only be able to
+> approximately reproduce results.
+> 
+> In order to be able to proceed, we need materials that fully conform with
+> JSS's requirements. Please use the attached version of the replication
+> materials and manuscript which already contain a few editorial touch-ups.
+> Note that this attached version of the manuscript and replication material
+> must be used for any edits because they already have been edited.
+> 
+> Please confirm receipt of this e-mail and do not hesitate to contact me in
+> case you have any questions!
+> 
+> Thanks in advance & best regards,
+> Bettina
+> 
