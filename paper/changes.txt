@@ -56,7 +56,6 @@ I had this problem myself a while ago and have fixed it the same way.
 
 I haven't kept up with Julia so I've just removed any mention of it.
 
-
 > 
 > Replication material:
 > 
@@ -66,7 +65,9 @@ I haven't kept up with Julia so I've just removed any mention of it.
 > manuscript so that readers are aware that they will only be able to
 > approximately reproduce results.
 
-replicate.py sets the random seed to zero.
+replicate.py sets the random seed to zero. There are also random numbers
+in the Python postprocessing, so I've now made those set the seed as well.
+replicate.py now always produces exactly the same results.
 
 > In order to be able to proceed, we need materials that fully conform with
 > JSS's requirements. Please use the attached version of the replication

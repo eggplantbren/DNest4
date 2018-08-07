@@ -1,5 +1,6 @@
 import copy
 import numpy as np
+import numpy.random as rng
 from .loading import *
 
 def logsumexp(values):
@@ -231,7 +232,11 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 def postprocess_abc(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
-compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8):
+compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, threshold_fraction=0.8,rng_seed=None):
+
+	if rng_seed is not None:
+		rng.seed(rng_seed)
+
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))
