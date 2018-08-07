@@ -1,8 +1,8 @@
 from pylab import *
-import dnest4.classic as dn4
 
-rc("font", size=18, family="serif", serif="Computer Sans")
-rc("text", usetex=True)
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["font.size"] = 16
+plt.rc("text", usetex=True)
 
 data = loadtxt('galaxies.txt')
 posterior_sample = atleast_2d(dn4.my_loadtxt('posterior_sample.txt'))

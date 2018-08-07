@@ -1,6 +1,7 @@
 import dnest4.classic as dn4
 import os
 import matplotlib.pyplot
+from pylab import *
 
 print("This script should \
 replicate all the runs presented in the paper.\nNote:\
