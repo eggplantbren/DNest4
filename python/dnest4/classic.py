@@ -18,7 +18,11 @@ def logdiffexp(x1, x2):
 
 def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			cut=0., save=True, zoom_in=True, compression_bias_min=1., verbose=True,\
-			compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False):
+			compression_scatter=0., moreSamples=1., compression_assert=None, single_precision=False, rng_seed=None):
+
+	if rng_seed is not None:
+		rng.seed(rng_seed)
+
 	if len(loaded) == 0:
 		levels_orig = np.atleast_2d(my_loadtxt("levels.txt"))
 		sample_info = np.atleast_2d(my_loadtxt("sample_info.txt"))

@@ -65,7 +65,9 @@ I haven't kept up with Julia so I've just removed any mention of it.
 > before running the examples. Otherwise this should be pointed out in the
 > manuscript so that readers are aware that they will only be able to
 > approximately reproduce results.
-> 
+
+replicate.py sets the random seed to zero.
+
 > In order to be able to proceed, we need materials that fully conform with
 > JSS's requirements. Please use the attached version of the replication
 > materials and manuscript which already contain a few editorial touch-ups.
