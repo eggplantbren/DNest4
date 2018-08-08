@@ -15,7 +15,7 @@ junk = input()
 
 def run_example(directory, abc=False):
     os.chdir(directory)
-    os.system("./main -s 0")
+    os.system("./main -s 0 -t 8")
     if directory == "StraightLine":
         print("Figure 1 in the paper has been zoomed in.")
 

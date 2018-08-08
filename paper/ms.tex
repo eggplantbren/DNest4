@@ -528,9 +528,9 @@ and~\ref{fig:fig3} on the left, along with the following output:
 %
 \begin{CodeChunk}
 \begin{CodeOutput}
-log(Z) = -175.49577676640516
-Information = 15.17486407892028 nats.
-Effective sample size = 1126.5312086470944
+log(Z) = -175.47872682863076
+Information = 15.166340875399044 nats.
+Effective sample size = 1251.3576752091165
 \end{CodeOutput}
 \end{CodeChunk}
 %
@@ -1396,8 +1396,8 @@ void MyConditionalPrior::to_uniform(std::vector<double>& vec) const
 The data and the posterior mean fit are shown
 in Figure~\ref{fig:galaxies} on the left and the posterior distribution for
 $N$ is shown in Figure~\ref{fig:galaxies} on the right.
-The marginal likelihood was $\ln(Z) = -232.2$, and
-the information (measured in nats) was $\mathcal{H} = 29.5$.
+The marginal likelihood was $\ln(Z) = -232.1$, and
+the information was $\mathcal{H} = 29.5$ nats.
 
 \begin{figure}[t!]
 \centering
@@ -1670,7 +1670,7 @@ double MyModel::log_likelihood() const
 For ABC applications, there is an alternate \code{postprocess} function
 called \code{postprocess_abc}.
 This generates posterior samples using the $\epsilon$ value corresponding
-to level $\approx 3/4\times$~(maximum number of levels).
+to level $\approx 0.8\times$~(maximum number of levels).
 %
 \begin{CodeChunk}
 \begin{CodeInput}
