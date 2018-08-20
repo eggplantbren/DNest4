@@ -1,4 +1,5 @@
 #include "RNG.h"
+#include "Distributions/Cauchy.h"
 #include "Utils.h"
 #include <cmath>
 
@@ -43,6 +44,12 @@ double RNG::randt2()
 double RNG::randh()
 {
 	return pow(10.0, 1.5 - 3*std::abs(this->randt2()))*this->randn();
+}
+
+double RNG::randh2()
+{
+    Cauchy cauchy;
+	return pow(10.0, 0.5 - std::abs(cauchy.generate(*this)))*this->randn();
 }
 
 int RNG::rand_int(int N)

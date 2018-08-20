@@ -43,6 +43,9 @@ class RNG
 		// My favourite heavy-tailed distribution
 		double randh();
 
+        // A more aggressive version of randh() [more mass near magnitude 1]
+        double randh2();
+
 		// Integer from {0, 1, 2, ..., N-1}
 		int rand_int(int N);
 }; // class RNG
