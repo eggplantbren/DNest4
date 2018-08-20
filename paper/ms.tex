@@ -316,7 +316,7 @@ Package     &   Easy to     & High   &   Multimodal     & Dependent   &   Phase 
 Bayesian computation software packages.\label{tab:packages}}
 \end{table}
 \newpage
-\section{Markov chain Monte Carlo}\label{sec:mcmc}
+\section{Markov chain monte carlo}\label{sec:mcmc}
 DNS is build upon the Metropolis-Hastings algorithm.
 In this algorithm, the acceptance probability $\alpha$
 is given by
@@ -511,10 +511,7 @@ nested sampling is usually to obtain posterior samples and the marginal likeliho
 whereas \code{sample.txt} only contains samples from the mixture of constrained
 priors. Additional
 post-processing is required. This can be achieved by running the following
-\proglang{Python} function\footnote{Alternatively, the file
-\code{showresults.py} in the example directory runs this function, and then
-calls the code in \code{display.py} to create a further plot shown in
-Figure~\ref{fig:fig3} on the right.}:
+\proglang{Python} function:
 %
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -522,6 +519,12 @@ Figure~\ref{fig:fig3} on the right.}:
 >>> dnest4.postprocess()
 \end{CodeInput}
 \end{CodeChunk}
+
+Alternatively, the file
+\code{showresults.py} in the example directory runs this function, and then
+calls the code in \code{display.py} to create a further plot shown in
+Figure~\ref{fig:fig3} on the right.
+
 %
 This produces the three diagnostic plots in Figures~\ref{fig:fig1}
 and~\ref{fig:fig3} on the left, along with the following output:
@@ -1118,7 +1121,7 @@ can encapsulate this part of the model.
 \includegraphics[width=0.4\textwidth]{rjobject_pgm.pdf}
 \caption{A PGM showing the kind of prior information the `\code{RJObject}'
 template class expresses.
-Figure created using Daft (\url{http://daft-pgm.org}).\label{fig:rjobject_pgm}}
+Figure created using \pkg{Daft} \citep{daft}.\label{fig:rjobject_pgm}}
 \end{figure}
 
 \citet{brewer2014inference}
@@ -1163,9 +1166,9 @@ p(N) \propto \frac{1}{N+1}
 for $N \in \{1, 2, \ldots, 100\}$.
 For the conditional prior of the Gaussian parameters,
 we used Laplace (biexponential)
-distributions\footnote{A Laplace
+distributions. A Laplace
 distribution with location parameter $a$ and scale parameter
-$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.}.
+$b$ has density $p(x | a, b) = \frac{1}{2}\exp\left(-\frac{1}{b}|x - a|\right)$.
 Normal distributions would be more conventional, but the analytic cumulative
 distribution function (CDF) of the Laplace distribution makes it easier to
 implement. These were:
@@ -1468,10 +1471,10 @@ p(\theta, D | D = D_{\rm observed}, M) &\propto p(\theta | M)p(D | \theta, M)
 \end{align}
 The marginal distribution for $\theta$ is also the conditional distribution
 $p(\theta | D = D_{\rm observed}, M)$, that is,
-the posterior\footnote{Incidentally, this usage of the {\em joint} posterior
+the posterior. Incidentally, this usage of the {\em joint} posterior
 distribution for the parameters {\em and the data} provides a bridge
 connecting Bayesian updating to maximum entropy updating
-\citep{caticha2006updating,giffin2007updating}.}.
+\citep{caticha2006updating,giffin2007updating}.
 
 This approach is rarely usable in practice because the probability of
 generating a dataset that matches the observed one is extremely low.
@@ -1564,10 +1567,10 @@ and the prior is
 \end{align*}
 However, instead of conditioning on the full dataset $\{x_i\}$, the example
 uses the minimum and maximum values in the data,
-$\min(\{x_i\})$ and $\max(\{x_i\})$, as summary statistics\footnote{This is
+$\min(\{x_i\})$ and $\max(\{x_i\})$, as summary statistics. This is
 not a serious application of ABC, since the likelihood function can easily
 be evaluated. It is included to demonstrate the principle of using
-nested sampling as an ABC method.}.
+nested sampling as an ABC method.
 
 In ABC applications the model class needs to describe a point in the joint
 (parameters, data) space, and the \code{from\_prior} and \code{perturb}
