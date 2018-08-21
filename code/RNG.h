@@ -12,6 +12,7 @@ namespace DNest4
 class RNG
 {
 	private:
+
 		// 64-bit Mersenne Twister
 		std::mt19937_64 twister;
 
@@ -20,6 +21,9 @@ class RNG
 
 		// For normal distribution
 		std::normal_distribution<double> normal;
+
+    public:
+        static bool randh_is_randh2;
 
 	public:
 		// Constructor

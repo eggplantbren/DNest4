@@ -6,6 +6,8 @@
 namespace DNest4
 {
 
+bool RNG::randh_is_randh2 = false;
+
 RNG::RNG()
 :uniform(0., 1.)
 ,normal(0., 1.)
@@ -43,6 +45,8 @@ double RNG::randt2()
 
 double RNG::randh()
 {
+	if(randh_is_randh2)
+		return randh2();
 	return pow(10.0, 1.5 - 3*std::abs(this->randt2()))*this->randn();
 }
 
