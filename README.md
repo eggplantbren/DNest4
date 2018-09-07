@@ -18,22 +18,20 @@ You can use it in a few different ways:
 Papers
 ======
 
-There is a manuscript describing DNest4 installation and usage
-in the paper/ directory of this repository.
-You can compile it with pdflatex. Alternatively, you can get the
-preprint [here](http://arxiv.org/abs/1606.03757).
+There is a [paper](https://www.jstatsoft.org/article/view/v086i07)
+describing DNest4 installation and usage in the Journal of
+Statistical software. You might also want to read the original
+[paper](http://arxiv.org/abs/0912.2380) describing the
+Diffusive Nested Sampling algorithm itself.
+If you find this software useful in your
+research, please cite one or both of these papers. Here are the citations:
 
-You might also want to read the paper describing the
-Diffusive Nested Sampling algorithm. If you find this software useful in your
-research, please cite one or both of these papers.
+Brewer, B., & Foreman-Mackey, D. (2018). DNest4: Diffusive Nested Sampling in C++ and Python. Journal of Statistical Software, 86(7), 1 - 33. doi:http://dx.doi.org/10.18637/jss.v086.i07
 
 Diffusive Nested Sampling
 Brendon J. Brewer, Livia B. Pártay, and Gábor Csányi
 Statistics and Computing, 2011, 21, 4, 649-656.
 
-The algorithm
-paper is [freely available online](http://arxiv.org/abs/0912.2380) at
-the [arXiv](http://www.arxiv.org/).
 
 Dependencies
 ============
