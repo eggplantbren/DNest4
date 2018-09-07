@@ -27,17 +27,11 @@ If you find this software useful in your
 research, please cite one or both of these papers. Here are the citations:
 
 Brewer, B., & Foreman-Mackey, D. (2018).
-
-DNest4: Diffusive Nested Sampling in C++ and Python.
-
+DNest4: Diffusive Nested Sampling in C++ and Python.<br>
 Journal of Statistical Software, 86(7), 1 - 33. doi:http://dx.doi.org/10.18637/jss.v086.i07
 
-
-Diffusive Nested Sampling
-
-Brendon J. Brewer, Livia B. Pártay, and Gábor Csányi
-Statistics and Computing, 2011, 21, 4, 649-656.
-
+Brewer, B. J., Pártay, L. B., & Csányi, G. (2011). Diffusive nested sampling.<br>
+Statistics and Computing, 21(4), 649-656.
 
 Dependencies
 ============
