@@ -10,8 +10,7 @@ namespace DNest4
 Fixed::Fixed(double val)
 :val(val)
     {
-        // if(a <= 0.0 or b <= 0.0)
-            // throw std::domain_error("Fixed distribution must have positive a and b.");
+        // nothing to do
     }
 
     double Fixed::cdf(double x) const
