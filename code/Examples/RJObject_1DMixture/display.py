@@ -1,3 +1,4 @@
+import dnest4.classic as dn4
 from pylab import *
 
 plt.rcParams["font.family"] = "serif"

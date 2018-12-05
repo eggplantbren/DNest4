@@ -30,6 +30,10 @@ double ConditionalPrior::perturb1(RNG& rng, const vector< vector<double> >& comp
 		logH += log_pdf(components[i]);
 		u_components[i] = components[i];
 		to_uniform(u_components[i]);
+
+        for(size_t j=0; j<components[i].size(); ++j)
+            if(u_components[i][j] <= 0.0 || u_components[i][j] >= 1.0)
+                logH = -1E300;
 	}
 
 	return logH;
