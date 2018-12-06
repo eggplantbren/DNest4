@@ -20,13 +20,13 @@ double Rosenbrock::perturb(RNG& rng)
 {
     int reps = 1;
     if(rng.rand() < 0.5)
-        reps += static_cast<int>(pow(100.0, rng.rand()));
+        reps += static_cast<int>(pow(params.size(), rng.rand()));
 
     int which;
     for(int i=0; i<reps; ++i)
     {
         which = rng.rand_int(params.size());
-        params[which] += 20.0*rng.randh();
+        params[which] += 20.0*rng.randh2();
         wrap(params[which], -10.0, 10.0);
     }
 
