@@ -45,6 +45,21 @@ if __name__ == "__main__":
             "Options.cpp",
             "RNG.cpp",
             "Utils.cpp",
+            "Distributions/Cauchy.cpp",
+            "Distributions/ContinuousDistribution.cpp",
+            "Distributions/Exponential.cpp",
+            "Distributions/Gaussian.cpp",
+            "Distributions/Jeffreys.cpp",
+            "Distributions/Kumaraswamy.cpp",
+            "Distributions/Laplace.cpp",
+            "Distributions/LogUniform.cpp",
+            "Distributions/Pareto.cpp",
+            "Distributions/Rayleigh.cpp",
+            "Distributions/Uniform.cpp",
+            "RJObject/ConditionalPriors/BasicCircular.cpp",
+            "RJObject/ConditionalPriors/ClassicMassInf1D.cpp",
+            "RJObject/ConditionalPriors/ClassicMassInf.cpp",
+            "RJObject/ConditionalPriors/ConditionalPrior.cpp"
         ]]
         src += [
             os.path.join("dnest4", "_dnest4.pyx")
