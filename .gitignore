@@ -6,6 +6,9 @@ paper/_minted-ms
 *.gch
 *.a
 main
+first.txt
+second.txt
+log_prior_weights.txt
 sample.txt
 sample_info.txt
 weights.txt
