@@ -6,7 +6,7 @@ dn4.postprocess()
 log_prior_weights = np.loadtxt("log_prior_weights.txt")
 
 # Look at a canonical distribution
-temperatures = [10.0, 5.0]
+temperatures = [30.0, 1.0]
 sample = dn4.my_loadtxt("sample.txt")
 fs, gs = sample[:,-2], sample[:,-1]
 
@@ -30,6 +30,7 @@ print("")
 print("True logZ =", 100*np.log(np.trapz(y, x=x)))
 print("True H =", 100*np.trapz(p*np.log(p + 1E-300), x=x))
 plt.plot(x, y)
+plt.title("Canonical distribution")
 plt.show()
 
 
