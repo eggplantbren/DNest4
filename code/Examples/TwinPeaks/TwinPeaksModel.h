@@ -8,7 +8,7 @@
 class TwinPeaksModel
 {
     private:
-        static constexpr int N = 10;
+        static constexpr int N = 100;
         std::vector<double> xs;
 
     public:
