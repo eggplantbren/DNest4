@@ -165,8 +165,15 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
 
+	# Log prior weights
+	logp_samples_averaged = np.empty(len(P_samples))
+	for i in range(len(P_samples)):
+		logp_samples_averaged = logsumexp(logp_samples[i, :]) \
+                                    - np.log(logp_samples.shape[1])
+
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
+
 	logz_estimate = np.mean(logz_estimates)
 	logz_error = np.std(logz_estimates)
 	H_estimate = np.mean(H_estimates)
@@ -224,6 +231,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		else:
 			np.savetxt("posterior_sample.txt", posterior_sample,\
 													header=header)
+		np.savetxt("log_prior_weights.txt", logp_samples)
 
 	if plot:
 		plt.show()
