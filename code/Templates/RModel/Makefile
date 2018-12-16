@@ -4,19 +4,20 @@
 CC = g++
 
 # Path to R.h
-R_PATH = /usr/include/R/
+R_PATH = /usr/share/R/include/
 
 # Path to Rcpp.h
-RCPP_PATH = /home/brewer/R/x86_64-pc-linux-gnu-library/3.5/Rcpp/include/
+RCPP_PATH = /usr/lib/R/site-library/Rcpp/include/
 
 # Path to RInside.h
-RINSIDE_PATH = /home/brewer/R/x86_64-pc-linux-gnu-library/3.5/RInside/include/
+RINSIDE_PATH = /usr/local/lib/R/site-library/RInside/include/
 
 # Path to libR.so
 RLIB_PATH = /usr/lib/R/lib/
 
 # Path to libRInside.so
-RINSIDE_LIB_PATH = /home/brewer/R/x86_64-pc-linux-gnu-library/3.5/RInside/lib/
+# You will also need to add this to your LD_LIBRARY_PATH
+RINSIDE_LIB_PATH = /usr/local/lib/R/site-library/RInside/lib/
 
 CXXFLAGS = -std=c++11 -O3 -march=native -DNDEBUG
 LIBS = -ldnest4 -lpthread -lR -lRInside
