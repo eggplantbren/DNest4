@@ -165,6 +165,12 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 			plt.xlabel('log(X)')
 			plt.xlim(xlim)
 
+	# Log prior weights
+	logp_samples_averaged = np.empty(len(P_samples))
+	for i in range(len(P_samples)):
+		logp_samples_averaged = logsumexp(logp_samples[i, :]) \
+										- np.log(logp_samples.shape[1])
+
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
 	logz_estimate = np.mean(logz_estimates)
@@ -217,6 +223,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 
 	if save:
+		np.savetxt("log_prior_weights.txt", logp_samples)
 		np.savetxt('weights.txt', w)
 		if single_precision:
 			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e",\
@@ -470,9 +477,9 @@ def levels_plot():
 	levels = my_loadtxt('levels.txt')
 
 	plt.plot(np.log10(np.diff(levels[:,1])), "ko-")
-	plt.ylim([-1, 4])
+	plt.ylim([-1, 6])
 	plt.axhline(0., color='g', linewidth=2)
-	plt.axhline(np.log10(np.log(10.)), color='g')
+#	plt.axhline(np.log10(np.log(10.)), color='g')
 	plt.axhline(np.log10(0.75), color='g', linestyle='--')
 	plt.xlabel('Level')
 	plt.ylabel('$\\log_{10}$(Delta log likelihood)')
