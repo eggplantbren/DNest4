@@ -55,7 +55,7 @@ if __name__ == "__main__":
             "Distributions/LogUniform.cpp",
             "Distributions/Pareto.cpp",
             "Distributions/Rayleigh.cpp",
-            "Distributions/Triangular.cpp"
+            "Distributions/Triangular.cpp",
             "Distributions/Uniform.cpp",
             "RJObject/ConditionalPriors/BasicCircular.cpp",
             "RJObject/ConditionalPriors/ClassicMassInf1D.cpp",
