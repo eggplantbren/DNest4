@@ -29,7 +29,7 @@
 #include "Distributions/LogUniform.h"
 #include "Distributions/Jeffreys.h"
 #include "Distributions/Kumaraswamy.h"
-#include "Distributions/Fixed.h"
+#include "Distributions/Triangular.h"
 #include "Distributions/ContinuousDistribution.h"
 
 #endif
