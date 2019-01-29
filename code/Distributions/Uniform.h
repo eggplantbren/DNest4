@@ -1,6 +1,7 @@
 #ifndef DNest4_Uniform
 #define DNest4_Uniform
 
+#include <iostream>
 #include "ContinuousDistribution.h"
 #include "../RNG.h"
 
@@ -21,6 +22,12 @@ class Uniform:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
+        // ostream representation of Uniform class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Uniform(" << lower << "; " << upper << ")";
+            return out;
+        }
 };
 
 
