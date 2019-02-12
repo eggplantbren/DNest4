@@ -23,6 +23,12 @@ class Exponential:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double p) const;
         double log_pdf(double x) const;
+        // ostream representation of Exponential class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Exponential(" << scale << ")";
+            return out;
+        }
 };
 
 /*
@@ -43,6 +49,12 @@ class TruncatedExponential:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double p) const;
         double log_pdf(double x) const;
+        // ostream representation of TruncatedExponential class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "TruncatedExponential(" << scale << "; [" << lower << " , " << upper << "])";
+            return out;
+        }
 };
 
 

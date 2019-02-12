@@ -21,6 +21,12 @@ class Fixed:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double p) const;
         double log_pdf(double x) const;
+        // ostream representation of Fixed class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Fixed(" << val << ")";
+            return out;
+        }
         // this special class reimplements perturb to save some work
         double perturb(double& x, RNG& rng) const;
 };
