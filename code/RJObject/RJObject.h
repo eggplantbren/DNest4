@@ -108,8 +108,8 @@ class RJObject
 		{ return removed; }
 
 		// Getter for hyperparameters
-		const ConditionalPrior& get_conditional_prior() const
-		{ return conditional_prior; }
+		ConditionalPrior* get_conditional_prior()
+		{ return &conditional_prior; }
 
         bool components_changed() const
         { return components_changed_flag; }
