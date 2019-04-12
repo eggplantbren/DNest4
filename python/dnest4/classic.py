@@ -272,7 +272,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 		xlim = plt.gca().get_xlim()
 		plt.axhline(-1., color='g')
 		plt.axhline(-np.log(10.), color='g', linestyle="--")
-		plt.ylim(ymax=0.05)
+		plt.ylim(top=0.05)
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
