@@ -119,9 +119,13 @@ double MyModel::log_likelihood() const
 	{
 		for(size_t j=0; j<data[i].size(); j++)
 		{
-			var = sigma*sigma + sig[i][j]*sig[i][j];
-			logL += -0.5*log(2.*M_PI*var)
-				-0.5*pow(data[i][j] - image[i][j], 2)/var;
+            // Allow for masking by using very high sigma values
+            if(sig[i][j] < 1E100)
+            {
+			    var = sigma*sigma + sig[i][j]*sig[i][j];
+			    logL += -0.5*log(2.*M_PI*var)
+				    -0.5*pow(data[i][j] - image[i][j], 2)/var;
+            }
 		}
 	}
 
