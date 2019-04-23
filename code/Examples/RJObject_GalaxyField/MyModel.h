@@ -8,6 +8,8 @@
 class MyModel
 {
 	private:
+
+        // The galaxies
 		DNest4::RJObject<MyConditionalPrior> objects;
 
 		// The model image
@@ -16,6 +18,7 @@ class MyModel
 
 		// Noise standard deviation
 		double sigma;
+        DNest4::TruncatedCauchy cauchy; // For its prior
 
 	public:
 		MyModel();
