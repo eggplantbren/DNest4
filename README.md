@@ -36,13 +36,10 @@ Statistics and Computing, 21(4), 649-656.
 Dependencies
 ============
 
-All you need is a C++ compiler that
-supports the C++11 standard, along with Python and the
+You will need a C++ compiler that
+supports the C++11 standard, along with Python 3 and the
 Python packages NumPy, scipy, matplotlib, Cython, and Numba.
 [Anaconda](https://www.anaconda.com) is a suitable Python distribution to use.
-for the post-processing scripts. Because of this, it should be much easier
-to compile (at least on a Unix-like operating system such as Ubuntu or
-Mac OS X).
 
 Compiling
 =========
