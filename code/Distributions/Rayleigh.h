@@ -21,6 +21,12 @@ class Rayleigh:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
+        // ostream representation of Rayleigh class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Rayleigh(" << scale << ")";
+            return out;
+        }
 
 };
 
@@ -38,6 +44,12 @@ class TruncatedRayleigh:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
+        // ostream representation of TruncatedRayleigh class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "TruncatedRayleigh(" << scale << "; [" << lower << " , " << upper << "])";
+            return out;
+        }
 };
 
 

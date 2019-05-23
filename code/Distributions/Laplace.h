@@ -25,7 +25,12 @@ class Laplace:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
-
+        // ostream representation of Laplace class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Laplace(" << center << "; " << width << ")";
+            return out;
+        }
         // Sign function
         static int sign(double x);
 };
