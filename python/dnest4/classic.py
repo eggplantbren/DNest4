@@ -169,11 +169,10 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 	logp_samples_averaged = np.empty(len(P_samples))
 	for i in range(len(P_samples)):
 		logp_samples_averaged = logsumexp(logp_samples[i, :]) \
-                                    - np.log(logp_samples.shape[1])
+										- np.log(logp_samples.shape[1])
 
 	P_samples = np.mean(P_samples, 1)
 	P_samples = P_samples/np.sum(P_samples)
-
 	logz_estimate = np.mean(logz_estimates)
 	logz_error = np.std(logz_estimates)
 	H_estimate = np.mean(H_estimates)
@@ -224,6 +223,7 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 
 
 	if save:
+		np.savetxt("log_prior_weights.txt", logp_samples)
 		np.savetxt('weights.txt', w)
 		if single_precision:
 			np.savetxt("posterior_sample.txt", posterior_sample, fmt="%.7e",\
@@ -231,7 +231,6 @@ def postprocess(temperature=1., numResampleLogX=1, plot=True, loaded=[], \
 		else:
 			np.savetxt("posterior_sample.txt", posterior_sample,\
 													header=header)
-		np.savetxt("log_prior_weights.txt", logp_samples)
 
 	if plot:
 		plt.show()
@@ -273,7 +272,7 @@ compression_scatter=0., moreSamples=1., compression_assert=None, single_precisio
 		xlim = plt.gca().get_xlim()
 		plt.axhline(-1., color='g')
 		plt.axhline(-np.log(10.), color='g', linestyle="--")
-		plt.ylim(ymax=0.05)
+		plt.ylim(top=0.05)
 
 		plt.subplot(2,1,2)
 		good = np.nonzero(levels_orig[:,4] > 0)[0]
