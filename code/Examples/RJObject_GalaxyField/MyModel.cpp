@@ -13,6 +13,7 @@ MyModel::MyModel()
 	Data::get_instance().get_y_min(), Data::get_instance().get_y_max()), PriorType::log_uniform)
 ,image(Data::get_instance().get_ni(),
 	vector<double>(Data::get_instance().get_nj()))
+,cauchy(0.0, 5.0, -50.0, 50.0)
 {
 
 }
@@ -21,7 +22,7 @@ void MyModel::from_prior(RNG& rng)
 {
 	objects.from_prior(rng);
 	calculate_image(false);
-	sigma = exp(log(1.) + log(1E6)*rng.rand());
+	sigma = pow(10.0, cauchy.generate(rng));
 }
 
 void MyModel::calculate_image(bool update)
@@ -99,10 +100,9 @@ double MyModel::perturb(RNG& rng)
 	}
 	else
 	{
-		sigma = log(sigma);
-		sigma += log(1E6)*rng.randh();
-		sigma = mod(sigma - log(1.), log(1E6)) + log(1.);
-		sigma = exp(sigma);
+		sigma = log10(sigma);
+        sigma += cauchy.perturb(sigma, rng);
+        sigma = pow(10.0, sigma);
 	}
 
 	return logH;
@@ -119,9 +119,13 @@ double MyModel::log_likelihood() const
 	{
 		for(size_t j=0; j<data[i].size(); j++)
 		{
-			var = sigma*sigma + sig[i][j]*sig[i][j];
-			logL += -0.5*log(2.*M_PI*var)
-				-0.5*pow(data[i][j] - image[i][j], 2)/var;
+            // Allow for masking by using very high sigma values
+            if(sig[i][j] < 1E100)
+            {
+			    var = sigma*sigma + sig[i][j]*sig[i][j];
+			    logL += -0.5*log(2.*M_PI*var)
+				    -0.5*pow(data[i][j] - image[i][j], 2)/var;
+            }
 		}
 	}
 
