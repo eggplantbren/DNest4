@@ -173,5 +173,30 @@ double r8poly_value(int n, double a[], double x)
     return value;
 }
 
+double perturb_ns(std::vector<double>& ns, RNG& rng)
+{
+    double logH = 0.0;
+
+    if(rng.rand() <= 0.5)
+    {
+        // Perturb a single n
+        int k = rng.rand_int(ns.size());
+        logH -= -0.5*pow(ns[k], 2);
+        ns[k] += rng.randh();
+        logH += -0.5*pow(ns[k], 2);
+    }
+    else
+    {
+        // Resample several ns
+        int reps = static_cast<int>(pow(ns.size(), rng.rand()));
+        for(int i=0; i<reps; ++i)
+        {
+            int k = rng.rand_int(ns.size());
+            ns[k] = rng.randn();
+        }
+    }
+    return logH;
+}
+
 } // namespace DNest4
 
