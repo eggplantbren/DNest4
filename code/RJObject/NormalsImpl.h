@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cmath>
+#include "../Utils.h"
 
 namespace DNest4
 {
@@ -37,6 +38,14 @@ void Normals<MuPrior, SigmaPrior>::sync_ys()
         ys[i] = mu + sigma*ns[i];
 }
 
+template<class MuPrior, class SigmaPrior>
+void Normals<MuPrior, SigmaPrior>::sync_ns()
+{
+    double inv_sigma = 1.0/sigma;
+    for(size_t i=0; i<ns.size(); ++i)
+        ns[i] = inv_sigma*(ys[i] - mu);
+}
+
 
 template<class MuPrior, class SigmaPrior>
 void Normals<MuPrior, SigmaPrior>::sync_logp()
@@ -46,6 +55,45 @@ void Normals<MuPrior, SigmaPrior>::sync_logp()
     logp = 0.0;
     for(double y: ys)
         logp += C - 0.5*tau*pow(y - mu, 2);
+}
+
+template<class MuPrior, class SigmaPrior>
+double Normals<MuPrior, SigmaPrior>::perturb(RNG& rng)
+{
+    double logH = 0.0;
+
+    int which = rng.rand_int(3);
+    if(which == 0)
+    {
+        // Perturb a hyperparameter, moving all ys
+        if(rng.rand() <= 0.5)
+            logH += mu_prior.perturb(mu, rng);
+        else
+            logH += sigma_prior.perturb(sigma, rng);
+        sync_ys();
+        sync_logp();
+    }
+    else if(which == 1)
+    {
+        // Perturb a hyperparameter, keeping ys fixed
+        logH -= logp;
+        if(rng.rand() <= 0.5)
+            logH += mu_prior.perturb(mu, rng);
+        else
+            logH += sigma_prior.perturb(sigma, rng);
+        sync_logp();
+        logH += logp;
+        sync_ns();
+    }
+    else
+    {
+        // Just perturb ns
+        logH += perturb_ns(ns, rng);
+        sync_ys();
+        sync_logp();
+    }
+
+    return logH;
 }
 
 

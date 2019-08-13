@@ -27,8 +27,9 @@ class Normals
         std::vector<double> ns, ys;
 
         // Syncing functions
-        void sync_logp();
-        void sync_ys();
+        void sync_logp();   // Requires ys
+        void sync_ys();     // Sync ys from ns
+        void sync_ns();     // Sync ns from ys
 
         // log p(y | alpha)
         double logp;
