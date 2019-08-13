@@ -97,6 +97,22 @@ double Normals<MuPrior, SigmaPrior>::perturb(RNG& rng)
 }
 
 
+// Getter
+template<class MuPrior, class SigmaPrior>
+const std::vector<double>& Normals<MuPrior, SigmaPrior>::get_ys() const
+{
+    return ys;
+}
+
+
+// Printer
+template<class MuPrior, class SigmaPrior>
+void Normals<MuPrior, SigmaPrior>::print(std::ostream& out) const
+{
+    for(double y: ys)
+        out << y << ' ';
+}
+
 
 } // namespace
 

@@ -1,6 +1,7 @@
 #ifndef DNest4_Normals
 #define DNest4_Normals
 
+#include <ostream>
 #include "../RNG.h"
 #include <vector>
 
@@ -47,6 +48,9 @@ class Normals
 
         // Getter
         const std::vector<double>& get_ys() const;
+
+        // Printer
+        void print(std::ostream& out) const;
 };
 
 } // namespace
