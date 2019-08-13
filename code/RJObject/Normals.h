@@ -46,6 +46,9 @@ class Normals
         void from_prior(RNG& rng);
         double perturb(RNG& rng);
 
+        // Size
+        size_t size() const;
+
         // Getter
         const std::vector<double>& get_ys() const;
 

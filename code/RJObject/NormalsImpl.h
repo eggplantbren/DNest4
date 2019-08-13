@@ -109,8 +109,15 @@ const std::vector<double>& Normals<MuPrior, SigmaPrior>::get_ys() const
 template<class MuPrior, class SigmaPrior>
 void Normals<MuPrior, SigmaPrior>::print(std::ostream& out) const
 {
+    out << mu << ' ' << sigma << ' ';
     for(double y: ys)
         out << y << ' ';
+}
+
+template<class MuPrior, class SigmaPrior>
+size_t Normals<MuPrior, SigmaPrior>::size() const
+{
+    return ys.size();
 }
 
 
