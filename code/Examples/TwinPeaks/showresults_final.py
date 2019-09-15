@@ -3,11 +3,14 @@ import numpy as np
 import dnest4.classic as dn4
 
 # Load output files
-log_prior_weights_first = np.loadtxt("log_prior_weights_first.txt")
-log_prior_weights_second = np.loadtxt("log_prior_weights_second.txt")
-log_prior_weights_final = np.loadtxt("log_prior_weights_final.txt")
-sample = dn4.my_loadtxt("sample.txt")
-fs, gs = sample[:,-2], sample[:,-1]
+log_prior_weights = [np.loadtxt("log_prior_weights_first.txt"),
+                     np.loadtxt("log_prior_weights_second.txt"),
+                     np.loadtxt("log_prior_weights_final.txt")]
+
+samples = [dn4.my_loadtxt("sample_first.txt"),
+           dn4.my_loadtxt("sample_second.txt"),
+           dn4.my_loadtxt("sample_third.txt")]
+
 
 def canonical(temperatures):
     """
@@ -18,13 +21,14 @@ def canonical(temperatures):
     # log-prior-weights and return the highest
 
     logZ = []
-    lpws = [log_prior_weights_first,
-                log_prior_weights_second,
-                log_prior_weights_final]
-    for lpw in lpws:
+    for k in range(3):
+        lpw, sample = log_prior_weights[k], samples[k]
+        fs, gs = sample[:,-2], sample[:,-1]
+
         F = fs/temperatures[0] + gs/temperatures[1]
         logZ.append(dn4.logsumexp(lpw + F))
         plt.plot(lpw)
+        plt.plot(lpw + F)
         plt.show()
 
     print(logZ)
