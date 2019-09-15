@@ -80,13 +80,13 @@ void MyModel::load_data()
 
     double a, b, c, d;
 
-    fin.open("first.txt", std::ios::in);
+    fin.open("sample_info_first.txt", std::ios::in);
     fin.ignore(1000000, '\n'); // Skip header line
     while(fin >> a && fin >> b && fin >> c && fin >> d)
         fs.push_back(b);
     fin.close();
 
-    fin.open("second.txt", std::ios::in);
+    fin.open("sample_info_second.txt", std::ios::in);
     fin.ignore(1000000, '\n'); // Skip header line
     while(fin >> a && fin >> b && fin >> c && fin >> d)
         gs.push_back(b);
