@@ -417,6 +417,25 @@ void Sampler<ModelType>::do_bookkeeping()
 	Level::recalculate_log_X(levels, compression,
                         options.new_level_interval*sqrt(options.lambda));
 
+
+    if(!enough_levels(levels))
+    {
+        // Compute difficulty as a weighted average of compression deviations
+        // from the target value
+        double gap_norm_tot = 0.0;
+        double weight_tot = 0.0;
+        for(size_t i=1; i<levels.size(); ++i)
+        {
+            // Departure of log(X) differences from target value.
+            double gap = (levels[i-1].get_log_X() - levels[i].get_log_X())
+                            - log(compression);
+            double weight = exp(log_push(i));
+            gap_norm_tot += weight*std::abs(gap)/log(compression);
+            weight_tot += weight;
+        }
+        std::cout << gap_norm_tot / weight_tot << std::endl;
+    }
+
 	// Save levels if one was created
 	if(created_level)
 		save_levels();
