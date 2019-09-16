@@ -2,17 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import dnest4.classic as dn4
 
-# Load output files
-log_prior_weights = [np.loadtxt("log_prior_weights_first.txt"),
+
+def canonical(temperatures,
+                    log_prior_weights = [np.loadtxt("log_prior_weights_first.txt"),
                      np.loadtxt("log_prior_weights_second.txt"),
-                     np.loadtxt("log_prior_weights_final.txt")]
-
-samples = [dn4.my_loadtxt("sample_first.txt"),
-           dn4.my_loadtxt("sample_second.txt"),
-           dn4.my_loadtxt("sample_third.txt")]
-
-
-def canonical(temperatures):
+                     np.loadtxt("log_prior_weights_final.txt")],
+                    samples = [dn4.my_loadtxt("sample_first.txt"),
+                               dn4.my_loadtxt("sample_second.txt"),
+                               dn4.my_loadtxt("sample_final.txt")]):
     """
     Compute properties of a canonical distribution
     """
@@ -31,9 +28,8 @@ def canonical(temperatures):
         plt.plot(lpw + F)
         plt.show()
 
-    print(logZ)
     highest = int(np.nonzero(logZ == np.max(logZ))[0][0])
-    log_prior_weights = lpws[highest]
+    log_prior_weights = log_prior_weights[highest]
     logZ = logZ[highest]
 
     logP = log_prior_weights + F - logZ
@@ -66,9 +62,6 @@ canonical(temperatures)
 truth(temperatures)
 
 
-# Plot scalars
-plt.plot(fs, gs, ".", markersize=3, alpha=0.3)
-plt.show()
 
 ## True logZ
 
