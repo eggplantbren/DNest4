@@ -67,17 +67,32 @@ def grid(log_prior_weights, samples):
     [T1, T2] = np.meshgrid(T1, T2[::-1])
 
     logZ = np.empty(T1.shape)
+    H = np.empty(T1.shape)
     true_logZ = np.empty(T1.shape)
+    true_H = np.empty(T1.shape)
     for i in range(T1.shape[0]):
         for j in range(T1.shape[1]):
             Ts = [T1[i, j], T2[i, j]]
+
             result = canonical(Ts, log_prior_weights, samples, verbose=False)
             logZ[i, j] = result["logZ"]
-            true_logZ[i, j] = truth(Ts, verbose=False)["logZ"]
+            H[i, j] = result["H"]
+
+            result = truth(Ts, verbose=False)
+            true_logZ[i, j] = result["logZ"]
+            true_H[i, j] = result["H"]
+
         print(".", end="", flush=True)
 
     print("")
-    plt.imshow(logZ - true_logZ, cmap="coolwarm")
+
+    plt.figure(1)
+    plt.imshow(logZ, cmap="coolwarm")
+    plt.title("Standardised residual of logZ")
+
+    plt.figure(2)
+    plt.imshow((logZ - true_logZ)/np.sqrt(H), cmap="coolwarm")
+    plt.title("Standardised residual of logZ")
     plt.show()
 
     return logZ
