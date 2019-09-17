@@ -441,6 +441,8 @@ void Sampler<ModelType>::do_bookkeeping()
             work_ratio = 1.0 + pow((difficulty - 0.01)/0.01, 2);
         else
             work_ratio = 1.0;
+        if(work_ratio >= 20.0)
+            work_ratio = 20.0;
     }
 
 	// Save levels if one was created
