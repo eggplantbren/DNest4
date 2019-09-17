@@ -30,6 +30,8 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,count_saves(0)
 ,count_mcmc_steps_since_save(0)
 ,count_mcmc_steps(0)
+,difficulty(1.0)
+,work_ratio(1.0)
 ,above(num_threads)
 {
 	assert(num_threads >= 1);
@@ -429,11 +431,16 @@ void Sampler<ModelType>::do_bookkeeping()
             // Departure of log(X) differences from target value.
             double gap = (levels[i-1].get_log_X() - levels[i].get_log_X())
                             - log(compression);
-            double weight = exp(log_push(i));
+            double weight = exp((int)i - (int)levels.size());
             gap_norm_tot += weight*std::abs(gap)/log(compression);
             weight_tot += weight;
         }
-        std::cout << gap_norm_tot / weight_tot << std::endl;
+        difficulty = gap_norm_tot / weight_tot;
+
+        if(difficulty >= 0.01)
+            work_ratio = 1.0 + pow((difficulty - 0.01)/0.01, 2);
+        else
+            work_ratio = 1.0;
     }
 
 	// Save levels if one was created
@@ -447,6 +454,14 @@ void Sampler<ModelType>::do_bookkeeping()
 		// If a level was not created, save anyway because of the time
 		if(!created_level)
 			save_levels();
+
+
+        // Print work ratio
+        if(!enough_levels(levels))
+        {
+            std::cout << "# Difficulty = " << difficulty << ".\n";
+            std::cout << "# Work ratio = " << work_ratio << ".\n" << std::endl;
+        }
 	}
 
     // Check for a new record holder
@@ -467,7 +482,7 @@ double Sampler<ModelType>::log_push(unsigned int which_level) const
 		return 0.0;
 
 	int i = which_level - (static_cast<int>(levels.size()) - 1);
-	return static_cast<double>(i)/options.lambda;
+	return static_cast<double>(i)/(work_ratio*options.lambda);
 }
 
 template<class ModelType>

@@ -61,6 +61,9 @@ class Sampler
         unsigned int count_mcmc_steps_since_save;
 		unsigned long long int count_mcmc_steps;
 
+        // For adaptation
+        double difficulty, work_ratio;
+
 		// Storage for likelihoods above threshold
 		std::vector< std::vector<LikelihoodType> > above;
 
