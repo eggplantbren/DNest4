@@ -431,18 +431,19 @@ void Sampler<ModelType>::do_bookkeeping()
             // Departure of log(X) differences from target value.
             double gap = (levels[i-1].get_log_X() - levels[i].get_log_X())
                             - log(compression);
-            double weight = exp((int)i - (int)levels.size());
+            double weight = exp(((int)i - (int)levels.size())/3.0);
             gap_norm_tot += weight*std::abs(gap)/log(compression);
             weight_tot += weight;
         }
         difficulty = gap_norm_tot / weight_tot;
 
-        if(difficulty >= 0.01)
-            work_ratio = 1.0 + pow((difficulty - 0.01)/0.01, 2);
+        double work_ratio_max = 20.0/sqrt(options.lambda);
+        if(difficulty >= 0.1)
+            work_ratio = work_ratio_max;
+        else if(difficulty >= 0.03)
+            work_ratio = sqrt(work_ratio_max);
         else
             work_ratio = 1.0;
-        if(work_ratio >= 20.0)
-            work_ratio = 20.0;
     }
 
 	// Save levels if one was created
