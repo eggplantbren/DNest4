@@ -438,10 +438,11 @@ void Sampler<ModelType>::do_bookkeeping()
         difficulty = gap_norm_tot / weight_tot;
 
         double work_ratio_max = 20.0/sqrt(options.lambda);
+        double coeff = (work_ratio_max - 1.0)/(0.1 - 0.02); 
         if(difficulty >= 0.1)
             work_ratio = work_ratio_max;
-        else if(difficulty >= 0.03)
-            work_ratio = sqrt(work_ratio_max);
+        else if(difficulty >= 0.02)
+            work_ratio = 1.0 + coeff*(difficulty - 0.02);
         else
             work_ratio = 1.0;
     }
