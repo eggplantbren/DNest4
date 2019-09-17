@@ -86,13 +86,21 @@ def grid(log_prior_weights, samples):
 
     print("")
 
-    plt.figure(1)
+    plt.subplot(2, 2, 1)
     plt.imshow(logZ, cmap="coolwarm")
-    plt.title("Standardised residual of logZ")
+    plt.title("logZ")
 
-    plt.figure(2)
+    plt.subplot(2, 2, 2)
+    plt.imshow(H, cmap="coolwarm")
+    plt.title("H")
+
+    plt.subplot(2, 2, 3)
     plt.imshow((logZ - true_logZ)/np.sqrt(H), cmap="coolwarm")
-    plt.title("Standardised residual of logZ")
+    plt.title("Std. residual of logZ")
+
+    plt.subplot(2, 2, 4)
+    plt.imshow((H - true_H)/np.sqrt(H), cmap="coolwarm")
+    plt.title("Std. residual of H")
     plt.show()
 
     return logZ
