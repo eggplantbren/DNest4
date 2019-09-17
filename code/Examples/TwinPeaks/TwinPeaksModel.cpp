@@ -39,6 +39,6 @@ double TwinPeaksModel::g() const
 {
     double result = 0.0;
     for(double x: xs)
-        result += cos(2.0*M_PI*(x - 0.5)*10.0);
+        result += -0.5*pow((x - 0.45)/0.01, 2);
     return result;
 }

@@ -42,12 +42,12 @@ def truth(temperatures, verbose=True):
     """
     Compute properties of a canonical distribution
     """
-    x = np.linspace(0.0, 1.0, 10001)
+    x = np.linspace(0.0, 1.0, 100001)
     y = np.exp(-0.5*(x - 0.5)**2 / 0.01**2 / temperatures[0] + \
-                np.cos(2.0*np.pi*(x - 0.5)*10.0) / temperatures[1])
+                -0.5*(x - 0.45)**2 / 0.01**2 / temperatures[1])
     p = y / np.trapz(y, x=x)
-    logZ = 100*np.log(np.trapz(y, x=x))
-    H = 100*np.trapz(p*np.log(p + 1E-300), x=x)
+    logZ = 20*np.log(np.trapz(y, x=x))
+    H = 20*np.trapz(p*np.log(p + 1E-300), x=x)
 
     if verbose:
         print("True logZ =", logZ)
@@ -62,8 +62,8 @@ def grid(log_prior_weights, samples):
     """
     Analyse a temperature grid
     """
-    T1 = np.exp(np.linspace(np.log(0.1), np.log(100.0), 31))
-    T2 = np.exp(np.linspace(np.log(0.1), np.log(100.0), 31))
+    T1 = np.exp(np.linspace(np.log(1.0), np.log(1000.0), 101))
+    T2 = np.exp(np.linspace(np.log(1.0), np.log(1000.0), 101))
     [T1, T2] = np.meshgrid(T1, T2[::-1])
 
     logZ = np.empty(T1.shape)
@@ -87,20 +87,20 @@ def grid(log_prior_weights, samples):
     print("")
 
     plt.subplot(2, 2, 1)
-    plt.imshow(logZ, cmap="coolwarm")
+    plt.imshow(logZ)
     plt.title("logZ")
 
     plt.subplot(2, 2, 2)
-    plt.imshow(H, cmap="coolwarm")
+    plt.imshow(H)
     plt.title("H")
 
     plt.subplot(2, 2, 3)
-    plt.imshow((logZ - true_logZ)/np.sqrt(H), cmap="coolwarm")
-    plt.title("Std. residual of logZ")
+    plt.imshow(logZ - true_logZ, cmap="coolwarm")
+    plt.title("Residual of logZ")
 
     plt.subplot(2, 2, 4)
-    plt.imshow((H - true_H)/np.sqrt(H), cmap="coolwarm")
-    plt.title("Std. residual of H")
+    plt.imshow(true_H, cmap="coolwarm")
+    plt.title("True H")
     plt.show()
 
     return logZ
@@ -116,17 +116,9 @@ if __name__ == "__main__":
                dn4.my_loadtxt("sample_second.txt"),
                dn4.my_loadtxt("sample_final.txt")]
 
-    temperatures = [30.0, 1.0]
+    temperatures = [1.0, 1.0]
     canonical(temperatures, log_prior_weights, samples)
     truth(temperatures)
     grid(log_prior_weights, samples)
-
-
-## True logZ
-
-#plt.plot(x, y)
-#plt.title("Canonical distribution")
-#plt.show()
-
 
 
