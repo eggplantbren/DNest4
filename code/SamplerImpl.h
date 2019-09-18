@@ -12,7 +12,8 @@ namespace DNest4
 
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
-							const Options& options, bool save_to_disk)
+							const Options& options, bool save_to_disk,
+                            bool _adaptive)
 :save_to_disk(save_to_disk)
 ,thin_print(1)
 ,threads(num_threads, nullptr)
@@ -20,6 +21,7 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,num_threads(num_threads)
 ,compression(compression)
 ,options(options)
+,adaptive(_adaptive)
 ,particles(options.num_particles*num_threads)
 ,log_likelihoods(options.num_particles*num_threads)
 ,level_assignments(options.num_particles*num_threads, 0)
@@ -420,7 +422,7 @@ void Sampler<ModelType>::do_bookkeeping()
                         options.new_level_interval*sqrt(options.lambda));
 
 
-    if(!enough_levels(levels))
+    if(!enough_levels(levels) && adaptive)
     {
         // Compute difficulty as a weighted average of compression deviations
         // from the target value
@@ -461,7 +463,7 @@ void Sampler<ModelType>::do_bookkeeping()
 
 
         // Print work ratio
-        if(!enough_levels(levels))
+        if(!enough_levels(levels) && adaptive)
         {
             std::cout << "# Difficulty = " << difficulty << ".\n";
             std::cout << "# Work ratio = " << work_ratio << ".\n" << std::endl;

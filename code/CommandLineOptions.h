@@ -43,6 +43,9 @@ class CommandLineOptions
                 const std::string& get_config_file() const
                 { return config_file; }
 
+        bool get_adaptive() const
+        { return adaptive; }
+
 		// Convert seed string to an unsigned integer and return it
 		unsigned int get_seed_uint() const;
 

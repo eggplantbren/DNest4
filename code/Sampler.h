@@ -34,6 +34,7 @@ class Sampler
 
 		// Options (most useful comment ever)
 		Options options;
+        bool adaptive;
 
 		// Particles, tiebreaker values, and level assignments
 		std::vector<ModelType> particles;
@@ -108,7 +109,7 @@ class Sampler
 		// Constructor: Pass in Options object and save_to_disk
 		Sampler(unsigned int num_threads,
 						double compression, const Options& options,
-						bool save_to_disk);
+						bool save_to_disk, bool _adaptive);
 
 		// Set rng seeds, then draw all particles from the prior
 		void initialise(unsigned int first_seed);
