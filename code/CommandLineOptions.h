@@ -19,7 +19,8 @@ class CommandLineOptions
 		std::string data_file;
 		std::string compression;
 		int num_threads;
-                std::string config_file;
+        std::string config_file;
+        bool adaptive;        
 
 	public:
 		CommandLineOptions(int argc, char** argv);
