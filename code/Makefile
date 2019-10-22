@@ -23,6 +23,7 @@ examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/RJObject_GalaxyField
 	make nolib -C Examples/ABC
 	make nolib -C Examples/Rosenbrock
+	make nolib -C Examples/Rosenbrock2
 	make nolib -C Examples/LennardJones
 	make nolib -C Examples/Optimizer
 
