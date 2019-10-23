@@ -14,7 +14,7 @@ jobs:
 
 install:
     - travis_retry pip install --upgrade pip
-    - travis_retry pip install --upgrade setuptools
+    - travis_retry pip install --upgrade setuptools numpy cython
     - travis_retry pip install .
 
 script:
