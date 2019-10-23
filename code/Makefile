@@ -1,4 +1,6 @@
-CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
+CXX = g++
+export CXX
+CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
 
 SRCS = $(wildcard *.cpp) \
        $(wildcard Distributions/*.cpp) \
