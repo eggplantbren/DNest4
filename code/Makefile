@@ -1,6 +1,4 @@
-CXX = g++
-export CXX
-CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
+CXXFLAGS = -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
 
 SRCS = $(wildcard *.cpp) \
        $(wildcard Distributions/*.cpp) \
@@ -14,6 +12,9 @@ noexamples: $(OBJS) libdnest4.a
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
 	@ar rcs $@ $^
+
+libdnest4: $(OBJS)
+	$(CXX) ${LDFLAGS} -o $@ $^
 
 examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/SpikeSlab

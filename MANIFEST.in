@@ -1,0 +1,5 @@
+include LICENSE *.rst python/*.rst *.toml
+
+include code/*.cpp
+include code/Distributions/*.cpp
+include code/RJObject/ConditionalPriors/*.cpp
