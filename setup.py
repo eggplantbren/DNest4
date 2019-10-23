@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import os
+import sys
 from setuptools import setup, Extension
 
 
 if __name__ == "__main__":
-    import sys
+    # The root of the DNest4 repo.
+    basedir = os.path.dirname(os.path.abspath(__file__))
 
     # Publish the library to PyPI.
     if "publish" in sys.argv:
@@ -22,9 +24,6 @@ if __name__ == "__main__":
 
         import numpy
         from Cython.Build import cythonize
-
-        # The root of the DNest4 repo.
-        basedir = os.path.dirname(os.path.abspath(__file__))
 
         # Set up the C++-extension.
         libraries = []
