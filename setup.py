@@ -27,8 +27,20 @@ if __name__ == "__main__":
 
         # Set up the C++-extension.
         libraries = []
+        extra_compile_args = [
+            "-std=c++11",
+            "-Wno-unused-function",
+            "-Wno-uninitialized",
+            "-DNO_THREADS",
+        ]
+        extra_link_args = ["-std=c++11"]
         if os.name == "posix":
             libraries.append("m")
+        if sys.platform == "darwin":
+            libraries.append("c++")
+            extra_compile_args += ["-mmacosx-version-min=10.9"]
+            extra_link_args += ["-mmacosx-version-min=10.9"]
+
         include_dirs = [
             "dnest4",
             os.path.join(basedir, "code"),
@@ -62,13 +74,8 @@ if __name__ == "__main__":
                 language="c++",
                 libraries=libraries,
                 include_dirs=include_dirs,
-                extra_compile_args=[
-                    "-std=c++11",
-                    "-Wno-unused-function",
-                    "-Wno-uninitialized",
-                    "-DNO_THREADS",
-                ],
-                extra_link_args=["-std=c++11"],
+                extra_compile_args=extra_compile_args,
+                extra_link_args=extra_link_args,
             ),
             Extension(
                 "dnest4.utils",
@@ -78,13 +85,8 @@ if __name__ == "__main__":
                 language="c++",
                 libraries=libraries,
                 include_dirs=include_dirs,
-                extra_compile_args=[
-                    "-std=c++11",
-                    "-Wno-unused-function",
-                    "-Wno-uninitialized",
-                    "-DNO_THREADS",
-                ],
-                extra_link_args=["-std=c++11"],
+                extra_compile_args=extra_compile_args,
+                extra_link_args=extra_link_args,
             ),
         ]
         extensions = cythonize(ext)
