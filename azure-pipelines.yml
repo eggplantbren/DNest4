@@ -11,10 +11,6 @@ jobs:
     - task: PublishBuildArtifacts@1
       inputs: {pathtoPublish: 'wheelhouse'}
 - job: macos
-  variables:
-    - MACOSX_DEPLOYMENT_TARGET: 10.9
-    - CFLAGS: '-mmacosx-version-min=10.9 -lc++ -std=c++11'
-    - CXXFLAGS: '-mmacosx-version-min=10.9 -lc++ -std=c++11'
   pool: {vmImage: 'macOS-10.13'}
   steps:
     - task: UsePythonVersion@0
@@ -25,6 +21,8 @@ jobs:
         echo $CC
         echo $CXX
         $CXX --version
-        cibuildwheel --output-dir wheelhouse .
+        export CFLAGS=-mmacosx-version-min=10.9 -lc++ -std=c++11
+        export CXXFLAGS=-mmacosx-version-min=10.9 -lc++ -std=c++11
+        MACOSX_DEPLOYMENT_TARGET=10.9 cibuildwheel --output-dir wheelhouse .
     - task: PublishBuildArtifacts@1
       inputs: {pathtoPublish: 'wheelhouse'}
