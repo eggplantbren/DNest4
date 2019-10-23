@@ -72,7 +72,7 @@ but you can install the development version using:
 python setup.py install
 ```
 
-in the root of this repository.
+in the root directory of this repository.
 
 Alternative build process with SCons
 ====================================
