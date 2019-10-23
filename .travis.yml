@@ -1,0 +1,21 @@
+sudo: false
+dist: xenial
+language: python
+matrix:
+    fast_finish: true
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+jobs:
+  include:
+    - python: '3.5'
+    - python: '3.6'
+    - python: '3.7'
+
+install:
+    - travis_retry pip install --upgrade pip
+    - travis_retry pip install --upgrade setuptools numpy cython
+    - travis_retry pip install .
+
+script:
+    - python -c 'import dnest4;print(dnest4.__version__)'

@@ -1,0 +1,25 @@
+jobs:
+- job: macos
+  pool: {vmImage: 'macOS-10.13'}
+  steps:
+    - task: UsePythonVersion@0
+    - bash: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools numpy cython
+        pip install cibuildwheel==0.12.0
+        export CFLAGS="-mmacosx-version-min=10.9 -lc++ -std=c++11"
+        export CXXFLAGS="-mmacosx-version-min=10.9 -lc++ -std=c++11"
+        MACOSX_DEPLOYMENT_TARGET=10.9 cibuildwheel --output-dir wheelhouse .
+    - task: PublishBuildArtifacts@1
+      inputs: {pathtoPublish: 'wheelhouse'}
+- job: linux
+  pool: {vmImage: 'Ubuntu-16.04'}
+  steps:
+    - task: UsePythonVersion@0
+    - bash: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools numpy cython
+        pip install cibuildwheel==0.12.0
+        cibuildwheel --output-dir wheelhouse .
+    - task: PublishBuildArtifacts@1
+      inputs: {pathtoPublish: 'wheelhouse'}
