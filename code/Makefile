@@ -13,9 +13,6 @@ libdnest4.a: $(OBJS)
 	@echo Creating $@ library
 	@ar rcs $@ $^
 
-libdnest4: $(OBJS)
-	$(CXX) ${LDFLAGS} -o $@ $^
-
 examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/SpikeSlab
 	make nolib -C Examples/StraightLine
