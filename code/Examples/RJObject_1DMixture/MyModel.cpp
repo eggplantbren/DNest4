@@ -53,7 +53,7 @@ double MyModel::log_likelihood() const
     for(const auto& c: components)
     {
         mu.push_back(c[0]);
-        sigma.push_back(exp(c[1]));
+        sigma.push_back(exp(c[1]) + 1.0);
         log_weight.push_back(c[2]);
         C.push_back(0.5*log(2*M_PI*pow(sigma.back(), 2)));
     }
