@@ -1,16 +1,15 @@
 CXXFLAGS = -std=c++17 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
 CXXFLAGS += -Wno-inconsistent-missing-override
 
-ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
-    detected_OS := Windows
-else
-    detected_OS := $(shell uname)  # same as "uname -s"
-endif
+# ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+#     detected_OS := Windows
+# else
+#     detected_OS := $(shell uname)  # same as "uname -s"
+# endif
 
-ifeq ($(detected_OS),Darwin) # Mac OS X
-    ARC := libtool -static -o
-else
-    ARC := ar rcs
+LIBTOOL = ar rcs
+ifeq ($(shell uname), Darwin)
+	LIBTOOL = libtool -static -o
 endif
 
 SRCS = $(wildcard *.cpp) \
@@ -24,9 +23,8 @@ noexamples: $(OBJS) libdnest4.a
 
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
-	@echo $(detected_OS)
-	@echo $(ARC)
-	@$(ARC) $@ $^
+	@echo $(LIBTOOL)
+	@$(LIBTOOL) $@ $^
 
 examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/SpikeSlab
