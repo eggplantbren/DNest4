@@ -8,10 +8,9 @@ else
 endif
 
 ifeq ($(detected_OS),Darwin) # Mac OS X
-    ARC = libtool -static -o
-endif
-ifeq ($(detected_OS),Linux)
-    ARC = ar rcs
+    ARC := libtool -static -o
+else
+    ARC := ar rcs
 endif
 
 SRCS = $(wildcard *.cpp) \
@@ -25,6 +24,7 @@ noexamples: $(OBJS) libdnest4.a
 
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
+	@echo $(detected_OS)
 	@echo $(ARC)
 	@$(ARC) $@ $^
 
