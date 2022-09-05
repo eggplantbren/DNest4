@@ -1,4 +1,5 @@
 # distutils: language = c++
+# cython: language_level=3, cdivision=True
 from __future__ import division
 
 cimport cython
@@ -32,7 +33,8 @@ cdef extern from "DNest4.h" namespace "DNest4":
     cdef cppclass Sampler[T]:
         Sampler()
         Sampler(unsigned int num_threads, double compression,
-                const Options options, unsigned save_to_disk)
+                const Options options, unsigned save_to_disk,
+                unsigned _adaptive)
 
         # Setup, running, etc.
         void initialise(unsigned int first_seed) except +
@@ -92,6 +94,7 @@ def sample(
     # "command line" arguments
     seed=None,
     double compression=np.exp(1.0),
+    unsigned int adaptive=0,
 ):
     """
     Sample using a DNest4 model.
@@ -156,7 +159,7 @@ def sample(
 
     # Declarations.
     cdef int i, j, n, error
-    cdef Sampler[PyModel] sampler = Sampler[PyModel](1, compression, options, 0)
+    cdef Sampler[PyModel] sampler = Sampler[PyModel](1, compression, options, 0, adaptive)
     cdef PyModel* particle
     cdef vector[Level] levels
     cdef Level level

@@ -16,6 +16,7 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 ,compression("2.7182818284590451")
 ,num_threads(1)
 ,config_file("")
+,adaptive(false)
 {
 	// The following code is based on the example given at
 	// http://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
@@ -24,12 +25,15 @@ CommandLineOptions::CommandLineOptions(int argc, char** argv)
 	std::stringstream s;
 
 	opterr = 0;
-	while((c = getopt(argc, argv, "ho:s:d:c:t:f:")) != -1)
+	while((c = getopt(argc, argv, "hao:s:d:c:t:f:")) != -1)
 	switch(c)
 	{
 		case 'h':
 			print_help();
 			break;
+        case 'a':
+            adaptive = true;
+            break;
 		case 'o':
 			options_file = std::string(optarg);
 			break;
@@ -93,6 +97,7 @@ void CommandLineOptions::print_help() const
 {
 	std::cout<<"DNest4 Command Line Options: "<<std::endl;
 	std::cout<<"-h: display this message"<<std::endl;
+    std::cout << "-a: Use adaptation." << std::endl;
 	std::cout<<"-o <filename>: load DNest4 options from the specified file. Default=OPTIONS"<<std::endl;
 	std::cout<<"-s <seed>: seed the random number generator with the specified value. If unspecified, the system time is used."<<std::endl;
 	std::cout<<"-d <filename>: Load data from the specified file, if required."<<std::endl;

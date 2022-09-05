@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+# cython: language_level=3, cdivision=True
+
 __all__ = ["rand", "randn", "randt2", "randh", "wrap"]
 
 cimport cython

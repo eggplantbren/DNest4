@@ -16,6 +16,7 @@
 #include "Start.h"
 #include "Utils.h"
 #include "RJObject/RJObject.h"
+#include "RJObject/Normals.h"
 #include "RJObject/ConditionalPriors/BasicCircular.h"
 #include "RJObject/ConditionalPriors/ClassicMassInf1D.h"
 #include "RJObject/ConditionalPriors/ConditionalPrior.h"

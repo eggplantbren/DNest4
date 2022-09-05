@@ -26,3 +26,6 @@ code/Templates/Builder/MyModel.h
 code/Templates/Builder/MyModel.cpp
 ms.out
 dnest4.lib
+build
+dist
+.DS_Store

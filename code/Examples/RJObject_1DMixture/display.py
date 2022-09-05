@@ -12,7 +12,7 @@ x = linspace(0., 50.0, 10001)
 def mixture(x, params):
     N = int(params[7])
     centers = params[8:108][0:N]
-    widths = exp(params[108:208][0:N])
+    widths = exp(params[108:208][0:N]) + 1.0
     weights = exp(params[208:308][0:N])
     weights /= weights.sum()
 
@@ -20,8 +20,8 @@ def mixture(x, params):
     for i in range(0, N):
         # Don't plot flukey narrow things (which ought to eventually average
         # out, but won't in a finite sample)
-        if widths[i] >= 0.02:
-            y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
+#        if widths[i] >= 0.02:
+        y += weights[i]/widths[i]/sqrt(2.*pi)*exp(-0.5*(x - centers[i])**2/widths[i]**2)
 
     return y
 

@@ -1,17 +1,21 @@
-language: generic
-compiler:
-  - gcc
-os:
-  - linux
-script: 
-  - cd code
-  - make
-  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-  - chmod +x miniconda.sh
-  - ./miniconda.sh -b
-  - /home/travis/miniconda3/bin/conda update --yes conda
-  - sudo rm -rf /dev/shm
-  - sudo ln -s /run/shm /dev/shm
-  - /home/travis/miniconda3/bin/conda install --yes python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib cython
-  - cd ../python
-  - /home/travis/miniconda3/bin/python setup.py install
+sudo: false
+dist: xenial
+language: python
+matrix:
+    fast_finish: true
+cache:
+  directories:
+  - "$HOME/.cache/pip"
+jobs:
+  include:
+    - python: '3.5'
+    - python: '3.6'
+    - python: '3.7'
+
+install:
+    - travis_retry pip install --upgrade pip
+    - travis_retry pip install --upgrade setuptools numpy cython
+    - travis_retry pip install .
+
+script:
+    - python -c 'import dnest4;print(dnest4.__version__)'
