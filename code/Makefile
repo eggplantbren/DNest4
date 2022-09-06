@@ -23,7 +23,6 @@ noexamples: $(OBJS) libdnest4.a
 
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
-	@echo $(LIBTOOL)
 	@$(LIBTOOL) $@ $^
 
 examples: $(OBJS) libdnest4.a
