@@ -38,8 +38,10 @@ cpdef double randh():
 
 cpdef double wrap(double x, double a, double b):
     assert b > a
-    result = (x - a)%(b - a) + a
-    if result < 0.0:
-        result += 1.0
+    result = my_mod(x - a, b - a) + a
     return result
+
+cpdef my_mod(double y, double x):
+    assert(x > 0.0);
+    return (y/x - math.floor(y/x))*x;
 
