@@ -22,6 +22,12 @@ class Kumaraswamy:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double p) const;
         double log_pdf(double x) const;
+        // ostream representation of Kumaraswamy class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "Kumaraswamy(" << a << "; " << b << ")";
+            return out;
+        }
 };
 
 } // namespace DNest4

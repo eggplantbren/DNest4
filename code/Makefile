@@ -1,6 +1,16 @@
-CXX = g++
-export CXX
-CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
+CXXFLAGS = -std=c++17 -O3 -march=native -Wall -Wextra -pedantic -DNDEBUG
+CXXFLAGS += -Wno-inconsistent-missing-override
+
+# ifeq ($(OS),Windows_NT)     # is Windows_NT on XP, 2000, 7, Vista, 10...
+#     detected_OS := Windows
+# else
+#     detected_OS := $(shell uname)  # same as "uname -s"
+# endif
+
+LIBTOOL = ar rcs
+ifeq ($(shell uname), Darwin)
+	LIBTOOL = libtool -static -o
+endif
 
 SRCS = $(wildcard *.cpp) \
        $(wildcard Distributions/*.cpp) \
@@ -13,7 +23,7 @@ noexamples: $(OBJS) libdnest4.a
 
 libdnest4.a: $(OBJS)
 	@echo Creating $@ library
-	@ar rcs $@ $^
+	@$(LIBTOOL) $@ $^
 
 examples: $(OBJS) libdnest4.a
 	make nolib -C Examples/SpikeSlab

@@ -23,6 +23,12 @@ class LogUniform:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
+        // ostream representation of LogUniform class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "LogUniform(" << lower << "; " << upper << ")";
+            return out;
+        }
 };
 
 
@@ -40,6 +46,12 @@ class ModifiedLogUniform:public ContinuousDistribution
         double cdf(double x) const;
         double cdf_inverse(double x) const;
         double log_pdf(double x) const;
+        // ostream representation of ModifiedLogUniform class
+        virtual std::ostream& print(std::ostream& out) const override
+        {
+            out << "ModifiedLogUniform(" << knee << "; " << upper << ")";
+            return out;
+        }
 };
 
 
