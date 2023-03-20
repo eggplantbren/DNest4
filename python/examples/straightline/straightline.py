@@ -7,12 +7,10 @@ Demonstration of DNest4 in Python using the "StraightLine" example
 import dnest4
 import numpy as np
 import numpy.random as rng
-from numba import jitclass, int32
 
 # Load the data
 data = np.loadtxt("../../../code/Examples/StraightLine/road.txt")
 
-@jitclass([('dummy', int32)])
 class Model(object):
     """
     Specify the model in Python.
