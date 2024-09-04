@@ -52,7 +52,7 @@ double MyModel::log_likelihood() const
     pybind11::array_t<double> numpy_array(params.size(),
                                           params.data());
 
-    pybind11::object both = my_module.attr("both");
+    static pybind11::object both = my_module.attr("both");
     double result = both(numpy_array).cast<double>();
 
     return result;
@@ -69,7 +69,7 @@ void MyModel::print(std::ostream& out) const
 
     pybind11::array_t<double> numpy_array(params.size(),
                                           params.data());
-    pybind11::object prior_transform = my_module.attr("prior_transform");
+    static pybind11::object prior_transform = my_module.attr("prior_transform");
     pybind11::array_t<double> xs =
                 prior_transform(numpy_array).cast<pybind11::array_t<double>>();
 
