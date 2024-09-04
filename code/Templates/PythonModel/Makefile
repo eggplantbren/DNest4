@@ -3,11 +3,12 @@
 
 CC = g++
 
+PYTHON_PATH=/usr/include/python3.10
 CXXFLAGS = -std=c++11 -O3 -DNO_THREADS
 LIBS = -ldnest4 -lpthread -lpython3.10
 
 default:
-	$(CC) -I$(DNEST4_PATH) -I/usr/include/python3.10/ $(CXXFLAGS) -c *.cpp
-	$(CC) -pthread -L$(DNEST4_PATH)/DNest4/code -L$(RLIB_PATH) -L$(RINSIDE_LIB_PATH) -o main *.o $(LIBS)
+	$(CC) -I$(DNEST4_PATH) -I$(PYTHON_PATH) $(CXXFLAGS) -c *.cpp
+	$(CC) -pthread -L$(DNEST4_PATH)/DNest4/code -o main *.o $(LIBS)
 	rm *.o
 
