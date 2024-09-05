@@ -12,7 +12,7 @@ You can use it in a few different ways:
 * Implement your model as a Python class.
 * Write up your model in Python, using a BUGS-style approach
 [see here to learn how](https://plausibilitytheory.wordpress.com/2016/08/11/a-jags-like-interface-to-dnest4/)
-(more documentation coming later for this).
+(more documentation [here](https://odysee.com/@BrendonBrewer:3/dfs:5)).
 
 Papers
 ======
