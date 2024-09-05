@@ -1,23 +1,19 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
 #include <iomanip>
-#include <RInside.h>
+#include <pybind11/numpy.h>
 
-RInside MyModel::R;
+pybind11::scoped_interpreter MyModel::guard;
+pybind11::module_ MyModel::my_module = pybind11::module_::import("mymodel");
+
+int MyModel::size = 1;
+
+
 
 MyModel::MyModel()
+:params(size)
 {
-    static int count = 0;
-    if(count == 0)
-    {
-        std::cout << "# WARNING: Do not use more than one thread." << std::endl;
-        R.parseEvalQ("source(\"MyModel.R\")");
-    }
-    ++count;
 
-    // Make params the correct size
-    Rcpp::NumericVector num_params = R.parseEval("num_params");
-    params = std::vector<double>(num_params[0]);
 }
 
 void MyModel::from_prior(DNest4::RNG& rng)
@@ -43,7 +39,7 @@ double MyModel::perturb(DNest4::RNG& rng)
         for(int i=0; i<reps; ++i)
         {
             int k = rng.rand_int(params.size());
-            params[k] += rng.randh();
+            params[k] += rng.randh2();
             DNest4::wrap(params[k], 0.0, 1.0);
         }
     }
@@ -53,27 +49,32 @@ double MyModel::perturb(DNest4::RNG& rng)
 
 double MyModel::log_likelihood() const
 {
-    Rcpp::NumericVector us(params.size());
-    for(size_t i=0; i<params.size(); ++i)
-        us[i] = params[i];
-    R["us"] = us;
+    pybind11::array_t<double> numpy_array(params.size(),
+                                          params.data());
 
-    Rcpp::NumericVector logL = R.parseEval("log_likelihood(us)");
-    return logL[0];
+    static pybind11::object both = my_module.attr("both");
+    double result = both(numpy_array).cast<double>();
+
+    return result;
+}
+
+void MyModel::set_size(int _size)
+{
+    size = _size;
 }
 
 void MyModel::print(std::ostream& out) const
 {
     out << std::setprecision(12);
 
-    Rcpp::NumericVector us(params.size());
-    for(size_t i=0; i<params.size(); ++i)
-        us[i] = params[i];
-    R["us"] = us;
-    Rcpp::NumericVector params2 = R.parseEval("from_uniform(us)");
+    pybind11::array_t<double> numpy_array(params.size(),
+                                          params.data());
+    static pybind11::object prior_transform = my_module.attr("prior_transform");
+    pybind11::array_t<double> xs =
+                prior_transform(numpy_array).cast<pybind11::array_t<double>>();
 
-    for(int i=0; i<params2.size(); ++i)
-        out << params2[i] << ' ';
+    for(int i=0; i<size; ++i)
+        out << xs.data()[i] << ' ';
 }
 
 std::string MyModel::description() const

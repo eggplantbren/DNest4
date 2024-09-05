@@ -3,15 +3,15 @@
 
 #include "DNest4/code/DNest4.h"
 #include <ostream>
-#include <Rcpp.h>
-#include <RInside.h>
+#include <pybind11/embed.h>
 
 class MyModel
 {
     private:
 
-        // Embedded R instance
-        static RInside R;
+        static int size;
+        static pybind11::scoped_interpreter guard;
+        static pybind11::module_ my_module;
 
         // Parameter vector with Uniform(0, 1) priors
         std::vector<double> params;
@@ -34,6 +34,8 @@ class MyModel
 
         // Return string with column information
         std::string description() const;
+
+        static void set_size(int _size);
 };
 
 #endif
