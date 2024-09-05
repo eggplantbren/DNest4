@@ -34,7 +34,7 @@ double MyModel::perturb(DNest4::RNG& rng)
     if(type == 0)
     {
         int k = rng.rand_int(params.size());
-        params[k] += rng.randh2();
+        params[k] += rng.randh();
         DNest4::wrap(params[k], 0.0, 1.0);
     }
     else
