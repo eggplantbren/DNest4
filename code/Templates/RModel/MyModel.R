@@ -9,26 +9,28 @@ num_params = 3L
 
 
 # Transform from uniform prior
-from_uniform = function(params)
+from_uniform = function(us)
 {
-    params2 = params
-    params2[1] = 1E3*qnorm(params[1])
-    params2[2] = 1E3*qnorm(params[2])
-    params2[3] = exp(-10.0 + 20.0*params[3])
-    return(params2)
+    params = us
+    params[1] = 1E3*qnorm(us[1])
+    params[2] = 1E3*qnorm(us[2])
+    params[3] = exp(-10.0 + 20.0*us[3])
+    return(params)
 }
 
 
-# Log likelihood function. Argument is a parameter vector where
-# the priors are iid Uniform(0, 1). It is your responsibility to
-# apply a transformation to produce the prior you want.
+# Log likelihood function
 log_likelihood = function(params)
 {
-    params2 = from_uniform(params)
-    m = params2[1]
-    b = params2[2]
-    sigma = params2[3]
+    m = params[1]
+    b = params[2]
+    sigma = params[3]
     logl = sum(dnorm(ys, mean=m*xs + b, sd=sigma, log=TRUE))
     return(logl)
 }
 
+
+both = function(us)
+{
+    return (log_likelihood(from_uniform(us)))
+}

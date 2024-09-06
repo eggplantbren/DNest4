@@ -1,23 +1,35 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
 #include <iomanip>
-#include <RInside.h>
+#include <Rinternals.h>
+#include <Rembedded.h>
+#include <cstring>
 
-RInside MyModel::R;
+/* we have to disable stack check since R API will be called from
+   different threads with different stacks */
+extern "C" uintptr_t R_CStackLimit;
 
 MyModel::MyModel()
 {
     static int count = 0;
-    if(count == 0)
-    {
-        std::cout << "# WARNING: Do not use more than one thread." << std::endl;
-        R.parseEvalQ("source(\"MyModel.R\")");
-    }
-    ++count;
+    if (count == 0) {
+        const char *argv[4] = { "R", "--no-save", "--no-restore", 0 };
+        Rmux.lock();
+        Rf_initEmbeddedR(3, (char**) argv);
+        R_CStackLimit = -1;
+         std::cout << "# WARNING: Do not use more than one thread." << std::endl;
+        /* call source("MyModel.R") in R */
+        Rf_eval(PROTECT(Rf_lang2(Rf_install("source"),        PROTECT(Rf_mkString("MyModel.R")))), R_GlobalEnv);
+        UNPROTECT(2);
+        Rmux.unlock();
+        ++count;
+     }
 
-    // Make params the correct size
-    Rcpp::NumericVector num_params = R.parseEval("num_params");
-    params = std::vector<double>(num_params[0]);
+     /* Make params the correct size by evaluating the num_params symbol in R */
+   Rmux.lock();
+    int np = Rf_asInteger(Rf_eval(Rf_install("num_params"), R_GlobalEnv));
+    params = std::vector<double>(np);
+    Rmux.unlock();
 }
 
 void MyModel::from_prior(DNest4::RNG& rng)
@@ -53,27 +65,36 @@ double MyModel::perturb(DNest4::RNG& rng)
 
 double MyModel::log_likelihood() const
 {
-    Rcpp::NumericVector us(params.size());
-    for(size_t i=0; i<params.size(); ++i)
-        us[i] = params[i];
-    R["us"] = us;
-
-    Rcpp::NumericVector logL = R.parseEval("log_likelihood(us)");
-    return logL[0];
+    Rmux.lock();
+    /* create double() params vector */
+    SEXP us = PROTECT(Rf_allocVector(REALSXP, params.size()));
+    memcpy(REAL(us), &params[0], params.size() * sizeof(double));
+    /* call log_likelihood() on that vector */
+    SEXP res = Rf_eval(PROTECT(Rf_lang2(Rf_install("both"), us)), R_GlobalEnv);
+    /* expect single double output */
+    double r = Rf_asReal(res);
+    UNPROTECT(2);
+    Rmux.unlock();
+    return r;
 }
 
 void MyModel::print(std::ostream& out) const
 {
     out << std::setprecision(12);
 
-    Rcpp::NumericVector us(params.size());
-    for(size_t i=0; i<params.size(); ++i)
-        us[i] = params[i];
-    R["us"] = us;
-    Rcpp::NumericVector params2 = R.parseEval("from_uniform(us)");
-
-    for(int i=0; i<params2.size(); ++i)
-        out << params2[i] << ' ';
+    Rmux.lock();
+    /* create double() params vector */
+    SEXP us = PROTECT(Rf_allocVector(REALSXP, params.size()));
+    memcpy(REAL(us), &params[0], params.size() * sizeof(double));
+    /* call from_uniform() on that vector */
+    SEXP res = Rf_eval(PROTECT(Rf_lang2(Rf_install("from_uniform"), us)), R_GlobalEnv);
+    /* result is a doubles vector */
+    int n = LENGTH(res);
+    double *params2 = REAL(res);
+    for(int i=0; i<n; ++i)
+         out << params2[i] << ' ';
+    UNPROTECT(2);
+    Rmux.unlock();
 }
 
 std::string MyModel::description() const
