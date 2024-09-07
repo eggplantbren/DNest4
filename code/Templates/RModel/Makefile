@@ -9,7 +9,7 @@ R_PATH = /usr/share/R/include/
 # Path to libR.so
 RLIB_PATH = /usr/lib/R/lib/
 
-CXXFLAGS = -std=c++11 -O3 -march=native -DNDEBUG
+CXXFLAGS = -std=c++11 -O3 -march=native -DNDEBUG -DNO_THREADS
 LIBS = -ldnest4 -lpthread -lR
 
 default:
