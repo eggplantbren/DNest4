@@ -18,6 +18,13 @@ Sampler<ModelType> setup(int argc, char** argv)
 template<class ModelType>
 Sampler<ModelType> setup(const CommandLineOptions& options)
 {
+	int num_threads = options.get_num_threads();
+
+	#ifdef NO_THREADS
+	std::cout << "# Compiled with no threads." << std::endl;
+	num_threads = 1;
+	#endif
+
 	std::cout<<"# Using "<<options.get_num_threads()<<" thread"<<
 		((options.get_num_threads() == 1)?("."):("s."))<<std::endl;
 
@@ -28,7 +35,7 @@ Sampler<ModelType> setup(const CommandLineOptions& options)
 	Options sampler_options(options.get_options_file().c_str());
 
 	// Create sampler
-	Sampler<ModelType> sampler(options.get_num_threads(),
+	Sampler<ModelType> sampler(num_threads,
 								options.get_compression_double(),
 								sampler_options,
 								true, options.get_adaptive());
