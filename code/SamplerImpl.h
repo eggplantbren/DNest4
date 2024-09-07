@@ -345,36 +345,33 @@ void Sampler<ModelType>::increase_max_num_saves(unsigned int increment)
 }
 
 template<class ModelType>
-bool Sampler<ModelType>::enough_levels(const std::vector<Level>& l) const
+bool Sampler<ModelType>::enough_levels(const std::vector<Level>& ls) const
 {
     if(options.max_num_levels == 0)
     {
         // Check level spacing (in terms of log likelihood)
         // over last n levels
-        int num_levels_to_check = static_cast<int>(30*sqrt(0.02*l.size()));
-        if(num_levels_to_check < 30)
+        unsigned int num_levels_to_check = 20;
+        if(ls.size() < num_levels_to_check)
             return false;
 
-        int k = l.size() - 1;
-        double tot = 0.0;
-        double max = -1E300;
-        for(int i=0; i<num_levels_to_check; ++i)
+        int end   = int(ls.size());
+        int start = end - 20;
+        if(start < 1)
+            start = 1;
+        double numerator   = 0.0;
+        double denominator = 0.0;
+        for(int i=start; i<end; ++i)
         {
-            double diff = l[k].get_log_likelihood().get_value()
-                             - l[k-1].get_log_likelihood().get_value();
-            tot += diff;
-            if(diff > max)
-                max = diff;
-            --k;
+            numerator   += (i-start+1)*(ls[i].get_log_likelihood().get_value()
+                                 - ls[i-1].get_log_likelihood().get_value());
+            denominator += (i-start+1);
         }
-        if(tot / num_levels_to_check < 0.75 && max < 1.0)
-            return true;
-        else
-            return false;
+        return numerator/denominator <= 0.5;
     }
 
     // Just compare with the value from OPTIONS
-    return (l.size() >= options.max_num_levels);   
+    return (ls.size() >= options.max_num_levels);   
 }
 
 template<class ModelType>
