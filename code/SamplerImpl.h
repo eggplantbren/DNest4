@@ -349,25 +349,20 @@ bool Sampler<ModelType>::enough_levels(const std::vector<Level>& ls) const
 {
     if(options.max_num_levels == 0)
     {
-        // Check level spacing (in terms of log likelihood)
-        // over last n levels
-        unsigned int num_levels_to_check = 20;
-        if(ls.size() < num_levels_to_check)
-            return false;
-
-        int end   = int(ls.size());
-        int start = end - 20;
-        if(start < 1)
-            start = 1;
-        double numerator   = 0.0;
-        double denominator = 0.0;
-        for(int i=start; i<end; ++i)
+        std::vector<double> logx_plus_logl(ls.size());
+        for(size_t i=0; i<ls.size(); ++i)
         {
-            numerator   += (i-start+1)*(ls[i].get_log_likelihood().get_value()
-                                 - ls[i-1].get_log_likelihood().get_value());
-            denominator += (i-start+1);
+            logx_plus_logl[i] = -double(i)*log(compression)
+                                    + ls[i].get_log_likelihood().get_value();
+/*            std::cout << (-double(i)*log(compression)) << ' ' << compression << std::endl;*/
         }
-        return numerator/denominator <= 0.5;
+
+        double max = *std::max_element(logx_plus_logl.begin(),
+                                       logx_plus_logl.end());
+        if(ls.size() > 20 && logx_plus_logl.back() < max + log(1E-6))
+            return true;
+
+        return false;
     }
 
     // Just compare with the value from OPTIONS
