@@ -1,21 +1,28 @@
 #include "MyModel.h"
 #include "DNest4/code/DNest4.h"
 #include <cmath>
-#include <julia/julia.h>
+#include <julia.h>
 
 using namespace std;
 using namespace DNest4;
 
+int MyModel::size = 1;
+
 MyModel::MyModel()
-:x(20)
+:us(size)
 {
 
 }
 
+void MyModel::set_size(int _size)
+{
+    size = _size;
+}
+
 void MyModel::from_prior(RNG& rng)
 {
-	for(size_t i=0; i<x.size(); i++)
-		x[i] = rng.rand();
+	for(size_t i=0; i<us.size(); i++)
+		us[i] = rng.rand();
 }
 
 double MyModel::perturb(RNG& rng)
@@ -24,13 +31,13 @@ double MyModel::perturb(RNG& rng)
 	if(rng.rand() <= 0.5)
 		reps = 1;
 	else
-		reps = static_cast<int>(pow(10.0, 2*rng.rand()));
+		reps = static_cast<int>(pow(us.size(), 2*rng.rand()));
 
 	for(int i=0; i<reps; i++)
 	{
-		which = rng.rand_int(x.size());
-		x[which] += rng.randh();
-		wrap(x[which], 0., 1.);
+		which = rng.rand_int(us.size());
+		us[which] += rng.randh();
+		wrap(us[which], 0.0, 1.0);
 	}
 
 	return 0.;
@@ -38,20 +45,53 @@ double MyModel::perturb(RNG& rng)
 
 double MyModel::log_likelihood() const
 {
-	jl_value_t* array_type = jl_apply_array_type(jl_float64_type, 1);
+    // Convert std::vector<double> to a Julia array (Vector{Float64})
+    jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);  // Create a Julia array type for Float64
+    jl_array_t* julia_array = jl_alloc_array_1d(array_type, us.size());  // Allocate a Julia array
 
-	double* temp = const_cast<double*>(&x[0]);
-	jl_array_t* params = jl_ptr_to_array_1d(array_type, temp, x.size(), 0);
-	jl_function_t* func = jl_get_function(jl_current_module, "log_likelihood");
-	jl_value_t* logL = jl_call1(func, reinterpret_cast<jl_value_t*>(params));
+    // Copy data from std::vector<double> to the Julia array
+    double* julia_array_data = (double*)jl_array_data(julia_array);
+    std::copy(us.begin(), us.end(), julia_array_data);
 
-	return jl_unbox_float64(logL);
+    // Get the function `sum_vector` from the Julia global scope
+    jl_function_t *both_func = jl_get_function(jl_main_module, "both");
+
+    // Call the Julia function with the Julia array as an argument
+    jl_value_t* args = (jl_value_t*)julia_array;
+    jl_value_t* result = jl_call1(both_func, args);
+
+    double result_double = jl_unbox_float64(result);
+
+    return result_double;
 }
 
 void MyModel::print(std::ostream& out) const
 {
-	for(size_t i=0; i<x.size(); i++)
-		out<<x[i]<<' ';
+    // Convert std::vector<double> to a Julia array (Vector{Float64})
+    jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);  // Create a Julia array type for Float64
+    jl_array_t* julia_array = jl_alloc_array_1d(array_type, us.size());  // Allocate a Julia array
+
+    // Copy data from std::vector<double> to the Julia array
+    double* julia_array_data = (double*)jl_array_data(julia_array);
+    std::copy(us.begin(), us.end(), julia_array_data);
+
+   // Get the function `prior_transform` from the Julia global scope
+    jl_function_t *prior_transform_func = jl_get_function(jl_main_module, "prior_transform");
+
+    // Call the Julia function with the Julia array as an argument
+    jl_value_t* args2 = (jl_value_t*)julia_array;
+    jl_value_t* result2 = jl_call1(prior_transform_func, args2);
+
+    jl_array_t* result_array = (jl_array_t*)result2;
+    double* result_data = (double*)jl_array_data(result_array);
+    size_t len = jl_array_len(result_array);
+
+    // Create a C++ vector and copy the data from Julia array
+    std::vector<double> cpp_result(result_data, result_data + len);
+
+    // Print the result vector
+    for (double val : cpp_result)
+        out << val << ' ';
 }
 
 string MyModel::description() const

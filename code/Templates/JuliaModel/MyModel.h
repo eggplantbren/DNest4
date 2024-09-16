@@ -8,7 +8,8 @@
 class MyModel
 {
 	private:
-		std::vector<double> x;
+		std::vector<double> us;
+        static int size;
 
 	public:
 		MyModel();
@@ -27,6 +28,8 @@ class MyModel
 
 		// Return string with column information
 		std::string description() const;
+
+        static void set_size(int _size);
 };
 
 #endif

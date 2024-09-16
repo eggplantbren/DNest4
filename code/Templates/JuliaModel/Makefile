@@ -2,7 +2,9 @@
 # called DNEST4_PATH for this to work.
 
 CC = g++
-CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -DNDEBUG
+JULIA_LIB_PATH=/home/brewer/.julia/juliaup/julia-1.10.5+0.x64.linux.gnu/lib
+JULIA_INCLUDE_PATH=/home/brewer/.julia/juliaup/julia-1.10.5+0.x64.linux.gnu/include/julia
+CXXFLAGS = -std=c++11 -O3 -march=native -Wall -Wextra -DNDEBUG -DNO_THREADS
 LIBS = -ldnest4 -lpthread -ljulia
 
 default:
