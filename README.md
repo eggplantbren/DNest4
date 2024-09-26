@@ -10,6 +10,7 @@ You can use it in a few different ways:
 * Implement your model in C++, compile it and have it run super fast.
 * Implement trans-dimensional models with the *RJObject* template class.
 * Implement your model as a Python class.
+* Implement your model by writing just two functions in Python, R, or Julia (this is new and undocumented - email me)
 * Write up your model in Python, using a BUGS-style approach
 [see here to learn how](https://plausibilitytheory.wordpress.com/2016/08/11/a-jags-like-interface-to-dnest4/)
 (more documentation [here](https://odysee.com/@BrendonBrewer:3/dfs:5)).
