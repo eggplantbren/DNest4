@@ -90,6 +90,7 @@ void MyModel::print(std::ostream& out) const
     std::vector<double> cpp_result(result_data, result_data + len);
 
     // Print the result vector
+    out << std::setprecision(12);
     for (double val : cpp_result)
         out << val << ' ';
 }
