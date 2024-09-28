@@ -86,8 +86,8 @@ void MyModel::print(std::ostream& out) const
     /* create double() params vector */
     SEXP us = PROTECT(Rf_allocVector(REALSXP, params.size()));
     memcpy(REAL(us), &params[0], params.size() * sizeof(double));
-    /* call from_uniform() on that vector */
-    SEXP res = Rf_eval(PROTECT(Rf_lang2(Rf_install("from_uniform"), us)), R_GlobalEnv);
+    /* call prior_transform() on that vector */
+    SEXP res = Rf_eval(PROTECT(Rf_lang2(Rf_install("prior_transform"), us)), R_GlobalEnv);
     /* result is a doubles vector */
     int n = LENGTH(res);
     double *params2 = REAL(res);

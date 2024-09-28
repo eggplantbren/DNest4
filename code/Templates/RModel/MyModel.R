@@ -9,7 +9,7 @@ num_params = 3L
 
 
 # Transform from uniform prior
-from_uniform = function(us)
+prior_transform = function(us)
 {
     params = us
     params[1] = 1E3*qnorm(us[1])
@@ -32,5 +32,5 @@ log_likelihood = function(params)
 
 both = function(us)
 {
-    return (log_likelihood(from_uniform(us)))
+    return (log_likelihood(prior_transform(us)))
 }
