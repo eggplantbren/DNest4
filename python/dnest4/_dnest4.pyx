@@ -69,6 +69,7 @@ cdef extern from "PyModel.h":
         object get_py_self ()
         int get_exception ()
         object get_npy_coords ()
+        object get_npy_coords2 ()
 
 
 class DNest4Error(Exception):
@@ -206,7 +207,7 @@ def sample(
                 raise DNest4Error(error)
 
             # Results.
-            samples.append(particle.get_npy_coords())
+            samples.append(particle.get_npy_coords2())
             sample_info.append((
                 level_assignments[j],
                 log_likelihoods[j].get_value(),

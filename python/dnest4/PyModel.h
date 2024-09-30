@@ -29,7 +29,7 @@ public:
         }
 
         // Parse that return value as a numpy array.
-        PyObject* rarray = PyArray_FROM_OTF(result, NPY_DOUBLE, NPY_IN_ARRAY);
+        PyArrayObject* rarray = (PyArrayObject*)PyArray_FROM_OTF(result, NPY_DOUBLE, NPY_IN_ARRAY);
         if (result == NULL || (int)PyArray_NDIM(rarray) != 1) {
             Py_DECREF(result);
             Py_XDECREF(rarray);
@@ -49,10 +49,10 @@ public:
     };
 
     double perturb (DNest4::RNG& rng) {
-        PyObject* c = get_npy_coords();
+        PyObject* c = (PyObject*)get_npy_coords();
 
         // Call the Python method and get the Python return value.
-        PyObject* result = PyObject_CallMethod(py_self_, "perturb", "O", c);
+        PyObject* result = (PyObject*)PyObject_CallMethod(py_self_, "perturb", "O", c);
         if (result == NULL || PyErr_Occurred() != NULL) {
             Py_DECREF(c);
             Py_XDECREF(result);
@@ -68,7 +68,7 @@ public:
             return 0.0;
         }
 
-        double* data = (double*)PyArray_DATA(c);
+        double* data = (double*)PyArray_DATA((PyArrayObject*)c);
         for (int i = 0; i < size_; ++i) coords_[i] = data[i];
         Py_DECREF(c);
 
@@ -79,7 +79,7 @@ public:
     double log_likelihood () {
         if (size_ == 0) return 0.0;
 
-        PyObject* c = get_npy_coords();
+        PyObject* c = (PyObject*)get_npy_coords();
 
         // Call the Python method and get the Python return value.
         PyObject* result = PyObject_CallMethod(py_self_, "log_likelihood", "O", c);
@@ -101,13 +101,18 @@ public:
         return log_like;
     };
 
-    PyObject* get_npy_coords () {
+    PyArrayObject* get_npy_coords () {
         npy_intp shape[] = {size_};
-        PyObject* c = PyArray_SimpleNew(1, shape, NPY_DOUBLE);
+        PyArrayObject* c = (PyArrayObject*)PyArray_SimpleNew(1, shape, NPY_DOUBLE);
         if (c == NULL) set_exception(-100);
         double* data = (double*)PyArray_DATA(c);
         for (int i = 0; i < size_; ++i) data[i] = coords_[i];
         return c;
+    };
+
+    PyObject* get_npy_coords2() {
+        PyObject* ptr = reinterpret_cast<PyObject*>(get_npy_coords());
+        return ptr;
     };
 
     // Print to stream

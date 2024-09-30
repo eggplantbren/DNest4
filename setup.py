@@ -32,6 +32,7 @@ if __name__ == "__main__":
             "-Wno-unused-function",
             "-Wno-uninitialized",
             "-DNO_THREADS",
+            "-DNPY_NO_DEPRECATED_API"
         ]
         extra_link_args = ["-std=c++11"]
         if os.name == "posix":
