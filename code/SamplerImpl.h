@@ -12,8 +12,7 @@ namespace DNest4
 
 template<class ModelType>
 Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
-							const Options& options, bool save_to_disk,
-                            bool _adaptive)
+							const Options& options, bool save_to_disk)
 :save_to_disk(save_to_disk)
 ,thin_print(1)
 ,threads(num_threads, nullptr)
@@ -21,7 +20,6 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,num_threads(num_threads)
 ,compression(compression)
 ,options(options)
-,adaptive(_adaptive)
 ,particles(options.num_particles*num_threads)
 ,log_likelihoods(options.num_particles*num_threads)
 ,level_assignments(options.num_particles*num_threads, 0)
@@ -32,8 +30,6 @@ Sampler<ModelType>::Sampler(unsigned int num_threads, double compression,
 ,count_saves(0)
 ,count_mcmc_steps_since_save(0)
 ,count_mcmc_steps(0)
-,difficulty(1.0)
-,work_ratio(1.0)
 ,above(num_threads)
 {
 	assert(num_threads >= 1);
@@ -414,33 +410,6 @@ void Sampler<ModelType>::do_bookkeeping()
                         options.new_level_interval*sqrt(options.lambda));
 
 
-    if(!enough_levels(levels) && adaptive)
-    {
-        // Compute difficulty as a weighted average of compression deviations
-        // from the target value
-        double gap_norm_tot = 0.0;
-        double weight_tot = 0.0;
-        for(size_t i=1; i<levels.size(); ++i)
-        {
-            // Departure of log(X) differences from target value.
-            double gap = (levels[i-1].get_log_X() - levels[i].get_log_X())
-                            - log(compression);
-            double weight = exp(((int)i - (int)levels.size())/3.0);
-            gap_norm_tot += weight*std::abs(gap)/log(compression);
-            weight_tot += weight;
-        }
-        difficulty = gap_norm_tot / weight_tot;
-
-        double work_ratio_max = 20.0/sqrt(options.lambda);
-        double coeff = (work_ratio_max - 1.0)/(0.1 - 0.02); 
-        if(difficulty >= 0.1)
-            work_ratio = work_ratio_max;
-        else if(difficulty >= 0.02)
-            work_ratio = 1.0 + coeff*(difficulty - 0.02);
-        else
-            work_ratio = 1.0;
-    }
-
 	// Save levels if one was created
 	if(created_level)
 		save_levels();
@@ -453,13 +422,6 @@ void Sampler<ModelType>::do_bookkeeping()
 		if(!created_level)
 			save_levels();
 
-
-        // Print work ratio
-        if(!enough_levels(levels) && adaptive)
-        {
-            std::cout << "# Difficulty = " << difficulty << ".\n";
-            std::cout << "# Work ratio = " << work_ratio << ".\n" << std::endl;
-        }
 	}
 
     // Check for a new record holder
@@ -480,7 +442,7 @@ double Sampler<ModelType>::log_push(unsigned int which_level) const
 		return 0.0;
 
 	int i = which_level - (static_cast<int>(levels.size()) - 1);
-	return static_cast<double>(i)/(work_ratio*options.lambda);
+	return static_cast<double>(i)/options.lambda;
 }
 
 template<class ModelType>

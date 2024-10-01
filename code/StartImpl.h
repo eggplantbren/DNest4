@@ -38,7 +38,7 @@ Sampler<ModelType> setup(const CommandLineOptions& options)
 	Sampler<ModelType> sampler(num_threads,
 								options.get_compression_double(),
 								sampler_options,
-								true, options.get_adaptive());
+								true);
 
 	// Seed RNGs
 	sampler.initialise(options.get_seed_uint());
