@@ -38,8 +38,7 @@ Dependencies
 
 You will need a C++ compiler that
 supports the C++11 standard, along with Python 3 and the
-Python packages NumPy, scipy, matplotlib, Cython, and Numba.
-[Anaconda](https://www.anaconda.com) is a suitable Python distribution to use.
+Python packages NumPy, scipy, matplotlib, and Cython.
 
 Compiling
 =========
