@@ -1,5 +1,7 @@
 import numpy as np
-import dnest4.builder as bd
+import sys
+sys.path.append("../..")
+import builder as bd
 
 data = {"x": np.array([1.0, 2.0, 3.0, 4.0, 5.0]),\
         "y": np.array([1.0, 2.0, 3.0, 3.9, 5.1]),\

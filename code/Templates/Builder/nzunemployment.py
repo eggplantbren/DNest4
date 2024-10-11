@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Import DNest4's builder
-import dnest4.builder as bd
+import sys
+sys.path.append("../..")
+import builder as bd
+
 
 # Load the data and make a dictionary out of it
 nzunemployment = pd.read_csv("nzunemployment.csv")

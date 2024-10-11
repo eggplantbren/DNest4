@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import dnest4.builder as bd
+import sys
+sys.path.append("../..")
+import builder as bd
 
 # The data, as a dictionary
 data = {}

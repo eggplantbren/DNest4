@@ -1,6 +1,10 @@
 import dnest4.builder as bd
 import numpy as np
 import os
+import sys
+sys.path.append("../..")
+import builder as bd
+
 
 # Data in a dictionary
 data = {"N": 30, "T": 5,
