@@ -57,15 +57,7 @@ make
 ```
 
 Along with building the library this will compile all the examples.
-Then, install the Python package.
-
-The easiest way to do this is with:
-
-```bash
-pip install -U dnest4
-```
-
-but you can install the development version using:
+Then, install the Python package:
 
 ```bash
 python setup.py install
