@@ -50,7 +50,7 @@ double MyModel::log_likelihood() const
     jl_array_t* julia_array = jl_alloc_array_1d(array_type, us.size());  // Allocate a Julia array
 
     // Copy data from std::vector<double> to the Julia array
-    double* julia_array_data = (double*)jl_array_data(julia_array);
+    double* julia_array_data = jl_array_data(julia_array, double);
     std::copy(us.begin(), us.end(), julia_array_data);
 
     // Get the function `sum_vector` from the Julia global scope
@@ -72,7 +72,7 @@ void MyModel::print(std::ostream& out) const
     jl_array_t* julia_array = jl_alloc_array_1d(array_type, us.size());  // Allocate a Julia array
 
     // Copy data from std::vector<double> to the Julia array
-    double* julia_array_data = (double*)jl_array_data(julia_array);
+    double* julia_array_data = jl_array_data(julia_array, double);
     std::copy(us.begin(), us.end(), julia_array_data);
 
    // Get the function `prior_transform` from the Julia global scope
@@ -83,7 +83,7 @@ void MyModel::print(std::ostream& out) const
     jl_value_t* result2 = jl_call1(prior_transform_func, args2);
 
     jl_array_t* result_array = (jl_array_t*)result2;
-    double* result_data = (double*)jl_array_data(result_array);
+    double* result_data = jl_array_data(result_array, double);
     size_t len = jl_array_len(result_array);
 
     // Create a C++ vector and copy the data from Julia array
