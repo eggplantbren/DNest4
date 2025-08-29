@@ -1,0 +1,142 @@
+\documentclass{beamer}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          alternativetitlepage=true,% Use the fancy title page.
+       %   titlepagelogo=logo-polito,% Logo for the first page.
+       %   watermark=watermark-polito,% Watermark used in every page.
+       %   watermarkheight=100px,% Height of the watermark.
+       %   watermarkheightmult=4,% The watermark image is 4 times bigger
+                                % than watermarkheight.
+          ]{Torino}
+
+\usecolortheme{dolphin} 
+\usefonttheme{professionalfonts}
+
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1ex,dp=1ex]{footline}
+    \vspace{5pt} \hspace{1em} \insertframenumber/\inserttotalframenumber
+  \end{beamercolorbox}
+}
+
+\author{Brendon J. Brewer}
+\title{Diffusive Nested Sampling: Not Dead Yet}
+\institute{Department of Statistics, The University of Auckland}
+\date{}
+
+
+\linespread{1.3}
+\usepackage{minted}
+\usepackage[utf8]{inputenc}
+\usepackage{dsfont}
+
+\newcommand{\given}{\,|\,}
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Bayesian Inference}
+Bayesian inference uses probability theory (usually probability distributions)
+to describe uncertainty, not variability. Bayes' theorem is used frequently:
+\pause
+\begin{align}
+p(\theta \given D, M) &= \frac{p(\theta \given M)p(D \given \theta, M)}{P(D \given M)}
+\end{align}
+\pause
+where
+\begin{align}
+p(D \given M) &= \int p(\theta \given M)p(D \given \theta, M) \, d\theta
+\end{align}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Bayesian Inference}
+The equations in words:
+
+\begin{align}
+\textnormal{posterior distribution} &= 
+    \frac{\textnormal{prior distribution} \times \textnormal{likelihood function}}{\textnormal{marginal likelihood value}}
+\end{align}
+\pause
+where
+\begin{align}
+\textnormal{marginal likelihood value} &= \textnormal{integral of prior times likelihood}.
+\end{align}
+
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bayesian Inference}
+The choice of the {\bf prior distribution} and the {\bf likelihood} form the
+inputs to the calculation. The former involves judgement calls, and the latter
+involves judgement calls and the data.\\[0.5em]\pause
+
+The {\bf posterior distribution} and
+{\bf marginal likelihood value} are the outputs. But how can we calculate them
+in general?
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Posterior Only}
+Many Bayesians use Markov Chain Monte Carlo (MCMC) to generate {\bf samples}
+from the posterior $p(\theta \given D, M)$, describing uncertainty about the
+parameters that remains after incorporating the data.\\[0.5em]\pause
+
+It is less common to compute the marginal likelihood, which is used for
+model comparison purposes. E.g. for two competing models $M_1$ and $M_2$
+the marginal likelihood acts as a likelihood:
+
+\begin{align}
+P(M_1 \given D) &= \frac{P(M_1)P(D \given M_1)}
+                        {P(M_1)P(D \given M_1) + P(M_2)P(D \given M_2)}.
+\end{align}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Notation Switch}
+For computational discussions:
+
+\begin{align}
+\pi(\theta) &= \textnormal{prior} \\
+L(\theta) &= \textnormal{likelihood} \\
+Z &= \textnormal{marginal likelihood}.
+\end{align}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Thermodynamic Integration}
+An older technique to calculate $P(M\given D)$ is based on the following
+result:
+\begin{align}
+\log Z &= \int_0^1 \left<\log L(\theta)\right>_\beta \, d\theta
+\end{align}
+\pause
+where the expectation is taken with respect to `power posteriors'
+proportional to $\pi(\theta)L(\theta)^\beta$. An `annealing' process can be done
+where $\beta$ is gradually raised from 0 to 1.
+
+\end{frame}
+
+
+
+
+
+
+\end{document}
+
