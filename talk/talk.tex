@@ -121,15 +121,18 @@ Z &= \textnormal{marginal likelihood}.
 
 \begin{frame}
 \frametitle{Thermodynamic Integration}
-An older technique to calculate $P(M\given D)$ is based on the following
+An older technique to calculate $Z$ is based on the following
 result:
 \begin{align}
 \log Z &= \int_0^1 \left<\log L(\theta)\right>_\beta \, d\theta
 \end{align}
 \pause
 where the expectation is taken with respect to `power posteriors'
-proportional to $\pi(\theta)L(\theta)^\beta$. An `annealing' process can be done
-where $\beta$ is gradually raised from 0 to 1.
+proportional to $\pi(\theta)L(\theta)^\beta$. \\[0.5em]\pause
+
+An `annealing' process can be done
+where $\beta$ is gradually raised from 0 to 1. As a side effect, difficult
+posteriors such as those with multiple peaks become a bit easier.
 
 \end{frame}
 
