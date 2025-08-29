@@ -7,6 +7,7 @@
 
 #include "Version.h"
 #include "Barrier.h"
+#include "Hypercube.hpp"
 #include "CommandLineOptions.h"
 #include "Level.h"
 #include "LikelihoodType.h"

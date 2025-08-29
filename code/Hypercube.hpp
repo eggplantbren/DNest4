@@ -12,7 +12,7 @@ namespace DNest4
 template<int size, class T>
 class Hypercube
 {
-    private:
+    protected:
         std::vector<double> us, xs;
 
     public:
