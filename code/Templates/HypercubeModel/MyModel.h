@@ -19,9 +19,6 @@ class MyModel:public DNest4::Hypercube<5, MyModel>
         // Likelihood function
         double log_likelihood() const;
 
-        // Print to stream
-        void print(std::ostream& out) const;
-
         // Return string with column information
         std::string description() const;
 };

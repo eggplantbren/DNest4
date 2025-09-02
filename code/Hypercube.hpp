@@ -3,6 +3,7 @@
 
 #include "RNG.h"
 #include "Utils.h"
+#include <iostream>
 #include <vector>
 
 namespace DNest4
@@ -19,6 +20,7 @@ class Hypercube
         Hypercube();
         void from_prior(DNest4::RNG& rng);
         double perturb(DNest4::RNG& rng);
+        void print(std::ostream& out) const;
 };
 
 
@@ -63,6 +65,13 @@ double Hypercube<size, T>::perturb(DNest4::RNG& rng)
     return 0.0;
 }
 
+
+template<int size, class T>
+void Hypercube<size, T>::print(std::ostream& out) const
+{
+    for(double x: xs)
+        out << x << ' ';
+}
 
 } // namespace
 

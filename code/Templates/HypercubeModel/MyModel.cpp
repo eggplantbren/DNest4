@@ -21,12 +21,6 @@ double MyModel::log_likelihood() const
     return logL;
 }
 
-void MyModel::print(std::ostream& out) const
-{
-    for(double x: xs)
-        out << x << ' ';
-}
-
 std::string MyModel::description() const
 {
     return std::string("");
