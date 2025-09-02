@@ -21,8 +21,3 @@ double MyModel::log_likelihood() const
     return logL;
 }
 
-std::string MyModel::description() const
-{
-    return std::string("");
-}
-
