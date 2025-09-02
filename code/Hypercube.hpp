@@ -11,13 +11,16 @@ namespace DNest4
 {
 
 // Base class for hypercube-based models.
-template<int size, class T>
+template<class T>
 class Hypercube
 {
     protected:
+        static int size;
         std::vector<double> us, xs;
 
     public:
+        static void set_size(int _size);
+
         Hypercube();
         void from_prior(DNest4::RNG& rng);
         double perturb(DNest4::RNG& rng);
@@ -27,17 +30,25 @@ class Hypercube
 
 
 /* Implementations follow */
+template<class T>
+int Hypercube<T>::size = 1;
 
-template<int size, class T>
-Hypercube<size, T>::Hypercube()
+template<class T>
+void Hypercube<T>::set_size(int _size)
+{
+    size = _size;
+}
+
+template<class T>
+Hypercube<T>::Hypercube()
 :us(size)
 ,xs(size)
 {
 
 }
 
-template<int size, class T>
-void Hypercube<size, T>::from_prior(DNest4::RNG& rng)
+template<class T>
+void Hypercube<T>::from_prior(DNest4::RNG& rng)
 {
     for(double& u: us)
         u = rng.rand();
@@ -46,8 +57,8 @@ void Hypercube<size, T>::from_prior(DNest4::RNG& rng)
 }
 
 
-template<int size, class T>
-double Hypercube<size, T>::perturb(DNest4::RNG& rng)
+template<class T>
+double Hypercube<T>::perturb(DNest4::RNG& rng)
 {
     int reps;
     if(rng.rand() <= 0.5)
@@ -68,15 +79,15 @@ double Hypercube<size, T>::perturb(DNest4::RNG& rng)
 }
 
 
-template<int size, class T>
-void Hypercube<size, T>::print(std::ostream& out) const
+template<class T>
+void Hypercube<T>::print(std::ostream& out) const
 {
     for(double x: xs)
         out << x << ' ';
 }
 
-template<int size, class T>
-std::string Hypercube<size, T>::description() const
+template<class T>
+std::string Hypercube<T>::description() const
 {
     return std::string("");
 }

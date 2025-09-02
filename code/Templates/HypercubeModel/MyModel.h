@@ -4,13 +4,13 @@
 #include "DNest4/code/DNest4.h"
 #include <ostream>
 
-class MyModel:public DNest4::Hypercube<5, MyModel>
+class MyModel:public DNest4::Hypercube<MyModel>
 {
     private:
 
 
     public:
-        // Constructor only gives size of params
+
         MyModel();
 
         // Transform us to xs
