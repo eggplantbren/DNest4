@@ -8,16 +8,20 @@ MyModel::MyModel()
 
 void MyModel::prior_transform()
 {
-    xs = us;
+    x = us[0];
+    y = us[1];
 }
 
 double MyModel::log_likelihood() const
 {
     double logL = 0.0;
 
-    for(double x: xs)
-        logL += -0.5*pow((x - 0.5)/0.01, 2);
+    logL += -0.5*pow(x, 2) - 0.5*pow((y - x*x)/0.01, 2);
 
     return logL;
 }
 
+void MyModel::print(std::ostream& out) const
+{
+    out << x << ' ' << y;
+}

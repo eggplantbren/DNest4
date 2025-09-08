@@ -7,7 +7,7 @@
 class MyModel:public DNest4::Hypercube<MyModel>
 {
     private:
-
+        double x, y;
 
     public:
 
@@ -18,6 +18,9 @@ class MyModel:public DNest4::Hypercube<MyModel>
 
         // Likelihood function
         double log_likelihood() const;
+
+        // Print function
+        void print(std::ostream& out) const;
 };
 
 #endif

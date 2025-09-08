@@ -16,7 +16,7 @@ class Hypercube
 {
     protected:
         static int size;
-        std::vector<double> us, xs;
+        std::vector<double> us;
 
     public:
         static void set_size(int _size);
@@ -42,7 +42,6 @@ void Hypercube<T>::set_size(int _size)
 template<class T>
 Hypercube<T>::Hypercube()
 :us(size)
-,xs(size)
 {
 
 }
@@ -82,8 +81,7 @@ double Hypercube<T>::perturb(DNest4::RNG& rng)
 template<class T>
 void Hypercube<T>::print(std::ostream& out) const
 {
-    for(double x: xs)
-        out << x << ' ';
+    static_cast<T*>(this)->print(out);
 }
 
 template<class T>
