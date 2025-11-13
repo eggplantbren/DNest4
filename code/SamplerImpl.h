@@ -199,7 +199,7 @@ void Sampler<ModelType>::update_particle(unsigned int thread, unsigned int which
 	    // Accept?
 	    if(level.get_log_likelihood() < logl_proposal)
 	    {
-		    particle = proposal;
+		    particle = std::move(proposal);
 		    logl = logl_proposal;
 		    level.increment_accepts(1);
 	    }
