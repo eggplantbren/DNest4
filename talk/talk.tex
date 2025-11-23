@@ -32,6 +32,7 @@
 \usepackage{dsfont}
 
 \newcommand{\given}{\,|\,}
+\newcommand{\bx}{\boldsymbol{x}}
 
 
 \begin{document}
@@ -130,6 +131,20 @@ Z &= \textnormal{marginal likelihood}.
 
 
 \begin{frame}
+\frametitle{Sampling Strategies}
+I divide MCMC (or similar) sampling strategies into two classes.
+The first category focuses on {\bf how to move around}:
+e.g., Metropolis, Gibbs sampling, Slice Sampling, Hamiltonian MCMC,
+Affine Invariant Ensemble Sampler.\\[0.5em]\pause
+
+The second category {\bf modifies the target distribution}.
+Examples: Parallel tempering (and other methods based on `annealing'
+or `power posteriors'), Nested Sampling, Diffusive Nested Sampling.
+
+\end{frame}
+
+
+\begin{frame}
 \frametitle{Thermodynamic Integration}
 An older technique to calculate $Z$ is based on the following
 result:
@@ -177,6 +192,23 @@ shape to the likelihood function.
 
 Let's explore how thermodynamic integration fails on phase change problems.
 
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Mixture of Two Gaussians}
+Taken from John Skilling's 2000s Nested Sampling papers.
+$\pi(\bx)$ is Uniform$(-1, 1)$ in 20 dimensions. $L(\bx)$ is a mixture
+of a broad and a narrow gaussian:
+
+\begin{align}
+L(\bx) &= \prod_{i=1}^{20}
+            \frac{\exp\left(-\frac{1}{2}(x_i/v)^2\right)}{v\sqrt{2\pi}}
+        + 100 \prod_{i=1}^{20}
+            \frac{\exp\left(-\frac{1}{2}(x_i/u)^2\right)}{u\sqrt{2\pi}}.
+\end{align}
+With $u=0.01$ and $v=0.1$ the narrow peak dominates the posterior (but not
+entirely).
 
 \end{frame}
 
