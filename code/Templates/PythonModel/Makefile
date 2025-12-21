@@ -3,9 +3,9 @@
 
 CC = g++
 
-PYTHON_PATH=/usr/include/python3.10
+PYTHON_PATH=/usr/include/python3.12
 CXXFLAGS = -std=c++11 -O3 -DNO_THREADS
-LIBS = -ldnest4 -lpthread -lpython3.10
+LIBS = -ldnest4 -lpthread -lpython3.12
 
 default:
 	$(CC) -I pybind11/include -I$(DNEST4_PATH) -I$(PYTHON_PATH) $(CXXFLAGS) -c *.cpp

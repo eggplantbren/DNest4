@@ -30,6 +30,9 @@ double normal_cdf(double x);
 double normal_inverse_cdf(double p);
 double r8poly_value(int n, double a[], double x);
 
+// Perturber for a vector of parameters with U(0, 1) priors
+double perturb_us(std::vector<double>& us, RNG& rng);
+
 // Perturber for a vector of parameters with N(0, 1) priors
 double perturb_ns(std::vector<double>& ns, RNG& rng);
 

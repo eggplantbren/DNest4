@@ -198,5 +198,26 @@ double perturb_ns(std::vector<double>& ns, RNG& rng)
     return logH;
 }
 
+
+double perturb_us(std::vector<double>& us, RNG& rng)
+{
+    int reps;
+    if(rng.rand() <= 0.5)
+        reps = 1;
+    else
+        reps = (int)pow(us.size(), rng.rand());
+
+    for(int i=0; i<reps; ++i)
+    {
+        int k = rng.rand_int(us.size());
+        us[k] += rng.randh();
+        DNest4::wrap(us[k], 0.0, 1.0);
+    }
+
+    return 0.0;
+}
+
+
+
 } // namespace DNest4
 

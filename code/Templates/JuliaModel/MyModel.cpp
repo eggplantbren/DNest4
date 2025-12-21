@@ -27,20 +27,7 @@ void MyModel::from_prior(RNG& rng)
 
 double MyModel::perturb(RNG& rng)
 {
-	int which, reps;
-	if(rng.rand() <= 0.5)
-		reps = 1;
-	else
-		reps = static_cast<int>(pow(us.size(), 2*rng.rand()));
-
-	for(int i=0; i<reps; i++)
-	{
-		which = rng.rand_int(us.size());
-		us[which] += rng.randh();
-		wrap(us[which], 0.0, 1.0);
-	}
-
-	return 0.;
+    return perturb_us(us, rng);
 }
 
 double MyModel::log_likelihood() const

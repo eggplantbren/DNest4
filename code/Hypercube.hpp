@@ -59,18 +59,7 @@ void Hypercube<T>::from_prior(DNest4::RNG& rng)
 template<class T>
 double Hypercube<T>::perturb(DNest4::RNG& rng)
 {
-    int reps;
-    if(rng.rand() <= 0.5)
-        reps = 1;
-    else
-        reps = (int)pow(size, rng.rand());
-
-    for(int i=0; i<reps; ++i)
-    {
-        int k = rng.rand_int(us.size());
-        us[k] += rng.randh();
-        DNest4::wrap(us[k], 0.0, 1.0);
-    }
+    perturb_us(us, rng);
 
     static_cast<T*>(this)->prior_transform();
 

@@ -24,27 +24,7 @@ void MyModel::from_prior(DNest4::RNG& rng)
 
 double MyModel::perturb(DNest4::RNG& rng)
 {
-    double logH = 0.0;
-
-    int type = rng.rand_int(2);
-    if(type == 0)
-    {
-        int k = rng.rand_int(params.size());
-        params[k] += rng.randh();
-        DNest4::wrap(params[k], 0.0, 1.0);
-    }
-    else
-    {
-        int reps = (int)pow(params.size(), rng.rand());
-        for(int i=0; i<reps; ++i)
-        {
-            int k = rng.rand_int(params.size());
-            params[k] += rng.randh();
-            DNest4::wrap(params[k], 0.0, 1.0);
-        }
-    }
-
-    return logH;
+    return perturb_us(params, rng);
 }
 
 double MyModel::log_likelihood() const
