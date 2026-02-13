@@ -10,7 +10,6 @@ You can use it in a few different ways:
 * Implement your model in C++, compile it and have it run super fast.
 * Implement trans-dimensional models with the *RJObject* template class.
 * Implement your model by writing just two functions in Python, R, or Julia (this is new and undocumented - email me or take a look in the Templates directory)
-* Implement your model as a Python class.
 * Write up your model in Python, using a BUGS-style approach
 [see here to learn how](https://plausibilitytheory.wordpress.com/2016/08/11/a-jags-like-interface-to-dnest4/)
 (more documentation [here](https://odysee.com/@BrendonBrewer:3/dfs:5)).
@@ -38,10 +37,10 @@ Dependencies
 
 You will need a C++ compiler that
 supports the C++11 standard, along with Python 3 and the
-Python packages NumPy, scipy, matplotlib, and Cython.
+Python packages NumPy and matplotlib.
 
-Compiling
-=========
+Compiling the C++
+=================
 
 ## Note for Mac users:
 On some Macs, `g++` is an alias for `clang`, which is a C compiler. If this
@@ -56,14 +55,11 @@ cd code
 make
 ```
 
-Along with building the library this will compile all the examples.
-Then, install the Python package:
-
-```bash
-python setup.py install
-```
-
-in the root directory of this repository.
+Along with building the library this will compile all the examples,
+which you can run by executing `main` in the appropriate example directory.
+Then, for postprocessing, run `showresults.py` in each example directory.
+This makes use the Python scripts from the `python`
+directory within DNest4. I suggest adding this directory to your `PYTHONPATH`.
 
 Alternative build process with SCons
 ====================================
