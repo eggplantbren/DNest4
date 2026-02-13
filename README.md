@@ -56,11 +56,11 @@ make
 Along with building the library this will compile all the examples,
 which you can run by executing `main` in the appropriate example directory.
 Then, for postprocessing, run `showresults.py` in each example directory.
-This makes use the Python scripts from the `python`
+The `showresults.py` file makes use the Python scripts from the `python`
 directory within DNest4. I suggest adding this directory to your `PYTHONPATH`.
 You should also add the directory _containing_ the DNest4 directory to
 an environment variable `DNEST4_PATH`. This will help some Makefiles in
-example/template directories to find the correct files.
+the example/template directories to find the correct files when compiling.
 
 ## Note for Mac users:
 On some Macs, `g++` is an alias for `clang`, which is a C compiler. If this
