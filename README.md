@@ -32,6 +32,9 @@ Journal of Statistical Software, 86(7), 1 - 33. doi:http://dx.doi.org/10.18637/j
 Brewer, B. J., Pártay, L. B., & Csányi, G. (2011). Diffusive nested sampling.<br>
 Statistics and Computing, 21(4), 649-656.
 
+NOTE: The Python model building described in the paper is now removed, and
+there is no longer a Python package. Just a couple of helper scripts for simplicity.
+
 Dependencies
 ============
 
