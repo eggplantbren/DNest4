@@ -45,11 +45,6 @@ Python packages NumPy and matplotlib.
 Compiling the C++
 =================
 
-## Note for Mac users:
-On some Macs, `g++` is an alias for `clang`, which is a C compiler. If this
-is the case for you, you'll need to edit the first line of the Makefile so
-that it uses `clang++`, which is a C++ compiler.
-
 You can compile the DNest4 library (`libdnest4`) using the Makefile in the
 `code` directory using:
 
@@ -63,6 +58,11 @@ which you can run by executing `main` in the appropriate example directory.
 Then, for postprocessing, run `showresults.py` in each example directory.
 This makes use the Python scripts from the `python`
 directory within DNest4. I suggest adding this directory to your `PYTHONPATH`.
+
+## Note for Mac users:
+On some Macs, `g++` is an alias for `clang`, which is a C compiler. If this
+is the case for you, you'll need to edit the first line of the Makefile so
+that it uses `clang++`, which is a C++ compiler.
 
 Alternative build process with SCons
 ====================================
