@@ -1,0 +1,183 @@
+\documentclass{beamer}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          alternativetitlepage=true,% Use the fancy title page.
+       %   titlepagelogo=logo-polito,% Logo for the first page.
+       %   watermark=watermark-polito,% Watermark used in every page.
+       %   watermarkheight=100px,% Height of the watermark.
+       %   watermarkheightmult=4,% The watermark image is 4 times bigger
+                                % than watermarkheight.
+          ]{Torino}
+
+\setbeamertemplate{footline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1ex,dp=1ex]{footline}
+    \vspace{5pt} \hspace{1em} \insertframenumber/\inserttotalframenumber
+  \end{beamercolorbox}
+}
+
+\newcommand{\bx}{\boldsymbol{x}}
+\newcommand{\given}{\,|\,}
+
+\author{Brendon J. Brewer}
+\title{Diffusive Nested Sampling: Not Dead Yet}
+\institute{The University of Auckland}
+\date{}
+
+
+\linespread{1.3}
+\usepackage{minted}
+\usepackage[utf8]{inputenc}
+\usepackage{dsfont}
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+
+\begin{frame}
+\frametitle{Minimalist Slides}
+These minimalist slides are inspired by Paul Murrell.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Bayesian Inference}
+
+\begin{itemize}
+\item Uncertainty is described using probability theory.\pause
+\item Usually you want to calculate posterior distributions for unknown
+quantities, given the data you have.\pause
+\item Computationally, this is best achieved by generating samples from
+the posterior distributions, using methods such as Markov Chain Monte Carlo.
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Background}
+
+\begin{itemize}
+\item Probability theory is used to describe uncertainty.\pause
+\item Prior distributions get updated to posterior distributions when you
+obtain data. Posterior distributions are the main
+conclusion.\pause
+\item The marginal likelihood is a single number that is also useful
+for model comparison purposes. Think: something like AIC but philosophically
+better (though, not idiot proof).
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Computing the Results}
+\begin{itemize}
+\item The best way to describe high dimensional probability distributions
+is with samples.\pause
+\item Markov Chain Monte Carlo (MCMC) methods `explore the parameter space'
+to generate samples.\pause
+\item Most cannot calculate marginal likelihoods, or do so poorly.
+\item Has failure modes similar to optimisation techniques, e.g., when
+the posterior is multimodal.
+\end{itemize}
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Two Categories of MCMC Methods}
+\begin{itemize}
+\item Different ways of moving around. Metropolis, Gibbs, Slice, Hamiltonian,
+Affine Invariant, etc.
+\item Change the distribution. Annealing, etc.
+\end{itemize}
+
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Nested Sampling}
+\begin{itemize}
+\item Invented by physicist John Skilling in 2004.\pause
+\item The gold standard for calculating marginal likelihood (a high dimensional
+integral), and also gives posterior samples.\pause
+\item Starts with points representing the prior distribution (i.e., guesses),
+moves them `uphill' in likelihood, at a controlled rate. Like an optimiser
+with a speedometer and brakes.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Diffusive Nested Sampling}
+\begin{itemize}
+\item Invented at the MaxEnt 2009 conference in Oxford, Mississippi.\pause
+\item A `pure MCMC' version of Nested Sampling.\pause
+\item Replace posterior distribution with `mixture of constrained priors'.\pause
+\item Easier to explore. Can jump between modes. Gives marginal likelihood.
+Posterior available by reweighting.\pause
+\item Canonical implementation is DNest4, written in 2018. It's in C++,
+with some Python postprocessing scripts.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{DNest4 Demos}
+\begin{itemize}
+\item `Road' dataset (simple linear regression).\pause
+\item Implementation as a C++ class (runs fast but a lot of work
+compared to \mintinline{r}{lm()} --- even loading
+data requires a bunch of I/O programming).\pause
+\item The perturb function is also a lot of work.\pause
+\item Exoplanet demo (more research-level model).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DNest4 Users}
+\begin{itemize}
+\item I don't have many users in the wild --- the learning curve is steep.
+People prefer bad samplers that are easy to use.\pause
+\item Needed ways of writing models simply in easier languages than C++.\pause
+\item Python, R, and Julia now supported.\pause
+\item You need to write a function to define the prior and a function
+to define the log likelihood.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DNest4 Demos}
+\begin{itemize}
+\item Road example implemented in R.\pause
+\item The R connection is by Simon Urbanek.\pause
+\item Python and Julia examples.\pause
+\item The Python and Julia connections were by myself and ChatGPT.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Strengths and Weaknesses}
+\begin{itemize}
+\item Strengths:
+works on hard problems with multimodality, strong correlations, phase
+transitions, etc, giving posterior samples and marginal likelihood.
+\item Weaknesses: Tends to only be sane on problems where likelihood evaluation
+is pretty fast. Avoid on problems with very tiny (relative to prior volume)
+yet simple posteriors.
+\end{itemize}
+
+\end{frame}
+
+
+\end{document}
+
