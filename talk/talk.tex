@@ -81,7 +81,7 @@ better (though, not idiot proof).
 is with samples.\pause
 \item Markov Chain Monte Carlo (MCMC) methods `explore the parameter space'
 to generate samples.\pause
-\item Most cannot calculate marginal likelihoods, or do so poorly.
+\item Most cannot calculate marginal likelihoods, or do so poorly.\pause
 \item Has failure modes similar to optimisation techniques, e.g., when
 the posterior is multimodal.
 \end{itemize}
@@ -96,7 +96,7 @@ the posterior is multimodal.
 \frametitle{Two Categories of MCMC Methods}
 \begin{itemize}
 \item Different ways of moving around. Metropolis, Gibbs, Slice, Hamiltonian,
-Affine Invariant, etc.
+Affine Invariant, etc.\pause
 \item Change the distribution. Annealing, etc.
 \end{itemize}
 
@@ -139,7 +139,7 @@ with some Python postprocessing scripts.
 compared to \mintinline{r}{lm()} --- even loading
 data requires a bunch of I/O programming).\pause
 \item The perturb function is also a lot of work.\pause
-\item Exoplanet demo (more research-level model).
+\item Galaxy demo (gaussian mixture model).
 \end{itemize}
 \end{frame}
 
@@ -170,7 +170,7 @@ to define the log likelihood.
 \begin{itemize}
 \item Strengths:
 works on hard problems with multimodality, strong correlations, phase
-transitions, etc, giving posterior samples and marginal likelihood.
+transitions, etc, giving posterior samples and marginal likelihood.\pause
 \item Weaknesses: Tends to only be sane on problems where likelihood evaluation
 is pretty fast. Avoid on problems with very tiny (relative to prior volume)
 yet simple posteriors.
