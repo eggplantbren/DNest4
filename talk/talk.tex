@@ -43,18 +43,18 @@ These minimalist slides are inspired by Paul Murrell.
 
 \end{frame}
 
-\begin{frame}
-\frametitle{Bayesian Inference}
+%\begin{frame}
+%\frametitle{Bayesian Inference}
 
-\begin{itemize}
-\item Uncertainty is described using probability theory.\pause
-\item Usually you want to calculate posterior distributions for unknown
-quantities, given the data you have.\pause
-\item Computationally, this is best achieved by generating samples from
-the posterior distributions, using methods such as Markov Chain Monte Carlo.
-\end{itemize}
+%\begin{itemize}
+%\item Uncertainty is described using probability theory.\pause
+%\item Usually you want to calculate posterior distributions for unknown
+%quantities, given the data you have.\pause
+%\item Computationally, this is best achieved by generating samples from
+%the posterior distributions, using methods such as Markov Chain Monte Carlo.
+%\end{itemize}
 
-\end{frame}
+%\end{frame}
 
 
 
@@ -112,8 +112,9 @@ Affine Invariant, etc.\pause
 \item The gold standard for calculating marginal likelihood (a high dimensional
 integral), and also gives posterior samples.\pause
 \item Starts with points representing the prior distribution (i.e., guesses),
-moves them `uphill' in likelihood, at a controlled rate. Like an optimiser
-with a speedometer and brakes.
+moves them `uphill' in likelihood, at a controlled rate (keeping track
+of prior mass). Like an optimiser
+with cruise control.
 \end{itemize}
 \end{frame}
 
