@@ -1,0 +1,1 @@
+Demonstration of DNest4 on a model where we know the evidence integral (same as python/examples/gaussian/gaussian.py). 
